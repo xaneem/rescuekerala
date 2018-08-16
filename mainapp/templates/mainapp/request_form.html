@@ -13,16 +13,17 @@
   {% bootstrap_icon "star" %} Submit
   </button>
   {% endbuttons %}
-  </form>
-  	<div id="floating-panel">
-		<input id="address" type="textbox" value="Kochi, Kerala">
-		<input id="Search" type="button" value="Search">
-		<button id="change" type="button">
-			Change
-		</button>
+	</form>
+	<div id="gpslocationchooser" hidden>
+		<div id="floating-panel">
+			<input id="address" type="textbox" value="Kochi, Kerala">
+			<input id="Search" type="button" value="Search">
+			<button id="change" type="button">
+				Change
+			</button>
+		</div>
+		<div id="map"></div>
 	</div>
-	<div id="map"></div>
-
   <!-- Instruction Modal -->
   <div id="instructionModal" class="modal  fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
     <div class="modal-dialog" style="background: white">
@@ -43,7 +44,8 @@
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" integrity="sha256-/GKyJ0BQJD8c8UYgf7ziBrs/QgcikS7Fv/SaArgBcEI=" crossorigin="anonymous"></script>
-	<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+	<!-- <script src="http://www.openlayers.org/api/OpenLayers.js"></script> -->
+	<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.1.3/build/ol.js"></script>
   <script type="text/javascript">
 
 	window.onload = function(){
@@ -80,15 +82,19 @@
 			enableHighAccuracy: true
 		};
 
-		var success = function(pos) {
+		success = function(pos) {
 			var crd = pos.coords;
 				gpsField.value = crd.latitude + "," + crd.longitude;
 				gpsAccuracyField.value = crd.accuracy + ' Meters';
 				$.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + crd.latitude + '&lon=' + crd.longitude + '&zoom=18&addressdetails=1')
 					.done(function(response) {
-						var inputElem = $('<input class="form-control" id="id_latlng_display" value="' + response.display_name + '"</input>')
-						$(gpsField).before(inputElem);
-						$(gpsField).hide();
+						if($('#id_latlng_display').length==0){
+							var inputElem = $('<input class="form-control" id="id_latlng_display" value="' + response.display_name + '"</input>')
+							$(gpsField).before(inputElem);
+							$(gpsField).hide();
+						}else{
+							$('#id_latlng_display').val(response.display_name);
+						}
 						console.log(response.display_name);
 					})
 					.fail(function(err){
@@ -102,7 +108,8 @@
 
 		var changeGPSLocationBtn = document.getElementById('changeGPSLocation');
 		changeGPSLocationBtn.addEventListener('click', function(event){
-			document.getElementById('gpslocationinwordsdiv').hidden = false;
+			document.getElementById('gpslocationchooser').hidden = false;
+			createMap();
 		});
 		
     $('#modal_ok_button').click(function(event) {
@@ -110,57 +117,109 @@
     });
 		$('#instructionModal').modal('show');
 
-		map = new OpenLayers.Map("map");
-    map.addLayer(new OpenLayers.Layer.OSM());
-
-    var lonLat = new OpenLayers.LonLat( 9.9312 , 76.2673 );
-          
-    var zoom=8;
-
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
-    map.addLayer(markers);
-    
-    markers.addMarker(new OpenLayers.Marker(lonLat));
-    
-    map.setCenter (lonLat, zoom);
-	}
-
-	function initMap() {
-		var map = new google.maps.Map(document.getElementById('map'), {
-			zoom: 8,
-			center: {lat: 9.9312, lng: 76.2673}
-		});
-		var marker = new google.maps.Marker({
-			map,
-			position: new google.maps.LatLng(9.9312, 76.2673)
-		});
-		document.getElementById('change').addEventListener('click', function(event){
-			console.log(marker.position);
-		});
-		var geocoder = new google.maps.Geocoder();
-		document.getElementById('Search').addEventListener('click', function() {
-			geocodeAddress(geocoder, map);
-		});
-	}
-
-	function geocodeAddress(geocoder, resultsMap) {
-		var address = document.getElementById('address').value;
-		geocoder.geocode({'address': address}, function(results, status) {
-			if (status === 'OK') {
-				resultsMap.setCenter(results[0].geometry.location);
-			marker = new google.maps.Marker({
-					map: resultsMap,
-					position: results[0].geometry.location
+		function makeMovable(feature) {
+				var modify = new ol.interaction.Modify({
+						features: new ol.Collection([feature])
 				});
-			} else {
-				alert('Geocode was not successful for the following reason: ' + status);
+
+				feature.on('change',function() {
+						var pos = ol.proj.transform(this.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326');
+						// console.log('Feature Moved To:', pos);
+						currentPosition.lat = pos[1];
+						currentPosition.long = pos[0];
+				}, feature);
+				return modify;
+		}
+
+		function createMarker(location, style){
+				var iconFeature = new ol.Feature({
+						geometry: new ol.geom.Point(location)
+				});
+				iconFeature.setStyle(style);
+
+				return iconFeature
+		}
+
+		function changeLocation(location){
+			marker.getGeometry().setCoordinates(new ol.proj.transform([location.lon-0, location.lat-0], 'EPSG:4326', 'EPSG:3857'));
+			map.getView().setCenter(ol.proj.transform([location.lon-0, location.lat-0], 'EPSG:4326', 'EPSG:3857'));
+		}
+
+		function createMap(){
+			map = new ol.Map({
+				target: document.getElementById('map'),
+				layers:[
+					new ol.layer.Tile({
+						source: new ol.source.OSM()
+					})
+				],
+				view: new ol.View({
+					center: ol.proj.fromLonLat([76.2673, 9.9312]),
+					zoom:11
+				})
+			});
+
+			currentPosition = {
+				lat: 9.9312,
+				long: 76.2673
 			}
+
+			var mapVectorSource = new ol.source.Vector({
+					features: []
+			});
+			var mapVectorLayer = new ol.layer.Vector({
+					source: mapVectorSource
+			});
+			map.addLayer(mapVectorLayer);
+
+			iconStyle = [
+				new ol.style.Style({
+					image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+						anchor: [0.5, 1],
+						anchorXUnits: 'fraction',
+						anchorYUnits: 'fraction',
+						src: 'https://maps.gstatic.com/intl/de_de/mapfiles/ms/micons/red-pushpin.png',
+					}))
+				})
+			]
+			marker = createMarker(ol.proj.transform([76.2673, 9.9312], 'EPSG:4326', 'EPSG:3857'), iconStyle);
+			mapVectorSource.addFeature(marker);
+			var modifyInteraction = makeMovable(marker);
+			map.addInteraction(modifyInteraction);
+		}
+
+		document.getElementById('change').addEventListener('click', function(event){
+			console.log(currentPosition);
+			success({
+				coords:{
+					latitude:currentPosition.lat,
+					longitude: currentPosition.long
+				}
+			});
+		});
+		document.getElementById('Search').addEventListener('click', function() {
+			var address = document.getElementById('address').value;
+			$.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
+					.done(function(response) {
+						try{
+							console.log(response);
+							if(response.length<1){
+								alert('Please check the spelling');
+							}else{
+								response = response[0];
+								console.log(response.lon-0, response.lat-0);
+								changeLocation(response);
+							}
+						}catch(err){
+							console.error(err);
+						}
+					})
+					.fail(function(err){
+						console.log(err);
+					});
 		});
 	}
 
   </script>
-  <!-- <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsNkmf6cK7dNkv3ck_HFCCU0lB-S8TOEc&callback=initMap">
-  </script> -->
 
 {% endblock %}
