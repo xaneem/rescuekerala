@@ -107,15 +107,16 @@ class Volunteer(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=10)
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
     organisation = models.CharField(max_length=250, verbose_name="Organization (സംഘടന) / Institution")
-    address = models.TextField()
+    address = models.TextField(verbose_name="Address - വിലാസം")
     area = models.CharField(
         max_length = 15,
         choices = vol_categories,
-        verbose_name = "Area of volunteering"
+        verbose_name = "Area of volunteering - സന്നദ്ധസേവനം"
     )
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
@@ -128,10 +129,11 @@ class Contributor(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=10)
-    address = models.TextField()
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    address = models.TextField(verbose_name="Address - വിലാസം")
     commodities = models.TextField(verbose_name="What you can contribute. ( സംഭാവന ചെയ്യാന്‍ ഉദ്ദേശിക്കുന്ന സാധനങ്ങള്‍ ) -- Eg: Shirts, torches etc ")
     status = models.CharField(
         max_length = 10,
@@ -147,10 +149,11 @@ class DistrictManager(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=11)
-    email = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=11, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    email = models.CharField(max_length=100, verbose_name="Email - ഇമെയിൽ")
 
     def __str__(self):
         return self.name + ' ' + self.get_district_display()
