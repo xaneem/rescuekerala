@@ -18,5 +18,6 @@ urlpatterns = [
     path('ieee/', views.AboutIEEE.as_view(), name='aboutieee'),
     path('data/' , views.mapdata , name="mapdata"),
     path('map/' , views.mapview , name="mapview"),
-
+    path('dmodash/' , views.dmodash , name="DMODash"),
+    path('dmoinfo/' , views.dmoinfo , name="DMOInfo" )
 ]
