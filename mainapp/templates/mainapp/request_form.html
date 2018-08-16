@@ -58,9 +58,16 @@
 				if(checkbox.length > 0){
 					var checkboxElem = el.querySelectorAll("input")[0];
 					if(checkboxElem.id === "id_is_request_for_others" ){
-					    $('#id_latlng').parent().show();
-					    $('#id_latlng_accuracy').parent().show();
-					    $('#id_latlng_display').show();
+						if(checkboxElem.checked){
+							$('#id_latlng').parent().hide();
+							$('#id_latlng_accuracy').parent().hide();
+							$('#id_latlng_display').hide();
+						}
+						else{
+							$('#id_latlng').parent().show();
+							$('#id_latlng_accuracy').parent().show();
+							$('#id_latlng_display').show();
+						}
 					}
 					else if(checkboxElem.checked){
 						formgroups[i+1].style.display = "block";						
@@ -78,6 +85,8 @@
 		}
 		var gpsField = document.getElementById('id_latlng');
 		var gpsAccuracyField = document.getElementById('id_latlng_accuracy');
+		gpsField.readOnly = true;
+		gpsAccuracyField.readOnly = true;
 		var options = {
 			enableHighAccuracy: true
 		};

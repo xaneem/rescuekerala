@@ -166,6 +166,16 @@ class DistrictNeed(models.Model):
     def __str__(self):
         return self.get_district_display()
 
+class RescueCampDetails(models.Model):
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+    )
+    camp_location = models.TextField(verbose_name="Camps and Locations") # Camp Locations
+
+    def __str__(self):
+        return self.get_district_display()
+
 class DistrictCollection(models.Model):
     district = models.CharField(
         max_length=15,

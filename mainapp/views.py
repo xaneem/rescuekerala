@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, RescueCampDetails
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -82,6 +82,15 @@ class DistNeeds(TemplateView):
         return context
 
 
+class RescueCamps(TemplateView):
+    template_name = "mainapp/rescue_camps.html"
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['camp_data'] = RescueCampDetails.objects.all()
+        return context
 
 
 class RequestFilter(django_filters.FilterSet):
@@ -93,7 +102,7 @@ class RequestFilter(django_filters.FilterSet):
                     'district' : ['exact'],
                     'requestee' : ['icontains'],
                     'requestee_phone' : ['exact'],
-                    'location' : ['exact']
+                    'location' : ['icontains']
                  }
 
     def __init__(self, *args, **kwargs):
