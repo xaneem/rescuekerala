@@ -91,8 +91,8 @@ class RequestFilter(django_filters.FilterSet):
 
 
 def request_list(request):
-    filter = RequestFilter(request.GET, queryset=Request.objects.all()  )
-    req_data = filter.qs
+    filter = RequestFilter(request.GET, queryset=Request.objects.all() )
+    req_data = filter.qs.order_by('-dateadded')
     paginator = Paginator(req_data, 100)
     page = request.GET.get('page')
     req_data = paginator.get_page(page)
