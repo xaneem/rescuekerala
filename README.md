@@ -14,7 +14,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Using Docker
 
-- Only pre-requisite is having docker and docker-compose insatalled
+- Only pre-requisite is having docker and docker-compose installed
 - Execute `docker-compose up` in this directory
 - Server will start running at `localhost:8000`
 - `Ctrl+C` to stop
