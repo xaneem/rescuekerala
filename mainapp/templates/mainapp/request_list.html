@@ -12,6 +12,7 @@
     <tr>
       <th>District</th>
       <th>Location</th>
+      <th>GPS Location</th>
       <th>Requestee</th>
       <th>Contact number</th>
       <th>Summary of request</th>
@@ -20,7 +21,16 @@
     {% for req in data %}
         <tr>
           <td>{{ req.get_district_display }}</td>
-          <td>{{ req.location  }}</td>
+          <td>{{ req.location }}</td>
+          <td>
+            {% if not req.is_request_for_others and req.latlng %}
+              <a class="btn btn-sm btn-success" href="https://maps.google.com/?q={{ req.latlng }}" target="_blank">Open in maps</a>
+              <br>
+              Accuracy: {{ req.latlng_accuracy }}
+            {% else %}
+              NA
+            {% endif %}
+          </td>
           <td>{{ req.requestee }}</td>
           <td>{{ req.requestee_phone }}</td> 
           <td>{{ req.summarise | linebreaks }}</td>
@@ -37,9 +47,13 @@
             <a href="?page={{ data.previous_page_number }}&district={{ request.GET.district }}">previous</a>
         {% endif %}
   
-        <span class="current">
-            Page {{ data.number }} of {{ data.paginator.num_pages }}.
-        </span>
+        {% for i in data.paginator.page_range %}
+        {% if data.number == i %}
+          <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
+        {% else %}
+          <a href="?page={{ i }}&district={{ request.GET.district }}">{{ i }}</a>
+        {% endif %}
+      {% endfor %}
   
         {% if data.has_next %}
             <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}">next</a>
