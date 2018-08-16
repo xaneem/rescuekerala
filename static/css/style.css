@@ -181,7 +181,6 @@ tr:hover td{
 }
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
-<<<<<<< HEAD
 
 #map {
     height: 500px;
@@ -200,5 +199,3 @@ tr:hover td{
     line-height: 30px;
     padding-left: 10px;
 }
-=======
->>>>>>> master
