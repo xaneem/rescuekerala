@@ -6,22 +6,30 @@
   {% csrf_token %}
   {% bootstrap_form form %}
   {% buttons %}
+  <button type="button" class="btn btn-default" id="changeGPSLocation">
+	change GPS Location
+  </button>
   <button type="submit" class="btn btn-primary">
   {% bootstrap_icon "star" %} Submit
   </button>
   {% endbuttons %}
   </form>
+  	<div id="floating-panel">
+		<input id="address" type="textbox" value="Kochi, Kerala">
+		<input id="Search" type="button" value="Search">
+		<button id="change" type="button">
+			Change
+		</button>
+	</div>
+	<div id="map"></div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" integrity="sha256-/GKyJ0BQJD8c8UYgf7ziBrs/QgcikS7Fv/SaArgBcEI=" crossorigin="anonymous"></script>
   <script type="text/javascript">
-	try {
 
-  		window.addEventListener('load', checkVisibility, false);
-  		var checkboxes = document.querySelectorAll("input[type=checkbox]");
-		for(var i=0; i< checkboxes.length; i++) {
-			checkboxes[i].addEventListener("change",checkVisibility);
-		}
- 	 	
- 	 	function checkVisibility(){
+	window.onload = function(){
+
+		var checkVisibility;
+ 	 	(checkVisibility = function(){
 			var formgroups = document.querySelectorAll(".form-group");
 			Array.prototype.forEach.call(formgroups, function(el, i){
 				var checkbox = el.querySelectorAll(".checkbox");
@@ -33,15 +41,13 @@
 						formgroups[i+1].style.display = "none";												
 					}
 				}
-			});  		
+			});
+		})();
 
+		var checkboxes = document.querySelectorAll("input[type=checkbox]");
+		for(var i=0; i< checkboxes.length; i++) {
+			checkboxes[i].addEventListener("change",checkVisibility);
 		}
-  	}
-	catch(err) {
-		console.log("Your browser does not allow some javascript programs.\nError Message : " + err.message)
-	}
-
-	window.onload = function(){
 
 		var gpsField = document.getElementById('id_latlng');
 		gpsField.readOnly = true;
@@ -72,8 +78,51 @@
 		}
 
 		navigator.geolocation.getCurrentPosition(success, error, options);
+
+		var changeGPSLocationBtn = document.getElementById('changeGPSLocation');
+		changeGPSLocationBtn.addEventListener('click', function(event){
+			document.getElementById('gpslocationinwordsdiv').hidden = false;
+		});
+		
 	}
 
+	function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: {lat: 9.9312, lng: 76.2673}
+		});
+		var marker = new google.maps.Marker({
+			map,
+			position: new google.maps.LatLng(9.9312, 76.2673)
+		});
+		document.getElementById('change').addEventListener('click', function(event){
+			console.log(marker.position);
+		});
+        var geocoder = new google.maps.Geocoder();
+
+        document.getElementById('Search').addEventListener('click', function() {
+          geocodeAddress(geocoder, map);
+        });
+      }
+
+      function geocodeAddress(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+        	marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+
+  </script>
+  <script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsNkmf6cK7dNkv3ck_HFCCU0lB-S8TOEc&callback=initMap">
   </script>
 
 {% endblock %}
