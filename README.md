@@ -1,8 +1,12 @@
 # rescuekerala
+
 Website for coordinating rehabilitation of people affected in the 2018 Kerala Floods
 
-We're so glad to see the PRs, will merge after releasing critical features
-=======
+Join our slack channel
+
+https://join.slack.com/t/keralarescue/shared_invite/enQtNDE4NzUyNjg4MjQ3LTJiMDU0ZmFhODNlNDE3ZDc4ZmFlMGI0YmQ0MzI0NWYyNThlOTgwYTM2Y2JlYzMxMDMxMzUwY2E2MmVmNDQyNmE
+
+
 # Kerala Rescue
 
 Website for coordinating rehabilitation of people affected in the 2018 Kerala Floods

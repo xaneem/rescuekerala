@@ -16,4 +16,7 @@ urlpatterns = [
     path('contrib_success/', views.ContribSuccess.as_view(), name='contribsucessview'),
     path('disclaimer/', views.DisclaimerPage.as_view(), name='disclaimer'),
     path('ieee/', views.AboutIEEE.as_view(), name='aboutieee'),
+    path('data/' , views.mapdata , name="mapdata"),
+    path('map/' , views.mapview , name="mapview"),
+
 ]
