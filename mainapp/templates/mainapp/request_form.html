@@ -61,14 +61,12 @@
 					var checkboxElem = el.querySelectorAll("input")[0];
 					if(checkboxElem.id === "id_is_request_for_others" ){
 						if(checkboxElem.checked){
-							$('#id_latlng').val("");
-							$('#id_latlng_accuracy').val("");
-							$('#id_latlng_display').hide();
+							$('#id_latlng_display').parent().hide();
+							$('#id_latlng_accuracy').parent().hide();
 						}
 						else{
-							$('#id_latlng').parent().show();
+							$('#id_latlng_display').parent().show();
 							$('#id_latlng_accuracy').parent().show();
-							$('#id_latlng_display').show();
 						}
 					}
 					else if(checkboxElem.checked){
