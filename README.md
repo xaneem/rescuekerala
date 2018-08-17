@@ -19,7 +19,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Using Docker
 
 - Only pre-requisite is having docker and docker-compose installed
-- Execute `docker-compose up` in this directory
+- Execute `sh docker.sh` in this directory (if you do not have permissions on the `docker.sh`, do `chmod +x docker.sh`)
 - Server will start running at `localhost:8000`
 - `Ctrl+C` to stop
 
