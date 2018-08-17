@@ -514,18 +514,18 @@ class PersonViewSet(viewsets.ModelViewSet):
     http_method_names = ['post']
 
     def create(self, request):
-        serializer = PersonSerializer(data=request.data)
+        for data in request.data:
+            serializer = PersonSerializer(data=data)
 
-        if serializer.is_valid(raise_exception=True):
+            if serializer.is_valid(raise_exception=True):
 
-            camped_at = serializer.validated_data.get('camped_at', None)
+                camped_at = serializer.validated_data.get('camped_at', None)
 
-            if camped_at :
-                camp = get_object_or_404(RescueCamp, id=camped_at.id, data_entry_user=self.request.user)
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+                if camped_at :
+                    camp = get_object_or_404(RescueCamp, id=camped_at.id, data_entry_user=self.request.user)
+                    serializer.save()
+                else:
+                    return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success' : 'Person(s) added'}, status=status.HTTP_201_CREATED)
