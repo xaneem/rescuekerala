@@ -188,14 +188,21 @@ tr:hover td{
 }
 /* Optional: Makes the sample page fill the window. */
 #floating-panel {
-    top: 10px;
-    left: 25%;
+    /*top: 10px;*/
+    /*left: 25%;*/
     z-index: 5;
     background-color: #fff;
     padding: 5px;
     border: 1px solid #999;
-    text-align: center;
-    font-family: 'Roboto','sans-serif';
-    line-height: 30px;
+    /*text-align: center;*/
+    /*font-family: 'Roboto','sans-serif';*/
+    /*line-height: 30px;*/
     padding-left: 10px;
+    box-sizing: border-box;
+}
+
+#gpslocationchooser {
+    width:100%;
+    box-sizing: border-box;
+    margin: 20px auto;
 }
