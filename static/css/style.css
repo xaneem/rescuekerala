@@ -206,3 +206,7 @@ tr:hover td{
     box-sizing: border-box;
     margin: 20px auto;
 }
+
+table thead tr th {
+  border-top: 2px solid #ddd !important;
+}
