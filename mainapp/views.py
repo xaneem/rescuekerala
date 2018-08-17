@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
@@ -21,8 +21,8 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
-from rest_framework import viewsets, permissions
-from .serializers import RescueCampSerializer
+from rest_framework import viewsets, permissions, status
+from .serializers import RescueCampSerializer, PersonSerializer
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -497,10 +497,34 @@ class RescueCampViewSet(viewsets.ModelViewSet):
     serializer_class = RescueCampSerializer
     permission_classes = (permissions.IsAuthenticated,)
     http_method_names = ['get']
-    
+
     """
         This view should return a list of all the RescueCamp
         for the currently user.
     """
     def get_queryset(self):
-        return RescueCamp.objects.filter(data_entry_user=self.request.user,).order_by('-id')
+        return RescueCamp.objects.filter(data_entry_user=self.request.user).order_by('-id')
+
+
+class PersonViewSet(viewsets.ModelViewSet):
+    queryset = Person.objects.filter()
+    serializer_class = PersonSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ['post']
+
+    def create(self, request):
+        serializer = PersonSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+
+            camped_at = serializer.validated_data.get('camped_at', None)
+
+            if camped_at :
+                camp = get_object_or_404(RescueCamp, id=camped_at, data_entry_user=self.request.user)
+                serializer.save()
+                Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            else:
+                return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,8 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'api/1/camps', views.RescueCampViewSet)
+router.register(r'api/1/persons', views.PersonViewSet)
+
 
 
 urlpatterns = [
