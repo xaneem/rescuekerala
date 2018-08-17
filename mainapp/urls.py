@@ -25,4 +25,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='user_logout'),
     path('relief_camps/', views.ReliefCamps.as_view(), name='relief_camps'),
     path('find_people/', views.find_people, name='find_people'),
+    path('announcements/', views.announcements, name="Announcements")
 ]
