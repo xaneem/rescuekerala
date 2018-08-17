@@ -191,10 +191,12 @@ class RescueCamp(models.Model):
         max_length=15,
         choices=districts
     )
+    taluk = models.CharField(max_length=50,verbose_name="Taluk")
+    village = models.CharField(max_length=50,verbose_name="Village")
     contacts = models.TextField(verbose_name="Phone Numbers",blank=True,null=True)
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
     class Meta:
-        verbose_name = 'Relief Camp'   
+        verbose_name = 'Relief Camp'
     def __str__(self):
         return self.name
 
@@ -220,5 +222,3 @@ class Person(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
-
-
