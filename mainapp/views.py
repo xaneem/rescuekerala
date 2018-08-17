@@ -13,6 +13,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.db.models import Count
+from django.core.cache import cache
+from django.conf import settings
 
 class CreateRequest(CreateView):
     model = Request
@@ -168,11 +170,15 @@ class Maintenance(TemplateView):
 
 
 def mapdata(request):
-    if("district" in request.GET.keys()):
-        data = Request.objects.exclude(latlng__exact="").filter(district = request.GET.get("district")).values() 
+    district = request.GET.get("district", "all")
+    data = cache.get("mapdata:" + district)
+    if data:
+        return JsonResponse(list(data) , safe=False)
+    if district != "all":
+        data = Request.objects.exclude(latlng__exact="").filter(district=district).values()
     else:
         data = Request.objects.exclude(latlng__exact="").values()
-
+    cache.set("mapdata:" + district, data, settings.CACHE_TIMEOUT)
     return JsonResponse(list(data) , safe=False)
 
 def mapview(request):

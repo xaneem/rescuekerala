@@ -1,5 +1,7 @@
 # rescuekerala
 
+[![Build Status - Travis][0]][1]
+
 Website for coordinating the rehabilitation of the people affected in the 2018 Kerala Floods.
 
 [![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](https://join.slack.com/t/keralarescue/shared_invite/enQtNDE4NzUyNjg4MjQ3LTJiMDU0ZmFhODNlNDE3ZDc4ZmFlMGI0YmQ0MzI0NWYyNThlOTgwYTM2Y2JlYzMxMDMxMzUwY2E2MmVmNDQyNmE)
@@ -24,7 +26,7 @@ You will need to have following softwares in your system:
 
 #### Setting up a development environment
 
-1. Create database and user in postgres for kerala rescue and give privilegesl.
+1. Create database and user in postgres for kerala rescue and give privileges.
 
 ```
 psql user=postgres
@@ -74,6 +76,7 @@ python3 manage.py migrate
 python3 manage.py collectstatic
 ```
 
+
 6. Run the server.
 
 ```
@@ -91,3 +94,6 @@ are working on it.
 ### By fixing bugs or by adding features
 
 Please find issues that we need help [here](https://github.com/IEEEKeralaSection/rescuekerala/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). Go through the comments in the issue to check if someone else is already working on it. Don't forget to drop a comment when you start working on it.
+
+[0]: https://travis-ci.org/IEEEKeralaSection/rescuekerala.svg?branch=master
+[1]: https://travis-ci.org/IEEEKeralaSection/rescuekerala
