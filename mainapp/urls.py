@@ -7,7 +7,7 @@ from . import views
 
 
 router = DefaultRouter()
-router.register(r'camp', views.RescueCampViewSet)
+router.register(r'api/1/camps', views.RescueCampViewSet)
 
 
 urlpatterns = [

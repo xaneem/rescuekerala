@@ -21,6 +21,8 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
+from rest_framework import viewsets, permissions
+from .serializers import RescueCampSerializer
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -493,11 +495,12 @@ def camp_requirements_list(request):
 class RescueCampViewSet(viewsets.ModelViewSet):
     queryset = RescueCamp.objects.filter()
     serializer_class = RescueCampSerializer
-    permission_classes = (permissions.IsAuthenticated)
-
+    permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ['get']
+    
     """
         This view should return a list of all the RescueCamp
         for the currently user.
     """
     def get_queryset(self):
-        return RescueCamp.objects.filter(user=self.request.user,).order_by('-id')
+        return RescueCamp.objects.filter(data_entry_user=self.request.user,).order_by('-id')
