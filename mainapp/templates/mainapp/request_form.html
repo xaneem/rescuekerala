@@ -289,30 +289,7 @@
 			console.warn(`ERROR(${err.code}): ${err.message}`);
 		}
 
-		var changeGPSLocationBtn = document.getElementById('changeGPSLocation');
-		changeGPSLocationBtn.addEventListener('click', function(event){
-			var gpslocationchooser = document.getElementById('gpslocationchooser');
-			mapDiv = document.getElementById('map');
-			if(gpslocationchooser.hidden){
-				var scriptTag = document.createElement('script'), // create a script tag
-					firstScriptTag = document.getElementsByTagName('script')[0]; // find the first script tag in the document
-					document.getElementById('gpslocationchooser').hidden = false;
-					var preloader = document.createElement('div');
-					preloader.id = "preloader";
-					preloader.style = "position: relative; left: 0; top: 0; z-index: 999; width: 100%; height: 100%; overflow: visible; background: #333 url('http://files.mimoymima.com/images/loading.gif') no-repeat center center;"
-					mapDiv.appendChild(preloader);
-					console.log(mapDiv);
-				scriptTag.onload = function(_, isAbort){
-					console.log("_", _);
-					console.log("isAbort", isAbort);
-					createMap();
-					changeGPSLocationBtn.disabled = true;	
-				}
-				scriptTag.src = 'https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.1.3/build/ol.js'; // set the source of the script to your script
-				firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
-			}
-		});
-		
+
     $('#modal_ok_button').click(function(event) {
       navigator.geolocation.getCurrentPosition(success, error, options);
     });
@@ -348,7 +325,7 @@
 		}
 
 		function createMap(){
-			mapDiv.innerHTML = "";
+			mapDiv = document.getElementById('map');
 			view = new ol.View({
 				center: ol.proj.fromLonLat([76.2673, 9.9312]),
 				zoom:11
