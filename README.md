@@ -14,6 +14,14 @@ Website for coordinating rehabilitation of people affected in the 2018 Kerala Fl
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
+
+### Using Docker
+
+- Only pre-requisite is having docker and docker-compose installed
+- Execute `sh docker.sh` in this directory (if you do not have permissions on the `docker.sh`, do `chmod +x docker.sh`)
+- Server will start running at `localhost:8000`
+- `Ctrl+C` to stop
+
 ### Prerequisites
 
 You will need to have following softwares in your system:
