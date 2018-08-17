@@ -58,13 +58,13 @@
        <input value="View requests" class="btn btn-primary" type="submit" />
  </form>
  <div id="requests-table" class="table-responsive">
-  <table class="table">
+  <table id="req-table" class="table">
     <thead>
       <tr>
         <th>District</th>
-        <th>Location</th>
-        <th>Requestee</th>
-        <th>Phone</th>
+        <th>Location <span><input class="search" id="search-loc" type="text" name="search-loc" /></span></th>
+        <th>Requestee<span><input class="search" id="search-requestee" type="text" name="search-requestee" /></span></th>
+        <th>Phone<span><input class="search" id="search-phone" type="text" name="search-phone" /></span></th>
         <th>Date</th>
         <th>More details</th>
       </tr>
@@ -101,9 +101,39 @@
         {% if data.has_next %}
             <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">next</a>
             <a href="?page={{ data.paginator.num_pages }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">last &raquo;</a>
-        {% endif %}
+            {% endif %}
     </span>
   </div>
 
-</div>
-{% endblock %}
+ </div>
+
+ <script>
+   window.onload = function() {
+     $("input.search").keyup(search);
+   }
+
+   function search() {
+     $("#req-table").find("tr").each(function(i,el) {
+       // skip header row
+       if (i == 0) return
+       el = $(el)
+       var tds = el.find("td")
+       var loc = tds.eq(1).text().toLowerCase()
+       var requestee = tds.eq(2).text().toLowerCase()
+       var phone = tds.eq(3).text()
+       var locKey = $("#search-loc").val().toLowerCase()
+       var reqKey = $("#search-requestee").val().toLowerCase()
+       var phoneKey = $("#search-phone").val()
+
+       if (loc.includes(locKey) &&
+           requestee.includes(reqKey) &&
+           phone.includes(phoneKey))
+         {
+           el.show()
+         } else {
+           el.hide()
+         }
+   })
+   }
+ </script>
+ {% endblock %}
