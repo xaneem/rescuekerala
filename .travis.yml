@@ -4,6 +4,7 @@ python:
 
 services: 
   - postgresql
+  - redis-server
 
 env:
   matrix:
@@ -14,6 +15,7 @@ env:
       ALLOWED_HOSTS= "localhost"
       SENTRY_DSN=""
       REDIS_URL="redis://localhost:6379"
+      
 
 install:
   - pip install -r requirements.txt

@@ -18,9 +18,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need to have following softwares in your system:
 
-- Python 3
-- Postgres
-- git
+- [Python 3](https://www.python.org/downloads/)
+- [Postgres](https://www.postgresql.org/download/)
+- [git](https://git-scm.com/downloads)
 
 ### Installing
 
@@ -83,6 +83,20 @@ python3 manage.py collectstatic
 python3 manage.py runserver
 ```
 7. Now open localhost:8000 in the browser
+
+## Running tests
+
+When running tests, Django creates a test replica of the database in order for the tests not to change the data on the real database. Because of that you need to alter the Postgres user that you created and add to it the `CREATEDB` priviledge:
+
+```
+ALTER USER rescueuser CREATEDB;
+```
+
+To run the tests, run this command:
+
+```
+python3 manage.py test --settings=floodrelief.test_settings
+```
 
 ## How can you help?
 
