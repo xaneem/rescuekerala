@@ -250,5 +250,4 @@ def find_people(request):
 
 def announcements(request):
     data = Announcements.objects.all()
-    print('data : {}'.format(data))
     return render(request , "announcements.html", {'data': data})
