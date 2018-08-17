@@ -23,6 +23,7 @@ from django.http import Http404
 from mainapp.admin import create_csv_response
 from rest_framework import viewsets, permissions, status
 from .serializers import RescueCampSerializer, PersonSerializer
+from rest_framework.response import Response
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -520,9 +521,9 @@ class PersonViewSet(viewsets.ModelViewSet):
             camped_at = serializer.validated_data.get('camped_at', None)
 
             if camped_at :
-                camp = get_object_or_404(RescueCamp, id=camped_at, data_entry_user=self.request.user)
+                camp = get_object_or_404(RescueCamp, id=camped_at.id, data_entry_user=self.request.user)
                 serializer.save()
-                Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             else:
                 return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
