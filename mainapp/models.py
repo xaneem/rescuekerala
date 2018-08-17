@@ -222,3 +222,7 @@ class Person(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
+
+class Announcements(models.Model):
+    name = models.CharField(max_length=50)
+    link = models.CharField(max_length=100)
