@@ -51,6 +51,13 @@ gender =(
     (2,'Others')
 )
 
+announcement_types =(
+    (0,'General'),
+    (1,'Food'),
+    (2,'Camps'),
+    (3,'Weather')
+)
+
 class Request(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -226,3 +233,15 @@ class Person(models.Model):
 class Announcements(models.Model):
     name = models.CharField(max_length=50)
     link = models.CharField(max_length=100)
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+        verbose_name='Districts - ജില്ല'
+    )
+    category = models.IntegerField(
+        choices = announcement_types,
+        verbose_name='Type'
+    )
+
+    def __str__(self):
+        return self.get_district_display()

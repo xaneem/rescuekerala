@@ -248,6 +248,16 @@ def find_people(request):
     people = paginator.get_page(page)
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
+class AnnouncementFilter(django_filters.FilterSet):
+    class Meta:
+        model = Announcements
+        fields = ['district', 'category']
+
+    def __init__(self, *args, **kwargs):
+        super(AnnouncementFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
 def announcements(request):
-    data = Announcements.objects.all()
-    return render(request , "announcements.html", {'data': data})
+    filter = AnnouncementFilter(request.GET, queryset=Announcements.objects.all())
+    return render(request, 'announcements.html', {'filter': filter})
