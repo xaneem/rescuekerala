@@ -1,20 +1,21 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 districts = (
-    ('tvm','Thiruvananthapuram'),
-    ('ptm','Pathanamthitta'),
-    ('alp','Alappuzha'),
-    ('ktm','Kottayam'),
-    ('idk','Idukki'),
-    ('mpm','Malappuram'),
-    ('koz','Kozhikode'),
-    ('wnd','Wayanad'),
-    ('knr','Kannur'),
-    ('ksr','Kasaragod'),
-    ('pkd','Palakkad'),
-    ('tcr','Thrissur'),
-    ('ekm','Ernakulam'),
-    ('kol','Kollam'),
+    ('alp','Alappuzha - ആലപ്പുഴ'),
+    ('ekm','Ernakulam - എറണാകുളം'),
+    ('idk','Idukki - ഇടുക്കി'),
+    ('knr','Kannur - കണ്ണൂർ'),
+    ('ksr','Kasaragod - കാസർഗോഡ്'),
+    ('kol','Kollam - കൊല്ലം'),
+    ('ktm','Kottayam - കോട്ടയം'),
+    ('koz','Kozhikode - കോഴിക്കോട്'),
+    ('mpm','Malappuram - മലപ്പുറം'),
+    ('pkd','Palakkad - പാലക്കാട്'),
+    ('ptm','Pathanamthitta - പത്തനംതിട്ട'),
+    ('tvm','Thiruvananthapuram - തിരുവനന്തപുരം'),
+    ('tcr','Thrissur - തൃശ്ശൂർ'),
+    ('wnd','Wayanad - വയനാട്'),
 )
 
 status_types =(
@@ -44,6 +45,12 @@ vol_categories = (
     ('oth', 'Other')
 )
 
+gender =(
+    (0,'Male'),
+    (1,'Female'),
+    (2,'Others')
+)
+
 class Request(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -55,6 +62,7 @@ class Request(models.Model):
     requestee_phone = models.CharField(max_length=10,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍')
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates - GPS നിർദ്ദേശാങ്കങ്ങൾ ', blank=True)
     latlng_accuracy = models.CharField(max_length=100, verbose_name='GPS Accuracy - GPS കൃത്യത ', blank=True)
+    is_request_for_others = models.BooleanField(verbose_name='Requesting for others - മറ്റൊരാൾക്ക് വേണ്ടി അപേക്ഷിക്കുന്നു  ', default=False)
 
     needwater = models.BooleanField(verbose_name='Water - വെള്ളം')
     needfood = models.BooleanField(verbose_name='Food - ഭക്ഷണം')
@@ -62,6 +70,7 @@ class Request(models.Model):
     needmed = models.BooleanField(verbose_name='Medicine - മരുന്നുകള്‍')
     needtoilet = models.BooleanField(verbose_name='Toiletries - ശുചീകരണ സാമഗ്രികള്‍ ')
     needkit_util = models.BooleanField(verbose_name='Kitchen utensil - അടുക്കള സാമഗ്രികള്‍')
+    needrescue = models.BooleanField(verbose_name='Need rescue - രക്ഷാപ്രവർത്തനം ആവശ്യമുണ്ട്')
 
     detailwater = models.CharField(max_length=250, verbose_name='Details for required water - ആവശ്യമായ വെള്ളത്തിന്‍റെ വിവരങ്ങള്‍', blank=True)
     detailfood = models.CharField(max_length=250, verbose_name='Details for required food - ആവശ്യമായ ഭക്ഷണത്തിന്‍റെ വിവരങ്ങള്‍', blank=True)
@@ -69,6 +78,7 @@ class Request(models.Model):
     detailmed = models.CharField(max_length=250, verbose_name='Details for required medicine - ആവശ്യമായ മരുന്നിന്‍റെ  വിവരങ്ങള്‍', blank=True)
     detailtoilet = models.CharField(max_length=250, verbose_name='Details for required toiletries - ആവശ്യമായ  ശുചീകരണ സാമഗ്രികള്‍', blank=True)
     detailkit_util = models.CharField(max_length=250, verbose_name='Details for required kitchen utensil - ആവശ്യമായ അടുക്കള സാമഗ്രികള്‍', blank=True)
+    detailrescue = models.CharField(max_length=250, verbose_name='Details for rescue action - രക്ഷാപ്രവർത്തനം വിവരങ്ങള്', blank=True)
 
     needothers = models.CharField(max_length=500, verbose_name="Other needs - മറ്റു ആവശ്യങ്ങള്‍", blank=True)
     status = models.CharField(
@@ -121,6 +131,31 @@ class Volunteer(models.Model):
         return self.name
 
 
+class NGO(models.Model):
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+    )
+    organisation = models.CharField(max_length=250, verbose_name="Name of Organization (സംഘടനയുടെ പേര്)")
+    organisation_type = models.CharField(max_length=250, verbose_name="Type of Organization")
+    organisation_address = models.TextField(default='', verbose_name="Address of Organization")
+    name = models.CharField(max_length=100, verbose_name="Contact Person")
+    phone = models.CharField(max_length=10)
+    description = models.TextField(verbose_name="About Organisation")
+    area = models.TextField(
+        verbose_name = "Area of volunteering"
+    )
+    location = models.CharField(
+        max_length=500,
+        verbose_name="Preferred Location to Volunteer"
+    )
+    is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
+    joined = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Contributor(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -163,6 +198,7 @@ class DistrictNeed(models.Model):
     def __str__(self):
         return self.get_district_display()
 
+
 class DistrictCollection(models.Model):
     district = models.CharField(
         max_length=15,
@@ -171,3 +207,50 @@ class DistrictCollection(models.Model):
     collection = models.TextField(
         verbose_name="Details of collected items"
     )
+
+class RescueCamp(models.Model):
+    verbose_name = 'Relief Camp'
+    name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
+    location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
+    district = models.CharField(
+        max_length=15,
+        choices=districts
+    )
+    taluk = models.CharField(max_length=50,verbose_name="Taluk - താലൂക്ക്")
+    village = models.CharField(max_length=50,verbose_name="Village - വില്ലജ്")
+    contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
+    map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
+    latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
+    food_req = models.TextField(blank=True,null=True,verbose_name="Food - ഭക്ഷണം")
+    clothing_req = models.TextField(blank=True,null=True,verbose_name="Clothing - വസ്ത്രം")
+    sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
+    medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
+    other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+    class Meta:
+        verbose_name = 'Relief Camp'
+    def __str__(self):
+        return self.name
+
+
+class Person(models.Model):
+    name = models.CharField(max_length=30,blank=False,null=False,verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=11,null=True,blank=True,verbose_name='Mobile - മൊബൈൽ')
+    age = models.IntegerField(null=True,blank=True,verbose_name="Age - പ്രായം")
+    gender = models.IntegerField(
+        choices = gender,
+        verbose_name='Gender - ലിംഗം',
+        null=True,blank=True
+    )
+    address = models.TextField(max_length=150,null=True,blank=True,verbose_name="Address - വിലാസം")
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+        verbose_name='Residence District - താമസിക്കുന്ന ജില്ല',
+        null=True,blank=True
+    )
+    notes = models.TextField(max_length=500,null=True,blank=True,verbose_name='Notes - കുറിപ്പുകൾ')
+    camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
+    added_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
