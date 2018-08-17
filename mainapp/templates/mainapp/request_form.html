@@ -117,8 +117,12 @@
 
 		var changeGPSLocationBtn = document.getElementById('changeGPSLocation');
 		changeGPSLocationBtn.addEventListener('click', function(event){
-			document.getElementById('gpslocationchooser').hidden = false;
-			createMap();
+			var gpslocationchooser = document.getElementById('gpslocationchooser');
+			if(gpslocationchooser.hidden){
+				document.getElementById('gpslocationchooser').hidden = false;
+				createMap();
+				changeGPSLocationBtn.disabled = true;
+			}
 		});
 		
     $('#modal_ok_button').click(function(event) {
