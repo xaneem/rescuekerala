@@ -11,6 +11,28 @@
   </button>
   {% endbuttons %}
   </form>
+  <div id="gpslocationchooser">
+      <div id="floating-panel">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="input-group">
+              <input id="address" class="form-control" type="textbox" value="Kochi, Kerala">
+              <div class="input-group-btn">
+                <!-- Buttons -->
+                <input id="Search" type="button" value="Search" class="btn btn-default">
+                <button id="change" type="button" class="btn btn-default">
+                  Update address
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="map"></div>
+      <div class="alert alert-info">
+        Use the marker to update the location. Touch / click at the bottom of the pin.
+      </div>
+  </div>
 
   <!-- Instruction Modal -->
   <div id="instructionModal" class="modal  fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
@@ -29,53 +51,38 @@
         <button class="btn" data-dismiss="modal" id="modal_ok_button" aria-hidden="true">Ok</button>
       </div>
     </div>
-  </div>
-
+	</div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" integrity="sha256-/GKyJ0BQJD8c8UYgf7ziBrs/QgcikS7Fv/SaArgBcEI=" crossorigin="anonymous"></script>
+  <!-- <script src="http://www.openlayers.org/api/OpenLayers.js"></script> -->
+  <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.1.3/build/ol.js"></script>
   <script type="text/javascript">
-	try {
 
-		window.addEventListener('load', checkVisibility, false);
-		var checkboxes = document.querySelectorAll("input[type=checkbox]");
-		for(var i=0; i< checkboxes.length; i++) {
-			checkboxes[i].addEventListener("change",checkVisibility);
-		}
- 	 	
- 	 	function checkVisibility(){
+	window.onload = function(){
+
+		var checkVisibility;
+ 	 	(checkVisibility = function(){
 			var formgroups = document.querySelectorAll(".form-group");
 			Array.prototype.forEach.call(formgroups, function(el, i){
 				var checkbox = el.querySelectorAll(".checkbox");
 				if(checkbox.length > 0){
 					var checkboxElem = el.querySelectorAll("input")[0];
-					if(checkboxElem.id === "id_is_request_for_others" ){
-						if(checkboxElem.checked){
-							$('#id_latlng').parent().hide();
-							$('#id_latlng_accuracy').parent().hide();
-							$('#id_latlng_display').hide();
-						}
-						else{
-							$('#id_latlng').parent().show();
-							$('#id_latlng_accuracy').parent().show();
-							$('#id_latlng_display').show();
-						}
-					}
-					else if(checkboxElem.checked){
-						formgroups[i+1].style.display = "block";						
-					}
-					else{
-						formgroups[i+1].style.display = "none";												
-					}
+					if ( checkboxElem.id != "id_is_request_for_others") {
+                        if (checkboxElem.checked) {
+                            formgroups[i+1].style.display = "block";
+                        }
+                        else {
+                            formgroups[i+1].style.display = "none";
+                        }
+                    }
 				}
-			});  		
+			});
+		})();
 
+		var checkboxes = document.querySelectorAll("input[type=checkbox]");
+		for(var i=0; i< checkboxes.length; i++) {
+			checkboxes[i].addEventListener("change",checkVisibility);
 		}
-  }
-	catch(err) {
-		console.log("Your browser does not allow some javascript programs.\nError Message : " + err.message)
-	}
-
-	window.onload = function(){
-        $("#id_requestee_phone").attr('type', 'number');
 		var gpsField = document.getElementById('id_latlng');
 		var gpsAccuracyField = document.getElementById('id_latlng_accuracy');
 		gpsField.readOnly = true;
@@ -84,29 +91,153 @@
 			enableHighAccuracy: true
 		};
 
-		var success = function(pos) {
+		success = function(pos, doNotUpdateMap, doNotFetchAddress) {
 			var crd = pos.coords;
 				gpsField.value = crd.latitude + "," + crd.longitude;
 				gpsAccuracyField.value = crd.accuracy + ' Meters';
-				$.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + crd.latitude + '&lon=' + crd.longitude + '&zoom=18&addressdetails=1')
-					.done(function(response) {
-						var inputElem = $('<input class="form-control" id="id_latlng_display" readonly="true" value="' + response.display_name + '"</input>');
-						$(gpsField).before(inputElem);
-						$(gpsField).hide();
-						console.log(response.display_name);
-					})
-					.fail(function(err){
-						console.log(err);
-					});
+				if(!doNotUpdateMap) {
+                    changeLocation({lat: crd.latitude, lon: crd.longitude});
+                }
+
+                if(!doNotFetchAddress) {
+                    $.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + crd.latitude + '&lon=' + crd.longitude + '&zoom=18&addressdetails=1')
+                        .done(function(response) {
+                            $('#id_latlng_display').val(response.display_name);
+                            console.log(response.display_name);
+                        })
+                        .fail(function(err) {
+                            console.log(err);
+                        });
+                }
 		}
 
 		var error = function(err) {
 			console.warn(`ERROR(${err.code}): ${err.message}`);
 		}
-    $('#modal_ok_button').click(function(event) {
+
+
+        $('#modal_ok_button').click(function(event) {
       navigator.geolocation.getCurrentPosition(success, error, options);
     });
 		$('#instructionModal').modal('show');
+
+		function makeMovable(feature) {
+				var modify = new ol.interaction.Modify({
+						features: new ol.Collection([feature])
+				});
+
+				feature.on('change',function() {
+						var pos = ol.proj.transform(this.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326');
+						// console.log('Feature Moved To:', pos);
+						currentPosition.lat = pos[1];
+						currentPosition.long = pos[0];
+						updateCurrentLocation(true);
+				}, feature);
+				return modify;
+		}
+
+		function createMarker(location, style){
+				var iconFeature = new ol.Feature({
+						geometry: new ol.geom.Point(location)
+				});
+				iconFeature.setStyle(style);
+
+				return iconFeature
+		}
+
+		function changeLocation(location){
+			marker.getGeometry().setCoordinates(new ol.proj.transform([location.lon-0, location.lat-0], 'EPSG:4326', 'EPSG:3857'));
+			map.getView().setCenter(ol.proj.transform([location.lon-0, location.lat-0], 'EPSG:4326', 'EPSG:3857'));
+		}
+
+		function createMap(){
+			map = new ol.Map({
+				target: document.getElementById('map'),
+				layers:[
+					new ol.layer.Tile({
+						source: new ol.source.OSM()
+					})
+				],
+				view: new ol.View({
+					center: ol.proj.fromLonLat([76.2673, 9.9312]),
+					zoom:11
+				})
+			});
+
+			currentPosition = {
+				lat: 9.9312,
+				long: 76.2673
+			}
+
+			var mapVectorSource = new ol.source.Vector({
+					features: []
+			});
+			var mapVectorLayer = new ol.layer.Vector({
+					source: mapVectorSource
+			});
+			map.addLayer(mapVectorLayer);
+
+			iconStyle = [
+				new ol.style.Style({
+					image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+						anchor: [0.5, 1],
+						anchorXUnits: 'fraction',
+						anchorYUnits: 'fraction',
+						src: 'https://maps.gstatic.com/intl/de_de/mapfiles/ms/micons/red-pushpin.png',
+					}))
+				})
+			]
+			marker = createMarker(ol.proj.transform([76.2673, 9.9312], 'EPSG:4326', 'EPSG:3857'), iconStyle);
+			mapVectorSource.addFeature(marker);
+			var modifyInteraction = makeMovable(marker);
+			map.addInteraction(modifyInteraction);
+		}
+
+		function addAddressField () {
+            var html = '<div class="form-group"><label class="control-label" for="id_latlng">Address - </label><input class="form-control" id="id_latlng_display" value="" readonly/></div>'
+            var gpsFieldGroup = $(gpsField).closest('.form-group');
+            $(html).insertBefore(gpsFieldGroup)
+        }
+
+        function updateCurrentLocation (doNotFetchAddress) {
+            success({
+                coords:{
+                    latitude:currentPosition.lat,
+                    longitude: currentPosition.long,
+                    // default accurracy for location updated using marker
+                    accuracy: 100
+                }
+            }, true, doNotFetchAddress);
+        }
+
+		document.getElementById('change').addEventListener('click', function(event){
+			console.log(currentPosition);
+			updateCurrentLocation(false);
+		});
+		document.getElementById('Search').addEventListener('click', function() {
+			var address = document.getElementById('address').value;
+			$.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
+					.done(function(response) {
+						try{
+							console.log(response);
+							if(response.length<1){
+								alert('Please check the spelling');
+							}else{
+								response = response[0];
+								console.log(response.lon-0, response.lat-0);
+								changeLocation(response);
+							}
+						}catch(err){
+							console.error(err);
+						}
+					})
+					.fail(function(err){
+						console.log(err);
+					});
+		});
+
+		addAddressField();
+        createMap();
 	}
 
   </script>
