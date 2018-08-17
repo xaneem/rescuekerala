@@ -199,3 +199,7 @@ tr:hover td{
     line-height: 30px;
     padding-left: 10px;
 }
+
+table thead tr th {
+  border-top: 2px solid #ddd !important;
+}
