@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -41,19 +41,26 @@ class CreateRequest(CreateView):
         'detailtoilet',
         'needothers'
     ]
-    success_url = '/req_sucess'
+    success_url = '/req_sucess/'
 
 
 class RegisterVolunteer(CreateView):
     model = Volunteer
     fields = ['name', 'district', 'phone', 'organisation', 'area', 'address']
+    success_url = '/reg_success/'
+
+
+class RegisterNGO(CreateView):
+    model = NGO
+    fields = ['organisation', 'organisation_type','organisation_address', 'name', 'phone', 'description', 'area',
+              'location']
     success_url = '/reg_success'
 
 
 class RegisterContributor(CreateView):
     model = Contributor
     fields = ['name', 'district', 'phone', 'address',  'commodities']
-    success_url = '/contrib_success'
+    success_url = '/contrib_success/'
 
 
 class HomePageView(TemplateView):
@@ -87,16 +94,22 @@ class DistNeeds(TemplateView):
         context['district_data'] = DistrictNeed.objects.all()
         return context
 
-class ReliefCamps(TemplateView):
-    template_name = "mainapp/relief_camps.html"
+class RescueCampFilter(django_filters.FilterSet):
+    class Meta:
+        model = RescueCamp
+        fields = ['district']
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['relief_camps'] = RescueCamp.objects.annotate(count=Count('person')).order_by('district','name').all()
-        return context
+    def __init__(self, *args, **kwargs):
+        super(RescueCampFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
 
+def relief_camps(request):
+    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
+    relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
+
+    return render(request, 'mainapp/relief_camps.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
 
 class RequestFilter(django_filters.FilterSet):
     class Meta:
@@ -119,7 +132,7 @@ class RequestFilter(django_filters.FilterSet):
 
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
-    req_data = filter.qs.order_by('-dateadded')
+    req_data = filter.qs.order_by('-id')
     paginator = Paginator(req_data, 100)
     page = request.GET.get('page')
     req_data = paginator.get_page(page)
@@ -155,7 +168,10 @@ class Maintenance(TemplateView):
 
 
 def mapdata(request):
-    data = Request.objects.exclude(latlng__exact="").values()
+    if("district" in request.GET.keys()):
+        data = Request.objects.exclude(latlng__exact="").filter(district = request.GET.get("district")).values() 
+    else:
+        data = Request.objects.exclude(latlng__exact="").values()
 
     return JsonResponse(list(data) , safe=False)
 
@@ -182,7 +198,7 @@ def error(request):
 def logout_view(request):
     logout(request)
     # Redirect to camps page instead
-    return redirect('relief_camps')
+    return redirect('relief_camps/')
 
 class PersonForm(forms.ModelForm):
     class Meta:
@@ -190,13 +206,20 @@ class PersonForm(forms.ModelForm):
        fields = [
         'camped_at',
         'name',
+        'phone',
         'age',
         'gender',
-        'address',
         'district',
-        'phone',
+        'address',
         'notes'
         ]
+       
+       widgets = {
+           'address': forms.Textarea(attrs={'rows':3}),
+           'notes': forms.Textarea(attrs={'rows':3}),
+           'gender': forms.RadioSelect()
+        }
+
 
     def __init__(self, *args, **kwargs):
        user = kwargs.pop('user')

@@ -86,21 +86,21 @@
   <div class="pagination" >
     <span class="step-links">
         {% if data.has_previous %}
-            <a href="?page=1&district={{ request.GET.district }}">&laquo; first</a>
-            <a href="?page={{ data.previous_page_number }}&district={{ request.GET.district }}">previous</a>
+            <a href="?page=1&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">&laquo; first</a>
+            <a href="?page={{ data.previous_page_number }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">previous</a>
         {% endif %}
 
         {% for i in data.paginator.page_range %}
         {% if data.number == i %}
           <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
         {% else %}
-          <a href="?page={{ i }}&district={{ request.GET.district }}">{{ i }}</a>
+          <a href="?page={{ i }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">{{ i }}</a>
         {% endif %}
       {% endfor %}
 
         {% if data.has_next %}
-            <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}">next</a>
-            <a href="?page={{ data.paginator.num_pages }}&district={{ request.GET.district }}">last &raquo;</a>
+            <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">next</a>
+            <a href="?page={{ data.paginator.num_pages }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">last &raquo;</a>
         {% endif %}
     </span>
   </div>

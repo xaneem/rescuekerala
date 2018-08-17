@@ -131,6 +131,31 @@ class Volunteer(models.Model):
         return self.name
 
 
+class NGO(models.Model):
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+    )
+    organisation = models.CharField(max_length=250, verbose_name="Name of Organization (സംഘടനയുടെ പേര്)")
+    organisation_type = models.CharField(max_length=250, verbose_name="Type of Organization")
+    organisation_address = models.TextField(default='', verbose_name="Address of Organization")
+    name = models.CharField(max_length=100, verbose_name="Contact Person")
+    phone = models.CharField(max_length=10)
+    description = models.TextField(verbose_name="About Organisation")
+    area = models.TextField(
+        verbose_name = "Area of volunteering"
+    )
+    location = models.CharField(
+        max_length=500,
+        verbose_name="Preferred Location to Volunteer"
+    )
+    is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
+    joined = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Contributor(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -191,10 +216,14 @@ class RescueCamp(models.Model):
         max_length=15,
         choices=districts
     )
+    taluk = models.CharField(max_length=50,verbose_name="Taluk")
+    village = models.CharField(max_length=50,verbose_name="Village")
     contacts = models.TextField(verbose_name="Phone Numbers",blank=True,null=True)
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
+    map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
+    latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
     class Meta:
-        verbose_name = 'Relief Camp'   
+        verbose_name = 'Relief Camp'
     def __str__(self):
         return self.name
 
@@ -208,7 +237,7 @@ class Person(models.Model):
         verbose_name='Gender - ലിംഗം',
         null=True,blank=True
     )
-    address = models.CharField(max_length=150,null=True,blank=True,verbose_name="Address - വിലാസം")
+    address = models.TextField(max_length=150,null=True,blank=True,verbose_name="Address - വിലാസം")
     district = models.CharField(
         max_length = 15,
         choices = districts,
@@ -220,5 +249,3 @@ class Person(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
-
-
