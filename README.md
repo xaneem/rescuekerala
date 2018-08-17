@@ -139,6 +139,7 @@ We have a lot of [Pull Requests](https://github.com/IEEEKeralaSection/rescuekera
 are working on it.
 
 ## Testing Pull Requests
+Note: If you have cloned a fork of IEEEKeralaSection/rescuekerala, replace ```origin``` with ```upstream```
 1. Checkout the Pull Request you would like to test by
       ```
       git fetch origin pull/ID/head:BRANCHNAME`
