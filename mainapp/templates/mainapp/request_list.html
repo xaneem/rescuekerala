@@ -39,15 +39,20 @@
 			left: 6px;
 			width: 45%;
 			padding-right: 10px;
-			white-space: nowrap;
+			white-space: normal;
 		}
-		#requests-table td:nth-of-type(1):before { content: "District"; }
-    #requests-table td:nth-of-type(2):before { content: "Location"; }
-    #requests-table td:nth-of-type(3):before { content: "Requestee"; }
-    #requests-table td:nth-of-type(4):before { content: "Phone"; }
-    #requests-table td:nth-of-type(5):before { content: "Date"; }
-    #requests-table td:nth-of-type(6):before { content: "More details"; }
+		#requests-table td:nth-of-type(1):before { content: "District - ജില്ല"; }
+    #requests-table td:nth-of-type(2):before { content: "Location - സ്ഥലം"; }
+    #requests-table td:nth-of-type(3):before { content: "Requestee - അപേക്ഷകന്‍റെ പേര്"; }
+    #requests-table td:nth-of-type(4):before { content: "Phone - ഫോണ്‍ നമ്പര്‍"; }
+    #requests-table td:nth-of-type(5):before { content: "Date - തീയതി"; }
+    #requests-table td:nth-of-type(6):before { content: "More details - കൂടുതൽ വിശദാംശങ്ങൾ"; }
   }
+@media only screen and (max-width: 420px)  {
+		#requests-table td {
+            min-height: 60px;
+		}
+    }
 </style>
 {% endblock %}
 
@@ -61,12 +66,12 @@
   <table class="table">
     <thead>
       <tr>
-        <th>District</th>
-        <th>Location</th>
-        <th>Requestee</th>
-        <th>Phone</th>
-        <th>Date</th>
-        <th>More details</th>
+        <th>District - ജില്ല</th>
+        <th>Location - സ്ഥലം</th>
+        <th>Requestee - അപേക്ഷകന്‍റെ പേര്</th>
+        <th>Phone - ഫോണ്‍ നമ്പര്‍</th>
+        <th>Date - തീയതി</th>
+        <th>More details - കൂടുതൽ വിശദാംശങ്ങൾ</th>
       </tr>
     </thead>
     <tbody>
@@ -86,21 +91,21 @@
   <div class="pagination" >
     <span class="step-links">
         {% if data.has_previous %}
-            <a href="?page=1&district={{ request.GET.district }}">&laquo; first</a>
-            <a href="?page={{ data.previous_page_number }}&district={{ request.GET.district }}">previous</a>
+            <a href="?page=1&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">&laquo; first</a>
+            <a href="?page={{ data.previous_page_number }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">previous</a>
         {% endif %}
 
         {% for i in data.paginator.page_range %}
         {% if data.number == i %}
           <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
         {% else %}
-          <a href="?page={{ i }}&district={{ request.GET.district }}">{{ i }}</a>
+          <a href="?page={{ i }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">{{ i }}</a>
         {% endif %}
       {% endfor %}
 
         {% if data.has_next %}
-            <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}">next</a>
-            <a href="?page={{ data.paginator.num_pages }}&district={{ request.GET.district }}">last &raquo;</a>
+            <a href="?page={{ data.next_page_number }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">next</a>
+            <a href="?page={{ data.paginator.num_pages }}&district={{ request.GET.district }}&requestee__icontains={{ request.GET.requestee__icontains }}&requestee_phone={{ request.GET.requestee_phone }}&location__icontains={{ request.GET.location__icontains }}">last &raquo;</a>
         {% endif %}
     </span>
   </div>
