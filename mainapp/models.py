@@ -231,6 +231,7 @@ class Person(models.Model):
         return self.name
 
 class Announcements(models.Model):
+    dateadded = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=50)
     link = models.CharField(max_length=100)
     district = models.CharField(

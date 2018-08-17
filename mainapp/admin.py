@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager ,vol_categories, RescueCamp, Person
+from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager ,vol_categories, RescueCamp, Person, Announcements
 import csv
 from django.http import HttpResponse
 
@@ -102,3 +102,4 @@ admin.site.register(DistrictNeed)
 admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
 admin.site.register(RescueCamp,RescueCampAdmin)
+admin.site.register(Announcements)
