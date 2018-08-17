@@ -91,7 +91,7 @@
 			enableHighAccuracy: true
 		};
 
-		success = function(pos) {
+		success = _.throttle(function(pos) {
 			var crd = pos.coords;
 				gpsField.value = crd.latitude + "," + crd.longitude;
 				gpsAccuracyField.value = crd.accuracy + ' Meters';
@@ -109,7 +109,7 @@
 					.fail(function(err){
 						console.log(err);
 					});
-		}
+		}, 100);
 
 		var error = function(err) {
 			console.warn(`ERROR(${err.code}): ${err.message}`);
@@ -158,6 +158,10 @@
 			map.getView().setCenter(ol.proj.transform([location.lon-0, location.lat-0], 'EPSG:4326', 'EPSG:3857'));
 		}
 
+		var view = new ol.View({
+					center: ol.proj.fromLonLat([76.2673, 9.9312]),
+					zoom:11
+				});
 		function createMap(){
 			map = new ol.Map({
 				target: document.getElementById('map'),
@@ -166,16 +170,18 @@
 						source: new ol.source.OSM()
 					})
 				],
-				view: new ol.View({
-					center: ol.proj.fromLonLat([76.2673, 9.9312]),
-					zoom:11
-				})
+				view: view
 			});
 
 			currentPosition = {
 				lat: 9.9312,
 				long: 76.2673
 			}
+
+			view.on('change:center', function(event){
+				var center = new ol.proj.transform([event.target.values_.center[0], event.target.values_.center[1]], 'EPSG:3857', 'EPSG:4326');
+				marker.getGeometry().setCoordinates(new ol.proj.transform([center[0], center[1]], 'EPSG:4326', 'EPSG:3857'));
+			});
 
 			var mapVectorSource = new ol.source.Vector({
 					features: []
