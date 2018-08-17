@@ -4,7 +4,7 @@
 
 Website for coordinating the rehabilitation of the people affected in the 2018 Kerala Floods.
 
-[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](https://join.slack.com/t/keralarescue/shared_invite/enQtNDE4NzUyNjg4MjQ3LTJiMDU0ZmFhODNlNDE3ZDc4ZmFlMGI0YmQ0MzI0NWYyNThlOTgwYTM2Y2JlYzMxMDMxMzUwY2E2MmVmNDQyNmE)
+[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/keralarescueslack)
 
 # Kerala Rescue
 
