@@ -133,6 +133,9 @@ In the above example the server is being run on a local IP address on port 8002 
 
 ## How can you help?
 
+### Contribution Guidelines
+[wiki](https://github.com/IEEEKeralaSection/rescuekerala/wiki/Contribution-Guidelines)
+
 ### By testing
 
 We have a lot of [Pull Requests](https://github.com/IEEEKeralaSection/rescuekerala/pulls) that requires testing. Pick any PR that you like, try to reproduce the original issue and fix. Also join `#testing` channel in our slack and drop a note that you
