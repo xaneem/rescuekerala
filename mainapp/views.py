@@ -489,3 +489,15 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+class RescueCampViewSet(viewsets.ModelViewSet):
+    queryset = RescueCamp.objects.filter()
+    serializer_class = RescueCampSerializer
+    permission_classes = (permissions.IsAuthenticated)
+
+    """
+        This view should return a list of all the RescueCamp
+        for the currently user.
+    """
+    def get_queryset(self):
+        return RescueCamp.objects.filter(user=self.request.user,).order_by('-id')

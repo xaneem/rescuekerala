@@ -1,7 +1,14 @@
 from django.urls import path
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from rest_framework.routers import DefaultRouter
+
 from . import views
+
+
+router = DefaultRouter()
+router.register(r'camp', views.RescueCampViewSet)
+
 
 urlpatterns = [
     path('', views.HomePageView.as_view(), name='home'),
@@ -39,3 +46,6 @@ urlpatterns = [
     path('announcements/', views.announcements, name="Announcements"),
     path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list')
 ]
+
+urlpatterns += router.urls
+
