@@ -15,13 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url    
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-admin.site.site_header = settings.ADMIN_SITE_HEADER
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_jwt.views import verify_jwt_token
 
+admin.site.site_header = settings.ADMIN_SITE_HEADER
 urlpatterns = [
     path('', include('mainapp.urls')),
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view()),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    url(r'^api/1/rest-auth/', include('rest_auth.urls')),
+    url(r'^api/1/api-token-auth/', obtain_jwt_token),
+    url(r'^api/1/api-token-refresh/', refresh_jwt_token),
+    url(r'^api/1/api-token-verify/', verify_jwt_token),
+]
