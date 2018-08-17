@@ -22,6 +22,28 @@ These instructions will get you a copy of the project up and running on your loc
 - Server will start running at `localhost:8000`
 - `Ctrl+C` to stop
 
+#### troubleshooting docker
+* Incompatible docker version
+
+ > ERROR: Version in "./docker-compose.yaml" is unsupported. You might be seeing this error because you're using the wrong Compose file version. Either specify a version of "2" (or "2.0") and place your service definitions under the `services` key, or omit the `version` key and place your service definitions at the root of the file to use version 1.
+For more on the Compose file format versions, see https://docs.docker.com/compose/compose-file/
+
+
+**Fix**
+
+Update your docker toolkit
+
+* Insufficient permissions
+> ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+
+
+**Fix**
+
+Run it with sudo - `sudo sh docker.sh`
+
+
+## Running natively
 ### Prerequisites
 
 You will need to have following softwares in your system:
