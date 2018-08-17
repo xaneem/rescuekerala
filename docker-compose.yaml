@@ -3,8 +3,10 @@ version: '3'
 services:
   db:
     image: postgres
+    restart: always
   web:
     build: .
+    restart: always
     environment:
       ALLOWED_HOSTS: localhost 
       SECRET_KEY: abcd
