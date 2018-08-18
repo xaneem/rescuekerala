@@ -138,6 +138,7 @@ class Volunteer(models.Model):
     )
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
