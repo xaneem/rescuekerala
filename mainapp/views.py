@@ -536,18 +536,14 @@ class CampList(APIView):
     http_method_names = ['get']
 
     def get(self, request):
-        serializer = CampListSerializer(data=request.data)
 
-        if serializer.is_valid(raise_exception=True):
+        district = request.GET.get('district', None)
 
-            district = serializer.validated_data.get('district', None)
+        if district :
+            camps = RescueCamp.objects.filter(district=district)
+            serializer = RescueCampSerializer(camps, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-            if district :
-                camps = RescueCamp.objects.filter(district=district)
-                serializer = RescueCampSerializer(camps, many=True)
-                Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            else:
-                return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
+        
