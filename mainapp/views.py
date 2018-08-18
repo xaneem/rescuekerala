@@ -466,9 +466,7 @@ class CampFilter(django_filters.FilterSet):
 def camp_requirements(request):
     filter = CampFilter(request.GET, queryset=RescueCamp.objects.all())
     camp_data = filter.qs.order_by('name')
-    paginator = Paginator(camp_data, 50)
+    paginator = Paginator(camp_data, 1)
     page = request.GET.get('page')
-    camp_data = paginator.get_page(page)    
-    return render(request, "mainapp/camp_requirement_display.html", {'filter': filter , 'camp_data' : camp_data})
-
->>>>>>> Camp requirement display
+    data = paginator.get_page(page)
+    return render(request, "mainapp/camp_requirement_display.html", {'filter': filter , 'data' : data})
