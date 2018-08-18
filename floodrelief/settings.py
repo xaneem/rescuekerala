@@ -71,7 +71,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    
 ]
 
 MIDDLEWARE = [
@@ -218,7 +217,7 @@ else:
 ADMIN_SITE_HEADER = "Keralarescue Dashboard"
 MEDIA_ROOT = 'media'
 
-#JWT REST Auth
+#JWT REST Auth for API
 REST_USE_JWT = True
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=20)

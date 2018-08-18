@@ -7,5 +7,3 @@ staticfiles/
 mysite.log
 venv
 .idea/*
-env/
-.vscode

@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
@@ -21,10 +21,6 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .serializers import RescueCampSerializer, PersonSerializer, CampListSerializer, RescueCampShortSerializer
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -493,63 +489,3 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
-
-class RescueCampViewSet(viewsets.ModelViewSet):
-    queryset = RescueCamp.objects.filter()
-    serializer_class = RescueCampSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-    http_method_names = ['get', 'put', 'patch']
-
-    """
-        This view should return a list of all the RescueCamp
-        for the currently user.
-    """
-    def get_queryset(self):
-        return RescueCamp.objects.filter(data_entry_user=self.request.user).order_by('-id')
-
-
-class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.filter()
-    serializer_class = PersonSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-    http_method_names = ['post']
-
-    def create(self, request):
-        for data in request.data:
-            serializer = PersonSerializer(data=data)
-            
-            data['age'] =  data['age'] or None
-                       
-            if serializer.is_valid(raise_exception=True):
-
-                camped_at = serializer.validated_data.get('camped_at', None)
-
-                if camped_at :
-                    serializer.save()
-                else:
-                    return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'status':'success','message' : 'Person(s) added'}, status=status.HTTP_201_CREATED)
-
-class CampList(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    http_method_names = ['get']
-
-    def get(self, request):
-
-        district = request.GET.get('district', None)
-
-        if district :
-            camps = RescueCamp.objects.filter(district=district)
-            serializer = RescueCampShortSerializer(camps, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        else:
-            return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Commented to allow all users to see all camps
-    # .filter(data_entry_user=request.user)
-    camps = RescueCamp.objects.filter(data_entry_user=request.user)
-    return render(request,"mainapp/coordinator_home.html",{'camps':camps})
-

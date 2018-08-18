@@ -2,8 +2,27 @@ from .models import Person, RescueCamp
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RescueCampSerializer, PersonSerializer, CampListSerializer, RescueCampShortSerializer
+from rest_framework import serializers
+from .models import RescueCamp, Person
 
+class RescueCampSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RescueCamp
+        fields = '__all__'
+
+class RescueCampShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RescueCamp
+        fields = ('id', 'name', 'district')
+
+class PersonSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Person
+		fields = '__all__'
+
+class CampListSerializer(serializers.Serializer):
+	district = serializers.CharField()
 
 class RescueCampViewSet(viewsets.ModelViewSet):
     queryset = RescueCamp.objects.filter()
@@ -16,7 +35,7 @@ class RescueCampViewSet(viewsets.ModelViewSet):
         for the currently user.
     """
     def get_queryset(self):
-        return RescueCamp.objects.filter(data_entry_user=self.request.user).order_by('-id')
+        return RescueCamp.objects.order_by('-id')
 
 
 class PersonViewSet(viewsets.ModelViewSet):
@@ -58,4 +77,3 @@ class CampList(APIView):
 
         else:
             return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
-        
