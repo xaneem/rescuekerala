@@ -11,6 +11,7 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
+from django.contrib import admin
 from django.shortcuts import redirect
 from django.db.models import Count, QuerySet
 from django.core.cache import cache
@@ -409,24 +410,30 @@ def find_people(request):
     people = paginator.get_page(page)
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
-class AnnouncementFilter(django_filters.FilterSet):
-    class Meta:
-        model = Announcements
-        fields = ['district', 'category']
-
-    def __init__(self, *args, **kwargs):
-        super(AnnouncementFilter, self).__init__(*args, **kwargs)
-        if self.data == {}:
-            self.queryset = self.queryset.none()
 
 def announcements(request):
-    filter = AnnouncementFilter(request.GET, queryset=Announcements.objects.all())
-    link_data = filter.qs.order_by('-id')
+    link_data = Announcements.objects.filter(is_pinned=False).order_by('-id').all()
+    pinned_data = Announcements.objects.filter(is_pinned=True).order_by('-id').all()[:5]
     # As per the discussions orddering by id hoping they would be addded in order
     paginator = Paginator(link_data, 10)
     page = request.GET.get('page')
     link_data = paginator.get_page(page)
-    return render(request, 'announcements.html', {'filter': filter, "data" : link_data})
+    return render(request, 'announcements.html', {'filter': filter, "data" : link_data,
+                                                  'pinned_data': pinned_data})
+
+
+class CoordinatorCampFilter(django_filters.FilterSet):
+    class Meta:
+        model = RescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains']
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
 
 class CoordinatorCampFilter(django_filters.FilterSet):
     class Meta:
