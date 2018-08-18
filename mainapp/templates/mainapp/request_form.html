@@ -7,13 +7,7 @@
   <form method="post"  class="simple-form">
   {% csrf_token %}
   {% bootstrap_form form %}
-
-  {% buttons %}
-  <button type="submit" class="btn btn-primary">
-  {% bootstrap_icon "star" %} Submit
-  </button>
-  {% endbuttons %}
-  </form>
+  <strong>മാപ്പിൽ സഹായം ആവശ്യമായ സ്ഥലം രേഖപ്പെടുത്തുക  </strong>
   <div id="gpslocationchooser">
       <div id="floating-panel">
         <div class="row">
@@ -35,6 +29,12 @@
       </div>
   </div>
 
+    {% buttons %}
+    <button type="submit" class="btn btn-primary">
+    {% bootstrap_icon "star" %} Submit
+    </button>
+    {% endbuttons %}
+    </form>
   <!-- Instruction Modal -->
   <div id="instructionModal" class="modal  fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
     <div class="modal-dialog" style="background: white">
