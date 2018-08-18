@@ -24,7 +24,7 @@ from mainapp.admin import create_csv_response
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RescueCampSerializer, PersonSerializer, CampListSerializer
+from .serializers import RescueCampSerializer, PersonSerializer, CampListSerializer, RescueCampShortSerializer
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -541,7 +541,7 @@ class CampList(APIView):
 
         if district :
             camps = RescueCamp.objects.filter(district=district)
-            serializer = RescueCampSerializer(camps, many=True)
+            serializer = RescueCampShortSerializer(camps, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:

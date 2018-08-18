@@ -7,6 +7,11 @@ class RescueCampSerializer(serializers.ModelSerializer):
         model = RescueCamp
         fields = '__all__'
 
+class RescueCampShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RescueCamp
+        fields = ('id', 'name', 'district')
+
 
 class PersonSerializer(serializers.ModelSerializer):
 
