@@ -528,4 +528,4 @@ class PersonViewSet(viewsets.ModelViewSet):
                     return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'success' : 'Person(s) added'}, status=status.HTTP_201_CREATED)
+        return Response({'status':'success','message' : 'Person(s) added'}, status=status.HTTP_201_CREATED)
