@@ -73,9 +73,16 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
 
+class NgoVolunteerView(TemplateView):
+    template_name = "ngo_volunteer.html"
+
+
+class MapView(TemplateView):
+    template_name = "mapview.html"
+
+
 class ReqSuccess(TemplateView):
     template_name = "mainapp/req_success.html"
-
 
 class RegSuccess(TemplateView):
     template_name = "mainapp/reg_success.html"
