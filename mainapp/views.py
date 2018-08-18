@@ -234,8 +234,9 @@ class PersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
        camp_id = kwargs.pop('camp_id')
        super(PersonForm, self).__init__(*args, **kwargs)
-       self.fields['camped_at'].queryset = RescueCamp.objects.filter(id=camp_id)
-       self.fields['camped_at'].initial = RescueCamp.objects.filter(id=camp_id).first()
+       rescue_camp_qs = RescueCamp.objects.filter(id=camp_id)
+       self.fields['camped_at'].queryset = rescue_camp_qs
+       self.fields['camped_at'].initial = rescue_camp_qs.first()
 
 class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     login_url = '/login/'
