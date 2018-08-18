@@ -469,6 +469,6 @@ def camp_requirements(request):
     paginator = Paginator(camp_data, 50)
     page = request.GET.get('page')
     camp_data = paginator.get_page(page)    
-    return render(request, "mainapp/camp_requirements.html", {'filter': filter , 'camp_data' : camp_data})
+    return render(request, "mainapp/camp_requirement_display.html", {'filter': filter , 'camp_data' : camp_data})
 
 >>>>>>> Camp requirement display
