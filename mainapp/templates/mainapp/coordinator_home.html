@@ -23,6 +23,11 @@
     {% endif %}
 </div>
 
+<form action="" method="get">
+    {{ filter.form }}
+    <button class="btn btn-default" type="submit"> Select {% bootstrap_icon "chevron-right" %}</button>
+</form>
+
 {% if camps.count > 0 %}
 <div class="row">
 {% for item in camps %}
@@ -52,7 +57,7 @@
 {% else  %}
 <div class="text-center text-warning">
   <h4>
-      No relief camps configured for this user yet.
+      No relief camps found.
   </h4>
   
 </div>

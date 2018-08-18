@@ -1,14 +1,10 @@
-# rescuekerala
+# keralarescue
 
 [![Build Status - Travis][0]][1]
 
-Website for coordinating the rehabilitation of the people affected in the 2018 Kerala Floods.
+The Website for coordinating the rehabilitation of the people affected in the 2018 Kerala Floods.
 
 [![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/keralarescueslack)
-
-# Kerala Rescue
-
-Website for coordinating rehabilitation of people affected in the 2018 Kerala Floods.
 
 ## Getting Started
 
@@ -20,13 +16,14 @@ You will need to have following softwares in your system:
 
 - [Python 3](https://www.python.org/downloads/)
 - [Postgres](https://www.postgresql.org/download/)
-- [git](https://git-scm.com/downloads)
+- [Git](https://git-scm.com/downloads)
+- [Redis](https://redis.io/)
 
 ### Installing
 
 #### Setting up a development environment
 
-1. Create database and user in postgres for kerala rescue and give privileges.
+1. Create database and user in Postgres for keralarescue and give privileges.
 
 ```
 psql user=postgres
@@ -86,7 +83,7 @@ python3 manage.py runserver
 
 ## Running tests
 
-When running tests, Django creates a test replica of the database in order for the tests not to change the data on the real database. Because of that you need to alter the Postgres user that you created and add to it the `CREATEDB` priviledge:
+When running tests, Django creates a test replica of the database in order for the tests not to change the data on the real database. Because of that, you need to alter the Postgres user that you created and add to it the `CREATEDB` privilege:
 
 ```
 ALTER USER rescueuser CREATEDB;
@@ -100,9 +97,9 @@ python3 manage.py test --settings=floodrelief.test_settings
 
 ### Enable HTTPS connections
 
-Certain features (example: GPS location collection) only work with HTTPS connections.  To enable HTTPS connections follow the below steps.
+Certain features (example: GPS location collection) only work with HTTPS connections.  To enable HTTPS connections,follow the below steps.
 
-Create self-signed certicate with openssl
+Create self-signed certificate with openssl
 
 ```
 $openssl req -x509 -newkey rsa:4096 -keyout key.key -out certificate.crt -days 365 -subj '/CN=localhost' -nodes
@@ -117,7 +114,7 @@ $pip3 install django-sslserver
 
 Update INSTALLED_APPS with sslserver by editing the file floodrelief/settings.py (diff below)
 
-```
+```diff
  INSTALLED_APPS = [
 +    'sslserver',
      'mainapp.apps.MainappConfig',
@@ -134,14 +131,16 @@ In the above example the server is being run on a local IP address on port 8002 
 ## How can you help?
 
 ### Contribution Guidelines
-[wiki](https://github.com/IEEEKeralaSection/rescuekerala/wiki/Contribution-Guidelines)
+[Wiki](https://github.com/IEEEKeralaSection/rescuekerala/wiki/Contribution-Guidelines)
 
 ### By testing
 
 We have a lot of [Pull Requests](https://github.com/IEEEKeralaSection/rescuekerala/pulls) that requires testing. Pick any PR that you like, try to reproduce the original issue and fix. Also join `#testing` channel in our slack and drop a note that you
 are working on it.
 
-### Testing Pull Requests
+## Testing Pull Requests
+Note: If you have cloned a fork of IEEEKeralaSection/rescuekerala, replace ```origin``` with ```upstream```
+
 1. Checkout the Pull Request you would like to test by
       ```
       git fetch origin pull/ID/head:BRANCHNAME`
@@ -179,7 +178,7 @@ has the bug number in the branch name.
      ```
 4. Make your changes.
 
-5. Ensure your feature is  working as expected.
+5. Ensure your feature is working as expected.
 
 6. Push your code.
       ```
