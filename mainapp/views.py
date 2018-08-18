@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
+
+from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -19,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+
 
 class CreateRequest(CreateView):
     model = Request
@@ -48,6 +51,11 @@ class CreateRequest(CreateView):
         'needothers'
     ]
     success_url = '/req_sucess/'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        send_confirmation_sms(self.object.requestee_phone)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class RegisterVolunteer(CreateView):
