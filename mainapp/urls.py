@@ -12,7 +12,9 @@ router.register(r'api/1/persons', views.PersonViewSet)
 
 
 
+
 urlpatterns = [
+    path('api/1/camplist/', views.CampList.as_view(), name='api_camplist'),
     path('', views.HomePageView.as_view(), name='home'),
     path('ngo-volunteer/', views.NgoVolunteerView.as_view(), name='ngovolunteerview'),
     path('map-view/', views.MapView.as_view(), name='mapview'),

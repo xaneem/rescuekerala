@@ -22,8 +22,9 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
 from rest_framework import viewsets, permissions, status
-from .serializers import RescueCampSerializer, PersonSerializer
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import RescueCampSerializer, PersonSerializer, CampListSerializer
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -529,3 +530,24 @@ class PersonViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status':'success','message' : 'Person(s) added'}, status=status.HTTP_201_CREATED)
+
+class CampList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ['get']
+
+    def get(self, request):
+        serializer = CampListSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+
+            district = serializer.validated_data.get('district', None)
+
+            if district :
+                camps = RescueCamp.objects.filter(district=district)
+                serializer = RescueCampSerializer(camps, many=True)
+                Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            else:
+                return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
