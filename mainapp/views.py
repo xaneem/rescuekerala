@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+from datetime import datetime, timedelta
 
 class CreateRequest(CreateView):
     model = Request
@@ -181,7 +182,7 @@ def mapdata(request):
     if district != "all":
         data = Request.objects.exclude(latlng__exact="").filter(district=district).values()
     else:
-        data = Request.objects.exclude(latlng__exact="").values()
+        from_date = datetime.today() - timedelta(hours=24)
     cache.set("mapdata:" + district, data, settings.CACHE_TIMEOUT)
     return JsonResponse(list(data) , safe=False)
 

@@ -156,6 +156,14 @@ tr:hover td{
     border: 2px solid #CCCCCC;
 }
 
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    word-break: break-all !important;
+    max-width: 160px;
+}
+ .table-responsive {
+    max-width: 100%;
+}
+
 .center {
     text-align: center;
 }
