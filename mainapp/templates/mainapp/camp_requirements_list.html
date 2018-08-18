@@ -2,6 +2,15 @@
 {% load bootstrap3 %}
 
 {% block content %}
+
+{% block css %}
+<style>
+.long-col {
+  min-width: 250px;
+}
+</style>
+
+{% endblock %}
 <div class="text-center">
   <h3>Camp details</h3>
 </div>
@@ -55,19 +64,19 @@
       <td>
         {{item.total_infants}}
       </td>
-      <td>
+      <td class="long-col">
         {{item.food_req|linebreaks}}
       </td>
-      <td>
+      <td class="long-col">
         {{item.clothing_req|linebreaks}}
       </td>
-      <td>
+      <td class="long-col">
         {{item.sanitary_req|linebreaks}}
       </td>
-      <td>
+      <td class="long-col">
         {{item.medical_req|linebreaks}}
       </td>
-      <td>
+      <td class="long-col">
         {{item.other_req|linebreaks}}
       </td>
     </tr>

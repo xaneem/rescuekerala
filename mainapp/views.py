@@ -428,43 +428,44 @@ def announcements(request):
     link_data = paginator.get_page(page)
     return render(request, 'announcements.html', {'filter': filter, "data" : link_data})
 
-@login_required(login_url='/login/')
-
-def coordinator_home(request):
-    if not request.GET._mutable:
-        request.GET._mutable = True
-
-    if len(request.GET.get('district') or '') == 0:
-        request.GET['pwd'] = ''
-
-    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
-    relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
-
-    # Commented to allow all users to see all camps
-    # .filter(data_entry_user=request.user)
-    return render(request, "mainapp/coordinator_home.html", {'filter': filter , 'camps' : relief_camps})
-
-class CampFilter(django_filters.FilterSet):
-    fields = ['name','location','district','taluk','village','contacts','total_males','total_females','total_infants','food_req','clothing_req','sanitary_req','medical_req','other_req']
-
+class CoordinatorCampFilter(django_filters.FilterSet):
     class Meta:
         model = RescueCamp
         fields = {
             'district' : ['exact'],
-            'name' : ['icontains'],
+            'name' : ['icontains']
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
 
+@login_required(login_url='/login/')
+def coordinator_home(request):
+    filter = CoordinatorCampFilter(request.GET, queryset=RescueCamp.objects.all())
+    data = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
+    paginator = Paginator(data, 50)
+    page = request.GET.get('page')
+    data = paginator.get_page(page)
+
+    return render(request, "mainapp/coordinator_home.html", {'filter': filter , 'data' : data})
+
+class CampRequirementsFilter(django_filters.FilterSet):
+    class Meta:
+        model = RescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains']
         }
 
-        # TODO - field order seems to not be working!
-        # field_order = ['name', 'phone', 'address','district','notes','gender','camped_at']
-
     def __init__(self, *args, **kwargs):
-        super(CampFilter, self).__init__(*args, **kwargs)
+        super(CampRequirementsFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
-            self.queryset = self.queryset.all()
+            self.queryset = self.queryset.none()
 
 def camp_requirements_list(request):
-    filter = CampFilter(request.GET, queryset=RescueCamp.objects.all())
+    filter = CampRequirementsFilter(request.GET, queryset=RescueCamp.objects.all())
     camp_data = filter.qs.order_by('name')
     paginator = Paginator(camp_data, 50)
     page = request.GET.get('page')
