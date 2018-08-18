@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from mainapp.models import Request, Volunteer, Contributor, NGO
-
+from mainapp.models import DistrictNeed
 
 class TemplateViewTests(TestCase):
     def check_template_view_response(self, url, template_name):
@@ -31,14 +31,21 @@ class TemplateViewTests(TestCase):
         self.check_template_view_response('/ieee/', 'mainapp/aboutieee.html')
 
     def test_loading_dist_needs(self):
+        _ = DistrictNeed.objects.create(district='ekm', needs='bedsheets', cnandpts='aluva uc college')
         response = self.check_template_view_response('/district_needs/', 'mainapp/district_needs.html')
         self.assertIn('district_data', response.context)
+        self.assertEqual(response.context['district_data'][0].district, 'ekm')
+        self.assertEqual(response.context['district_data'][0].needs, 'bedsheets')
+        self.assertEqual(response.context['district_data'][0].cnandpts, 'aluva uc college')
 
     def test_loading_mapview(self):
         self.check_template_view_response('/map/', 'map.html')
 
     def test_loading_dmodash(self):
         self.check_template_view_response('/dmodash/', 'dmodash.html')
+
+    def test_loading_ngo_volunteer_view(self):
+        self.check_template_view_response('/ngo-volunteer/', 'ngo_volunteer.html')
 
 
 class RequestViewTests(TestCase):
