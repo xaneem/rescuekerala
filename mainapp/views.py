@@ -291,7 +291,7 @@ def announcements(request):
     filter = AnnouncementFilter(request.GET, queryset=Announcements.objects.all())
     link_data = filter.qs.order_by('-id')
     # As per the discussions orddering by id hoping they would be addded in order
-    paginator = Paginator(link_data, 50)
+    paginator = Paginator(link_data, 10)
     page = request.GET.get('page')
     link_data = paginator.get_page(page)
-    return render(request, 'announcements.html', {'filter': filter , "data" : link_data })
+    return render(request, 'announcements.html', {'filter': filter, "data" : link_data})
