@@ -142,6 +142,20 @@ class RescueCampAdmin(admin.ModelAdmin):
         return form
 
 
+class PersonAdmin(admin.ModelAdmin):
+    actions = ['download_csv']
+    list_display = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
+
+    def download_csv(self, request, queryset):
+        header_row = ('name', 'phone', 'age', 'gender_string', 'district', 'camped_at')
+        body_rows = []
+        persons = queryset.all()
+        for person in persons:
+            row = [getattr(person, field) for field in header_row]
+            body_rows.append(row)
+
+        response = create_csv_response('People in relief camps', header_row, body_rows)
+        return response
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
@@ -152,3 +166,4 @@ admin.site.register(DistrictManager)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements)
+admin.site.register(Person, PersonAdmin)
