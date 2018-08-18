@@ -21,6 +21,11 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
 
+PER_PAGE = 100
+PAGE_LEFT = 5
+PAGE_RIGHT = 5
+PAGE_INTERMEDIATE = "50"
+
 class CreateRequest(CreateView):
     model = Request
     template_name='mainapp/request_form.html'
@@ -178,9 +183,12 @@ class RequestFilter(django_filters.FilterSet):
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
     req_data = filter.qs.order_by('-id')
-    paginator = Paginator(req_data, 100)
+    paginator = Paginator(req_data, PER_PAGE)
     page = request.GET.get('page')
     req_data = paginator.get_page(page)
+    req_data.min_page = req_data.number - PAGE_LEFT
+    req_data.max_page = req_data.number + PAGE_RIGHT
+    req_data.lim_page = PAGE_INTERMEDIATE
     return render(request, 'mainapp/request_list.html', {'filter': filter , "data" : req_data })
 
 def request_details(request, request_id=None):
@@ -262,7 +270,7 @@ class PersonForm(forms.ModelForm):
         'address',
         'notes'
         ]
-       
+
        widgets = {
            'address': forms.Textarea(attrs={'rows':3}),
            'notes': forms.Textarea(attrs={'rows':3}),
@@ -280,7 +288,7 @@ class PersonForm(forms.ModelForm):
 class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     login_url = '/login/'
     model = Person
-    template_name='mainapp/add_person.html'  
+    template_name='mainapp/add_person.html'
     form_class = PersonForm
     success_message = "'%(name)s' registered successfully"
 
@@ -289,7 +297,7 @@ class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.camp_id = kwargs.get('camp_id','')
-        
+
         try:
             self.camp = RescueCamp.objects.get(id=int(self.camp_id))
         except ObjectDoesNotExist:
@@ -365,7 +373,7 @@ class CampDetailsForm(forms.ModelForm):
 class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     login_url = '/login/'
     model = RescueCamp
-    template_name='mainapp/camp_details.html'  
+    template_name='mainapp/camp_details.html'
     form_class = CampDetailsForm
     success_url = '/coordinator_home/'
     success_message = "Details saved!"
