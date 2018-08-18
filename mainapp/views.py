@@ -312,6 +312,7 @@ class CampRequirementsForm(forms.ModelForm):
        model = RescueCamp
        fields = [
         'name',
+        'total_people',
         'total_males',
         'total_females',
         'total_infants',
