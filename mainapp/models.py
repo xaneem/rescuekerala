@@ -126,8 +126,8 @@ class Request(models.Model):
         return out
 
     class Meta:
-        verbose_name = 'Relief: Supply Requiement'
-        verbose_name_plural = 'Relief: Supply Requirements'
+        verbose_name = 'Rescue: Request'
+        verbose_name_plural = 'Rescue:Requests'
 
     def __str__(self):
         return self.get_district_display() + ' ' + self.location
