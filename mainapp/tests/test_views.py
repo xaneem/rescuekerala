@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from mainapp.models import Request, Volunteer, Contributor
+from mainapp.models import Request, Volunteer, Contributor, NGO
 
 
 class TemplateViewTests(TestCase):
@@ -139,6 +139,57 @@ class RegisterVolunteerViewTests(TestCase):
         self.assertEqual(volunteer.organisation, 'smc')
         self.assertEqual(volunteer.area, 'plw')
         self.assertEqual(volunteer.address, 'Near mosque')
+
+
+class RegisterNGOViewTests(TestCase):
+    def setUp(self):
+        self.url = '/NGO/'
+
+    def test_loading_creation_form(self):
+        client = Client()
+        response = client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'mainapp/ngo_form.html')
+
+    def test_validation_errors_in_creation(self):
+        client = Client()
+        post_data = {}
+        response = client.post(self.url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'mainapp/ngo_form.html')
+        req_fields = [ 'organisation', 'organisation_address', 'organisation_type', 'description', 'area', 'location', 'name']
+        for field in req_fields:
+            self.assertFormError(response, 'form', field, 'This field is required.')
+        # post_data = {'area': 'asdasdasd'}
+        # response = client.post(self.url, post_data)
+        # self.assertEqual(response.status_code, 200)
+        # self.assertTemplateUsed(response, 'mainapp/ngo_form.html')
+        # self.assertFormError(response, 'form', 'area', 'Select a valid choice. asdasdasd is not one of the available choices.')
+
+    def test_creation(self):
+        client = Client()
+        post_data = {
+            'name': 'Rag Sagar',
+            'phone': '8893845901',
+            'organisation': 'smc',
+            'area': 'plw',
+            'organisation_address': 'Near mosque',
+            'organisation_type': 'NGO',
+            'description': 'to help poor',
+            'location': 'chalakudy'
+        }
+        response = client.post(self.url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(NGO.objects.count(), 1)
+        ngo = NGO.objects.last()
+        self.assertEqual(ngo.name, 'Rag Sagar')
+        self.assertEqual(ngo.phone, '8893845901')
+        self.assertEqual(ngo.organisation, 'smc')
+        self.assertEqual(ngo.area, 'plw')
+        self.assertEqual(ngo.organisation_address, 'Near mosque')
+        self.assertEqual(ngo.organisation_type, 'NGO')
+        self.assertEqual(ngo.description, 'to help poor')
+        self.assertEqual(ngo.location, 'chalakudy')
 
 
 class RegisterContributorViewTests(TestCase):
