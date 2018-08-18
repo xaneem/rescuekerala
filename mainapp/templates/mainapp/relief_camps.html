@@ -15,7 +15,7 @@
     </a>
   </div>
   <div class="col-md-8 text-right">
-    <a class="btn btn-default" href="/add_person" style="margin-top: 5px;">
+    <a class="btn btn-default" href="/coordinator_home" style="margin-top: 5px;">
       Coordinator Login
     </a>
     <p>
@@ -60,6 +60,7 @@
         {{ item.location | linebreaks }}
       </td>
       <td class="phone-links">
+        <!-- Please don't add a <a href> tag here. It's added dynamically -->
         {{ item.contacts | linebreaks }}
       </td>
       <td>

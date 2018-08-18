@@ -1,3 +1,4 @@
+{% spaceless %}
 {% load static %}
 {% load bootstrap3 %}
 
@@ -26,11 +27,13 @@
   {% bootstrap_css %}
 
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'css/placepicker.css' %}"/>
+
+
 
 </head>
 
 <body>
+
 
  {% block body %}
 
@@ -54,6 +57,16 @@
 </nav>
 <div class="container">
 
+  <div id="google_translate_element"></div><script type="text/javascript">
+  function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT, multilanguagePage: true}, 'google_translate_element');
+  }
+  </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+
+
+
 {% block content %}
 {% endblock %}
 
@@ -64,15 +77,13 @@
 
 <footer class="footer">
   <div class="container text-center">
-    <a href="/disclaimer" style="font-weight:bold">Disclaimer</a>
+    <a href="/disclaimer/" style="font-weight:bold">Disclaimer</a>
     <span>&nbsp;|&nbsp;</span>
     <a href="https://github.com/IEEEKeralaSection/rescuekerala/" target="_blank">GitHub</a>
     {# &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; #}
-    {# <a href="/ieee"><img src="{% static 'images/ieeelogo.png' %}" class="footer-logo"></a> #}
+    {# <a href="/ieee/"><img src="{% static 'images/ieeelogo.png' %}" class="footer-logo"></a> #}
   </div>
 </footer>
-
-<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 {% bootstrap_javascript %}
@@ -90,3 +101,4 @@
 </body>
 
 </html>
+{% endspaceless %}
