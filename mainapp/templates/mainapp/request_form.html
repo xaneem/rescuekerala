@@ -39,6 +39,7 @@
       <div id="map"></div>
       <div class="alert alert-info">
         Use the marker to update the location. Touch / click at the bottom of the pin.
+        സ്ഥലം അപ്ഡേറ്റുചെയ്യാൻ മാർക്കർ ഉപയോഗിക്കുക. പിൻയുടെ താഴെയായി സ്പർശിക്കുക / ക്ലിക്കുചെയ്യുക.
       </div>
   </div>
 
@@ -190,10 +191,6 @@
 				long: 76.2673
 			}
 
-			view.on('change:center', function(event){
-				var center = new ol.proj.transform([event.target.values_.center[0], event.target.values_.center[1]], 'EPSG:3857', 'EPSG:4326');
-				marker.getGeometry().setCoordinates(new ol.proj.transform([center[0], center[1]], 'EPSG:4326', 'EPSG:3857'));
-			});
 
 			var mapVectorSource = new ol.source.Vector({
 					features: []
@@ -239,7 +236,6 @@
 		document.getElementById('change').addEventListener('click', function(event){
 			console.log(currentPosition);
 			updateCurrentLocation(false);
-			alert('Your location has been successfully set');
 		});
 		document.getElementById('Search').addEventListener('click', function() {
 			var address = document.getElementById('address').value;
