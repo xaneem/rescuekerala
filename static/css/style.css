@@ -182,6 +182,27 @@ tr:hover td{
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
 
+#map {
+    height: 500px;
+    width: 100%;
+}
+/* Optional: Makes the sample page fill the window. */
+#floating-panel {
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+#gpslocationchooser {
+    width:100%;
+    box-sizing: border-box;
+    margin: 20px auto;
+    box-sizing: border-box;
+}
+
 table thead tr th {
   border-top: 2px solid #ddd !important;
 }
