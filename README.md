@@ -4,8 +4,6 @@
 
 The Website for coordinating the rehabilitation of the people affected in the 2018 Kerala Floods.
 
-[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/keralarescueslack)
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
