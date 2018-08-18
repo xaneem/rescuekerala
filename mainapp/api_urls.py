@@ -1,18 +1,15 @@
 from django.urls import path
-from django.conf.urls import url
-from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
-
-from . import views
+import api_views
 
 
 router = DefaultRouter()
-router.register(r'camps', views.RescueCampViewSet)
-router.register(r'persons', views.PersonViewSet)
+router.register(r'camps', api_views.RescueCampViewSet)
+router.register(r'persons', api_views.PersonViewSet)
 
 
 urlpatterns = [
-    path('camplist/', views.CampList.as_view(), name='api_camplist'),
+    path('camplist/', api_views.CampList.as_view(), name='api_camplist'),
 ]
 
 urlpatterns += router.urls

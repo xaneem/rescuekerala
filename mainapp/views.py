@@ -547,4 +547,9 @@ class CampList(APIView):
 
         else:
             return Response({'error' : 'District Code is Required'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+    # Commented to allow all users to see all camps
+    # .filter(data_entry_user=request.user)
+    camps = RescueCamp.objects.filter(data_entry_user=request.user)
+    return render(request,"mainapp/coordinator_home.html",{'camps':camps})
+
