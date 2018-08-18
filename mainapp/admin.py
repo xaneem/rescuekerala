@@ -94,9 +94,9 @@ class NGOAdmin(admin.ModelAdmin):
 
 
 class ContributorAdmin(admin.ModelAdmin):
-    actions = ['download_csv', 'mark_as_fullfulled']
+    actions = ['download_csv', 'mark_as_fullfulled', 'mark_as_new']
     list_filter = ('district', 'status',)
-    list_display = ('district', 'status')
+    list_display = ('district', 'name', 'phone', 'address', 'commodities', 'status')
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Contributor._meta.get_fields()]
@@ -109,6 +109,9 @@ class ContributorAdmin(admin.ModelAdmin):
         queryset.update(status='ful')
         return
 
+    def mark_as_new(self, request, queryset):
+        queryset.update(status='new')
+        return
 
 class RescueCampAdmin(admin.ModelAdmin):
     list_display = ('district', 'name', 'location')
