@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 
 districts = (
@@ -51,6 +52,13 @@ gender =(
     (2,'Others')
 )
 
+announcement_types =(
+    (0,'General'),
+    (1,'Food'),
+    (2,'Camps'),
+    (3,'Weather')
+)
+
 class Request(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -62,7 +70,10 @@ class Request(models.Model):
     requestee_phone = models.CharField(max_length=10,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍')
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates - GPS നിർദ്ദേശാങ്കങ്ങൾ ', blank=True)
     latlng_accuracy = models.CharField(max_length=100, verbose_name='GPS Accuracy - GPS കൃത്യത ', blank=True)
-    is_request_for_others = models.BooleanField(verbose_name='Requesting for others - മറ്റൊരാൾക്ക് വേണ്ടി അപേക്ഷിക്കുന്നു  ', default=False)
+    #  If it is enabled no need to consider lat and lng
+    is_request_for_others = models.BooleanField(
+        verbose_name='Requesting for others - മറ്റൊരാൾക്ക് വേണ്ടി അപേക്ഷിക്കുന്നു  ', default=False,
+        help_text="If it is enabled, no need to consider lat and lng")
 
     needwater = models.BooleanField(verbose_name='Water - വെള്ളം')
     needfood = models.BooleanField(verbose_name='Food - ഭക്ഷണം')
@@ -114,15 +125,43 @@ class Volunteer(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=10)
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
     organisation = models.CharField(max_length=250, verbose_name="Organization (സംഘടന) / Institution")
-    address = models.TextField()
+    address = models.TextField(verbose_name="Address - വിലാസം")
     area = models.CharField(
         max_length = 15,
         choices = vol_categories,
+        verbose_name = "Area of volunteering - സന്നദ്ധസേവനം"
+    )
+    is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
+    joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class NGO(models.Model):
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+    )
+    organisation = models.CharField(max_length=250, verbose_name="Name of Organization (സംഘടനയുടെ പേര്)")
+    organisation_type = models.CharField(max_length=250, verbose_name="Type of Organization")
+    organisation_address = models.TextField(default='', verbose_name="Address of Organization")
+    name = models.CharField(max_length=100, verbose_name="Contact Person")
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone = models.CharField(validators=[phone_regex], max_length=17, blank=True) # validators should be a list
+    description = models.TextField(verbose_name="About Organisation")
+    area = models.TextField(
         verbose_name = "Area of volunteering"
+    )
+    location = models.CharField(
+        max_length=500,
+        verbose_name="Preferred Location to Volunteer"
     )
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
@@ -135,10 +174,11 @@ class Contributor(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=10)
-    address = models.TextField()
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    address = models.TextField(verbose_name="Address - വിലാസം")
     commodities = models.TextField(verbose_name="What you can contribute. ( സംഭാവന ചെയ്യാന്‍ ഉദ്ദേശിക്കുന്ന സാധനങ്ങള്‍ ) -- Eg: Shirts, torches etc ")
     status = models.CharField(
         max_length = 10,
@@ -154,10 +194,11 @@ class DistrictManager(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
+        verbose_name="District - ജില്ല"
     )
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=11)
-    email = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Name - പേര്")
+    phone = models.CharField(max_length=11, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    email = models.CharField(max_length=100, verbose_name="Email - ഇമെയിൽ")
 
     def __str__(self):
         return self.name + ' ' + self.get_district_display()
@@ -185,18 +226,29 @@ class DistrictCollection(models.Model):
 
 class RescueCamp(models.Model):
     verbose_name = 'Relief Camp'
-    name = models.CharField(max_length=50,verbose_name="Name")
-    location = models.TextField(verbose_name="Address",blank=True,null=True)
+    name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
+    location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
     district = models.CharField(
         max_length=15,
         choices=districts
     )
-    taluk = models.CharField(max_length=50,verbose_name="Taluk")
-    village = models.CharField(max_length=50,verbose_name="Village")
-    contacts = models.TextField(verbose_name="Phone Numbers",blank=True,null=True)
-    data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
+    taluk = models.CharField(max_length=50,verbose_name="Taluk - താലൂക്ക്")
+    village = models.CharField(max_length=50,verbose_name="Village - വില്ലജ്")
+    contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True,help_text="This camp's coordinator page will be visible only to this user")
     map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
+    
+    total_males = models.IntegerField(null=True,blank=True,verbose_name="Number of Males")
+    total_females = models.IntegerField(null=True,blank=True,verbose_name="Number of Females")
+    total_infants = models.IntegerField(null=True,blank=True,verbose_name="Number of Infants (<2y)")
+
+    food_req = models.TextField(blank=True,null=True,verbose_name="Food - ഭക്ഷണം")
+    clothing_req = models.TextField(blank=True,null=True,verbose_name="Clothing - വസ്ത്രം")
+    sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
+    medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
+    other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
     class Meta:
         verbose_name = 'Relief Camp'
     def __str__(self):
@@ -216,7 +268,7 @@ class Person(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
-        verbose_name='District - ജില്ല',
+        verbose_name='Residence District - താമസിക്കുന്ന ജില്ല',
         null=True,blank=True
     )
     notes = models.TextField(max_length=500,null=True,blank=True,verbose_name='Notes - കുറിപ്പുകൾ')
@@ -224,3 +276,20 @@ class Person(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
+
+class Announcements(models.Model):
+    dateadded = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=50)
+    link = models.CharField(max_length=100)
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+        verbose_name='Districts - ജില്ല'
+    )
+    category = models.IntegerField(
+        choices = announcement_types,
+        verbose_name='Type'
+    )
+
+    def __str__(self):
+        return self.get_district_display()

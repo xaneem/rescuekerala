@@ -2,8 +2,10 @@
 {% load bootstrap3 %}
 
 {% block content %}
-<h1 class="text-center">Register as Volunteer</h1>
-<h2 class="text-center">വൊളന്‍റീയര്‍ ആകാന്‍</h2>
+<p class="text-center">
+  <h1 class="text-center">NGO/Company Registration</h1>
+  <h2 class="text-center">വൊളന്‍റീയര്‍ ആകാന്‍</h2>
+</p>
   <form method="post">
   {% csrf_token %}
   {% bootstrap_form form %}
@@ -14,9 +16,4 @@
   {% endbuttons %}
   </form>
 
-<script>
-    window.onload = function() {
-        $("#id_phone").attr('type', 'number');
-    }
-</script>
 {% endblock %}
