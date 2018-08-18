@@ -12,14 +12,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
-from datetime import datetime, timedelta
+from mainapp.admin import create_csv_response
 
 class CreateRequest(CreateView):
     model = Request
@@ -64,6 +64,37 @@ class RegisterNGO(CreateView):
     success_url = '/reg_success'
 
 
+def download_ngo_list(request):
+    district = request.GET.get('district', None)
+    filename = 'ngo_list.csv'
+    if district is not None:
+        filename = 'ngo_list_{0}.csv'.format(district)
+        qs = NGO.objects.filter(district=district).order_by('district','name')
+    else:
+        qs = NGO.objects.all().order_by('district','name')
+    header_row = ['Organisation',
+                  'Type',
+                  'Address',
+                  'Name',
+                  'Phone',
+                  'Description',
+                  'District',
+                  'Area',
+                  'Location',
+                  ]
+    body_rows = qs.values_list(
+        'organisation',
+        'organisation_type',
+        'organisation_address',
+        'name',
+        'phone',
+        'description',
+        'district',
+        'area',
+        'location',
+    )
+    return create_csv_response(filename, header_row, body_rows)
+
 class RegisterContributor(CreateView):
     model = Contributor
     fields = ['name', 'district', 'phone', 'address',  'commodities']
@@ -74,9 +105,16 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
 
+class NgoVolunteerView(TemplateView):
+    template_name = "ngo_volunteer.html"
+
+
+class MapView(TemplateView):
+    template_name = "mapview.html"
+
+
 class ReqSuccess(TemplateView):
     template_name = "mainapp/req_success.html"
-
 
 class RegSuccess(TemplateView):
     template_name = "mainapp/reg_success.html"
@@ -182,7 +220,7 @@ def mapdata(request):
     if district != "all":
         data = Request.objects.exclude(latlng__exact="").filter(district=district).values()
     else:
-        from_date = datetime.today() - timedelta(hours=24)
+        data = Request.objects.exclude(latlng__exact="").values()
     cache.set("mapdata:" + district, data, settings.CACHE_TIMEOUT)
     return JsonResponse(list(data) , safe=False)
 
