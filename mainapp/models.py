@@ -63,11 +63,11 @@ class Request(models.Model):
     district = models.CharField(
         max_length = 15,
         choices = districts,
-        verbose_name='Districts - ജില്ല'
+        verbose_name='District - ജില്ല'
     )
     location = models.CharField(max_length=500,verbose_name='Location - സ്ഥലം')
     requestee = models.CharField(max_length=100,verbose_name='Requestee - അപേക്ഷകന്‍റെ പേര്')
-    requestee_phone = models.CharField(max_length=10,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍')
+    requestee_phone = models.CharField(max_length=10,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍', validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates - GPS നിർദ്ദേശാങ്കങ്ങൾ ', blank=True)
     latlng_accuracy = models.CharField(max_length=100, verbose_name='GPS Accuracy - GPS കൃത്യത ', blank=True)
     #  If it is enabled no need to consider lat and lng
@@ -132,7 +132,7 @@ class Volunteer(models.Model):
         verbose_name="District - ജില്ല"
     )
     name = models.CharField(max_length=100, verbose_name="Name - പേര്")
-    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
     organisation = models.CharField(max_length=250, verbose_name="Organization (സംഘടന) / Institution")
     address = models.TextField(verbose_name="Address - വിലാസം")
     area = models.CharField(
@@ -189,7 +189,7 @@ class Contributor(models.Model):
         verbose_name="District - ജില്ല"
     )
     name = models.CharField(max_length=100, verbose_name="Name - പേര്")
-    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍")
+    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
     address = models.TextField(verbose_name="Address - വിലാസം")
     commodities = models.TextField(verbose_name="What you can contribute. ( സംഭാവന ചെയ്യാന്‍ ഉദ്ദേശിക്കുന്ന സാധനങ്ങള്‍ ) -- Eg: Shirts, torches etc ")
     status = models.CharField(
