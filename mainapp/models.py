@@ -1,6 +1,22 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.db.models import Lookup, CharField
+
+# Custom levenshtein filter
+
+@CharField.register_lookup
+class LevenshteinDistance(Lookup):
+    lookup_name = 'levenshtein'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+
+        params = lhs_params + rhs_params
+
+        return "levenshtein_less_equal(%s, %s, 3) < 3" % (lhs, rhs), params
+
 
 districts = (
     ('alp','Alappuzha - ആലപ്പുഴ'),
