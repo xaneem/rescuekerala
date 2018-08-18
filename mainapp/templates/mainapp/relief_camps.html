@@ -2,28 +2,36 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<style>
+    .table{
+      table-layout: fixed;      
+    }
 
+    .table td{
+      word-wrap: break-word;
+    }
+</style>
 <h3>
-        Relief Camps | 
-        ദുരിതാശ്വാസ ക്യാമ്പുകൾ
+  Relief Camps |
+  ദുരിതാശ്വാസ ക്യാമ്പുകൾ
 </h3>
 
 <div class="row">
-    <div class="col-md-4">
-        <a class="btn btn-info btn-lg" href="/find_people">
-                Person Search - വ്യക്തിയെ തിരയുക
-        </a>
-    </div>
-    <div class="col-md-8 text-right">
-        <a class="btn btn-default" href="/coordinator_home" style="margin-top: 5px;">
-            Coordinator Login
-        </a>
-        <p>
-          Contact your coordinator to get login details
-          <br>
-          ലോഗിൻ ഡീറ്റെയിൽസ് ലഭിക്കാൻ കോർഡിനേറ്ററെ സമീപിക്കുക
-        </p>
-    </div>
+  <div class="col-md-4">
+    <a class="btn btn-info btn-lg" href="/find_people">
+      Person Search - വ്യക്തിയെ തിരയുക
+    </a>
+  </div>
+  <div class="col-md-8 text-right">
+    <a class="btn btn-default" href="/coordinator_home" style="margin-top: 5px;">
+      Coordinator Login
+    </a>
+    <p>
+      Contact your coordinator to get login details
+      <br>
+      ലോഗിൻ ഡീറ്റെയിൽസ് ലഭിക്കാൻ കോർഡിനേറ്ററെ സമീപിക്കുക
+    </p>
+  </div>
 </div>
 
 <hr>
@@ -32,9 +40,8 @@
   <h4>Select District to see Relief Camps</h4>
 </div>
 
-<form action="" method="get">
-    {{ filter.form }}
-    <button class="btn btn-default" type="submit">Show Relief Camps</button>
+<form id="relief-comps-form" action="" method="get">
+  {{ filter.form }}
 </form>
 
 {% if relief_camps.count > 0 %}
@@ -48,7 +55,7 @@
       <th>Contact Numbers</th>
       <th>Registrations</th>
     </tr>
-  {% for item in relief_camps %}
+    {% for item in relief_camps %}
     <tr valign="top">
       <td><strong>{{ item.get_district_display }}</strong></td>
       <td>
@@ -77,15 +84,19 @@
 </div>
 {% endif %}
 
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
-  $('.phone-links').each(function () {
-    var content = $(this).html();
-    // Convert 10 digit numbers to links
-    links = content.replace(/[0-9 ]{8,15}/g, "<a href=\"tel:$&\">$&</a>");
-    $(this).html(links);
-  })
+  window.onload = function() {
+    $('.phone-links').each(function () {
+      var content = $(this).html();
+      // Convert 10 digit numbers to links
+      links = content.replace(/[0-9 ]{10,15}/g, "<a href=\"tel:$&\">$&</a>");
+      $(this).html(links);
+    })
+
+    $("#id_district").change(() => {
+      $("#relief-comps-form").submit();
+    })
+  }
 
 </script>
 {% endblock %}

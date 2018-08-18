@@ -22,7 +22,7 @@ urlpatterns = [
     path('contrib_success/', views.ContribSuccess.as_view(), name='contribsucessview'),
     path('disclaimer/', views.DisclaimerPage.as_view(), name='disclaimer'),
     path('ieee/', views.AboutIEEE.as_view(), name='aboutieee'),
-    path('data/' , views.mapdata , name="mapdata"),
+    # path('data/' , views.mapdata , name="mapdata"),
     path('map/' , views.mapview , name="mapview"),
     path('dmodash/' , views.dmodash , name="DMODash"),
     path('dmoinfo/' , views.dmoinfo , name="DMOInfo" ),
@@ -30,9 +30,11 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='mainapp/login.html'),name='user_login'),
     path('logout/', views.logout_view, name='user_logout'),
     path('relief_camps/', views.relief_camps, name='relief_camps'),
+    path('camp/<int:pk>/requirements/',views.CampRequirements.as_view(),name='camp_requirements'),
     path('camp/<int:pk>/details/',views.CampDetails.as_view(),name='camp_details'),
     path('camp/<int:camp_id>/add_person/', views.AddPerson.as_view(), name='add_person'),
     path('coordinator_home/', views.coordinator_home, name='coordinator_home'),
     path('find_people/', views.find_people, name='find_people'),
-    path('announcements/', views.announcements, name="Announcements")
+    path('announcements/', views.announcements, name="Announcements"),
+    path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list')
 ]
