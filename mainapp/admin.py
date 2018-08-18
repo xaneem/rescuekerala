@@ -54,9 +54,9 @@ class RequestAdmin(admin.ModelAdmin):
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    actions = ['download_csv']
+    actions = ['download_csv', 'mark_inactive', 'mark_active']
     readonly_fields = ('joined',)
-    list_display = ('name', 'phone', 'organisation', 'joined')
+    list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
     list_filter = ('district', 'joined',)
 
     def download_csv(self, request, queryset):
@@ -71,6 +71,12 @@ class VolunteerAdmin(admin.ModelAdmin):
 
         response = create_csv_response('Volunteers', header_row, body_rows)
         return response
+
+    def mark_inactive(self, request, queryset):
+        queryset.update(is_active=False)
+
+    def mark_active(self, request, queryset):
+        queryset.update(is_active=True)
 
 
 class NGOAdmin(admin.ModelAdmin):
