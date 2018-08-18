@@ -10,6 +10,36 @@ The Website for coordinating the rehabilitation of the people affected in the 20
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
+
+### Using Docker
+
+- Only pre-requisite is having docker and docker-compose installed
+- Execute `sh docker.sh` in this directory (if you do not have permissions on the `docker.sh`, do `chmod +x docker.sh`)
+- Server will start running at `localhost:8000`
+- `Ctrl+C` to stop
+
+#### troubleshooting docker
+* Incompatible docker version
+
+ > ERROR: Version in "./docker-compose.yaml" is unsupported. You might be seeing this error because you're using the wrong Compose file version. Either specify a version of "2" (or "2.0") and place your service definitions under the `services` key, or omit the `version` key and place your service definitions at the root of the file to use version 1.
+For more on the Compose file format versions, see https://docs.docker.com/compose/compose-file/
+
+
+**Fix**
+
+Update your docker toolkit
+
+* Insufficient permissions
+> ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+
+
+**Fix**
+
+Run it with sudo - `sudo sh docker.sh`
+
+
+## Running natively
 ### Prerequisites
 
 You will need to have following softwares in your system:
@@ -138,7 +168,9 @@ In the above example the server is being run on a local IP address on port 8002 
 We have a lot of [Pull Requests](https://github.com/IEEEKeralaSection/rescuekerala/pulls) that requires testing. Pick any PR that you like, try to reproduce the original issue and fix. Also join `#testing` channel in our slack and drop a note that you
 are working on it.
 
-### Testing Pull Requests
+## Testing Pull Requests
+Note: If you have cloned a fork of IEEEKeralaSection/rescuekerala, replace ```origin``` with ```upstream```
+
 1. Checkout the Pull Request you would like to test by
       ```
       git fetch origin pull/ID/head:BRANCHNAME`
