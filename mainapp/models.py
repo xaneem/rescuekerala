@@ -274,6 +274,34 @@ class Person(models.Model):
     notes = models.TextField(max_length=500,null=True,blank=True,verbose_name='Notes - കുറിപ്പുകൾ')
     camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
     added_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def sex(self):
+        return {
+            0:'Male',
+            1:'Female',
+            2:'Others'
+        }.get(self.gender, 'Unknown')
+
+    @property
+    def district_name(self):
+        return {
+                'alp':'Alappuzha - ആലപ്പുഴ',
+                'ekm':'Ernakulam - എറണാകുളം',
+                'idk':'Idukki - ഇടുക്കി',
+                'knr':'Kannur - കണ്ണൂർ',
+                'ksr':'Kasaragod - കാസർഗോഡ്',
+                'kol':'Kollam - കൊല്ലം',
+                'ktm':'Kottayam - കോട്ടയം',
+                'koz':'Kozhikode - കോഴിക്കോട്',
+                'mpm':'Malappuram - മലപ്പുറം',
+                'pkd':'Palakkad - പാലക്കാട്',
+                'ptm':'Pathanamthitta - പത്തനംതിട്ട',
+                'tvm':'Thiruvananthapuram - തിരുവനന്തപുരം',
+                'tcr':'Thrissur - തൃശ്ശൂർ',
+                'wnd':'Wayanad - വയനാട്',
+                }.get(self.district, 'Unknown')
+
     def __str__(self):
         return self.name
 
