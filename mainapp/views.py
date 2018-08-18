@@ -517,13 +517,14 @@ class PersonViewSet(viewsets.ModelViewSet):
     def create(self, request):
         for data in request.data:
             serializer = PersonSerializer(data=data)
-
+            
+            data['age'] =  data['age'] or None
+                       
             if serializer.is_valid(raise_exception=True):
 
                 camped_at = serializer.validated_data.get('camped_at', None)
 
                 if camped_at :
-                    camp = get_object_or_404(RescueCamp, id=camped_at.id, data_entry_user=self.request.user)
                     serializer.save()
                 else:
                     return Response({'error' : 'Rescue Camp is required field.'}, status=status.HTTP_400_BAD_REQUEST)
