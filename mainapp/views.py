@@ -498,7 +498,7 @@ class RescueCampViewSet(viewsets.ModelViewSet):
     queryset = RescueCamp.objects.filter()
     serializer_class = RescueCampSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    http_method_names = ['get']
+    http_method_names = ['get', 'put', 'patch']
 
     """
         This view should return a list of all the RescueCamp
