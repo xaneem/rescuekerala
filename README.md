@@ -138,7 +138,9 @@ In the above example the server is being run on a local IP address on port 8002 
 We have a lot of [Pull Requests](https://github.com/IEEEKeralaSection/rescuekerala/pulls) that requires testing. Pick any PR that you like, try to reproduce the original issue and fix. Also join `#testing` channel in our slack and drop a note that you
 are working on it.
 
-### Testing Pull Requests
+## Testing Pull Requests
+Note: If you have cloned a fork of IEEEKeralaSection/rescuekerala, replace ```origin``` with ```upstream```
+
 1. Checkout the Pull Request you would like to test by
       ```
       git fetch origin pull/ID/head:BRANCHNAME`
