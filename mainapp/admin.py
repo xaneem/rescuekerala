@@ -114,7 +114,21 @@ class ContributorAdmin(admin.ModelAdmin):
         return
 
 class RescueCampAdmin(admin.ModelAdmin):
-    list_display = ('name','district','location')
+    actions = ['download_csv']
+    list_display = ('district', 'name', 'location', 'food_req',
+                    'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
+
+    def download_csv(self, request, queryset):
+        header_row = ('district', 'name', 'location', 'food_req',
+                      'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
+        body_rows = []
+        rescue_camps = queryset.all()
+        for rescue_camp in rescue_camps:
+            row = [getattr(rescue_camp, field) for field in header_row]
+            body_rows.append(row)
+
+        response = create_csv_response('RescueCamp', header_row, body_rows)
+        return response
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
