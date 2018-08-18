@@ -144,6 +144,10 @@ class RescueCampAdmin(admin.ModelAdmin):
         return form
 
 
+class AnnouncementAdmin(admin.ModelAdmin):
+    fields = ['is_pinned', 'priority', 'description', 'image', 'upload']
+
+
 class PersonAdmin(admin.ModelAdmin):
     actions = ['download_csv']
     list_display = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
@@ -159,6 +163,7 @@ class PersonAdmin(admin.ModelAdmin):
         response = create_csv_response('People in relief camps', header_row, body_rows)
         return response
 
+
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(Contributor, ContributorAdmin)
@@ -167,5 +172,5 @@ admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
-admin.site.register(Announcements)
+admin.site.register(Announcements, AnnouncementAdmin)
 admin.site.register(Person, PersonAdmin)
