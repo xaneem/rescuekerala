@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -246,6 +246,7 @@ class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
 
     def get_success_url(self):
         return reverse('add_person', args=(self.camp_id,))
+
     def dispatch(self, request, *args, **kwargs):
         self.camp_id = kwargs.get('camp_id','')
         
@@ -253,8 +254,11 @@ class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
             self.camp = RescueCamp.objects.get(id=int(self.camp_id))
         except ObjectDoesNotExist:
             raise Http404
-        if request.user!=self.camp.data_entry_user:
-            raise PermissionDenied
+
+        # Commented to allow all users to edit all camps
+        # if request.user!=self.camp.data_entry_user:
+        #     raise PermissionDenied
+
         return super(AddPerson, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -268,6 +272,9 @@ class CampDetailsForm(forms.ModelForm):
        model = RescueCamp
        fields = [
         'name',
+        'total_males',
+        'total_females',
+        'total_infants',
         'food_req',
         'clothing_req',
         'sanitary_req',
@@ -292,11 +299,12 @@ class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     success_url = '/coordinator_home/'
     success_message = "Updated requirements saved!"
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user!=self.get_object().data_entry_user:
-            raise PermissionDenied
-        return super(CampDetails, self).dispatch(
-            request, *args, **kwargs)
+    # Commented to allow all users to edit all camps
+    # def dispatch(self, request, *args, **kwargs):
+    #     if request.user!=self.get_object().data_entry_user:
+    #         raise PermissionDenied
+    #     return super(CampDetails, self).dispatch(
+    #         request, *args, **kwargs)
 
 class PeopleFilter(django_filters.FilterSet):
     fields = ['name', 'phone','address','district','notes','gender','camped_at']
@@ -329,7 +337,37 @@ def find_people(request):
     people = paginator.get_page(page)
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
+class AnnouncementFilter(django_filters.FilterSet):
+    class Meta:
+        model = Announcements
+        fields = ['district', 'category']
+
+    def __init__(self, *args, **kwargs):
+        super(AnnouncementFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+def announcements(request):
+    filter = AnnouncementFilter(request.GET, queryset=Announcements.objects.all())
+    link_data = filter.qs.order_by('-id')
+    # As per the discussions orddering by id hoping they would be addded in order
+    paginator = Paginator(link_data, 10)
+    page = request.GET.get('page')
+    link_data = paginator.get_page(page)
+    return render(request, 'announcements.html', {'filter': filter, "data" : link_data})
+
 @login_required(login_url='/login/')
+
 def coordinator_home(request):
-    camps = RescueCamp.objects.filter(data_entry_user=request.user)
-    return render(request,"mainapp/coordinator_home.html",{'camps':camps})
+    if not request.GET._mutable:
+        request.GET._mutable = True
+
+    if len(request.GET.get('district') or '') == 0:
+        request.GET['pwd'] = ''
+
+    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
+    relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
+
+    # Commented to allow all users to see all camps
+    # .filter(data_entry_user=request.user)
+    return render(request, "mainapp/coordinator_home.html", {'filter': filter , 'camps' : relief_camps})
