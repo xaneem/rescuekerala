@@ -443,3 +443,32 @@ def coordinator_home(request):
     # Commented to allow all users to see all camps
     # .filter(data_entry_user=request.user)
     return render(request, "mainapp/coordinator_home.html", {'filter': filter , 'camps' : relief_camps})
+
+class CampFilter(django_filters.FilterSet):
+    fields = ['name','location','district','taluk','village','contacts','total_males','total_females','total_infants','food_req','clothing_req','sanitary_req','medical_req','other_req']
+
+    class Meta:
+        model = RescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains'],
+
+        }
+
+        # TODO - field order seems to not be working!
+        # field_order = ['name', 'phone', 'address','district','notes','gender','camped_at']
+
+    def __init__(self, *args, **kwargs):
+        super(CampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.all()
+
+def camp_requirements(request):
+    filter = CampFilter(request.GET, queryset=RescueCamp.objects.all())
+    camp_data = filter.qs.order_by('name')
+    paginator = Paginator(camp_data, 50)
+    page = request.GET.get('page')
+    camp_data = paginator.get_page(page)    
+    return render(request, "mainapp/camp_requirements.html", {'filter': filter , 'camp_data' : camp_data})
+
+>>>>>>> Camp requirement display

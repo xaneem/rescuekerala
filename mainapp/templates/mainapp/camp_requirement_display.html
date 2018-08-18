@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+<<<<<<< Updated upstream
+
+{% block content %}  
+  <div class="text-right">
+    <a href="/coordinator_home">Coordinator Home</a> | 
+    <a href="/logout">Logout</a>
+  </div>
+
+  <h3 class="text-center">
+      Camp Requirements | 
+      ക്യാമ്പിലെ ആവശ്യങ്ങൾ
+  </h3>
+
+  <div class="text-center text-danger">
+      {% if messages %}
+        {% for message in messages %}
+          <h3>{{ message }}</h3>
+        {% endfor %}
+      {% endif %}
+  </div>
+  <br>
+
+  <form method="post"  class="simple-form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+    <button type="submit" class="btn btn-success btn-lg">
+    Save {% bootstrap_icon "ok" %}
+    </button>
+    {% endbuttons %}
+
+    <p class="text-center">
+        Please update this information whenever you receieve new supplies or need more.
+        <br>
+        നിങ്ങൾ പുതിയ സപ്ലൈസ് സ്വീകരിക്കുകയോ കൂടുതൽ ആവശ്യമുള്ളപ്പോഴോ അപ്ഡേറ്റ് ചെയ്യുക.        
+    </p>
+  </form> 
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+  $('#id_gender_0').parents('.radio').hide();
+  $('#id_gender > .radio').removeClass('radio').addClass('radio-inline');
+  </script>
+
+=======
+{% block content %}
+<div class="text-center">
+  <h3>Camp details</h3>
+</div>
+
+<form action="" method="get">
+    {{ filter.form.as_p }}
+    <button class="btn btn-default" type="submit">Show Relief Camps</button>
+</form>
+<div class="">
+  <table class="table">
+    <tr>
+      <th>Camp Name</th>
+      <th>District</th>
+      <th>Taluk</th>
+      <th>Village</th>
+      <th>Contacts</th>
+      <th>Total Males</th>
+      <th>Total Females</th>
+      <th>Total Infants</th>
+      <th>Food Requirements</th>
+      <th>Clothing Requirements</th>
+      <th>Sanitary Requirements</th>
+      <th>Medical Requirements</th>
+      <th>Other Requirements</th>
+    </tr>
+  {% for item in camp_data %}
+    <!-- Ernakulam -->
+    <tr valign="top">
+      <td><strong>{{item.name}}</strong></td>
+      <td>
+        {{item.district|linebreaks}}
+      </td>
+      <td>
+        {{item.taluk|linebreaks}}
+      </td>
+      <td>
+        {{item.village|linebreaks}}
+      </td>
+      <td>
+        {{item.contacts|linebreaks}}
+      </td>
+      <td>
+        {{item.total_males|linebreaks}}
+      </td>
+      <td>
+        {{item.total_females|linebreaks}}
+      </td>
+      <td>
+        {{item.total_infants|linebreaks}}
+      </td>
+      <td>
+        {{item.food_req|linebreaks}}
+      </td>
+      <td>
+        {{item.clothing_req|linebreaks}}
+      </td>
+      <td>
+        {{item.sanitary_req|linebreaks}}
+      </td>
+      <td>
+        {{item.medical_req|linebreaks}}
+      </td>
+      <td>
+        {{item.other_req|linebreaks}}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+>>>>>>> Stashed changes
+{% endblock %}
