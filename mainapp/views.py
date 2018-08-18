@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -336,6 +336,25 @@ def find_people(request):
     page = request.GET.get('page')
     people = paginator.get_page(page)
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
+
+class AnnouncementFilter(django_filters.FilterSet):
+    class Meta:
+        model = Announcements
+        fields = ['district', 'category']
+
+    def __init__(self, *args, **kwargs):
+        super(AnnouncementFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+def announcements(request):
+    filter = AnnouncementFilter(request.GET, queryset=Announcements.objects.all())
+    link_data = filter.qs.order_by('-id')
+    # As per the discussions orddering by id hoping they would be addded in order
+    paginator = Paginator(link_data, 10)
+    page = request.GET.get('page')
+    link_data = paginator.get_page(page)
+    return render(request, 'announcements.html', {'filter': filter, "data" : link_data})
 
 @login_required(login_url='/login/')
 

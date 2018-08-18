@@ -3,7 +3,7 @@ import csv
 from django.contrib import admin
 from django.http import HttpResponse
 
-from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, RescueCamp, Person, NGO
+from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, RescueCamp, Person, NGO, Announcements
 
 
 def create_csv_response(csv_name, header_row, body_rows):
@@ -123,3 +123,4 @@ admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
+admin.site.register(Announcements)
