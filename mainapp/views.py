@@ -12,13 +12,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+from mainapp.admin import create_csv_response
 
 class CreateRequest(CreateView):
     model = Request
@@ -62,6 +63,37 @@ class RegisterNGO(CreateView):
               'location']
     success_url = '/reg_success'
 
+
+def download_ngo_list(request):
+    district = request.GET.get('district', None)
+    filename = 'ngo_list.csv'
+    if district is not None:
+        filename = 'ngo_list_{0}.csv'.format(district)
+        qs = NGO.objects.filter(district=district).order_by('district','name')
+    else:
+        qs = NGO.objects.all().order_by('district','name')
+    header_row = ['Organisation',
+                  'Type',
+                  'Address',
+                  'Name',
+                  'Phone',
+                  'Description',
+                  'District',
+                  'Area',
+                  'Location',
+                  ]
+    body_rows = qs.values_list(
+        'organisation',
+        'organisation_type',
+        'organisation_address',
+        'name',
+        'phone',
+        'description',
+        'district',
+        'area',
+        'location',
+    )
+    return create_csv_response(filename, header_row, body_rows)
 
 class RegisterContributor(CreateView):
     model = Contributor
