@@ -335,8 +335,17 @@ def find_people(request):
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
 @login_required(login_url='/login/')
+
 def coordinator_home(request):
-    camps = RescueCamp.objects.all()
+    if not request.GET._mutable:
+        request.GET._mutable = True
+
+    if len(request.GET.get('district') or '') == 0:
+        request.GET['pwd'] = ''
+
+    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
+    relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
+
     # Commented to allow all users to see all camps
     # .filter(data_entry_user=request.user)
-    return render(request,"mainapp/coordinator_home.html",{'camps':camps})
+    return render(request, "mainapp/coordinator_home.html", {'filter': filter , 'camps' : relief_camps})
