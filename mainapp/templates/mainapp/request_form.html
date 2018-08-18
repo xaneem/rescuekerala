@@ -30,7 +30,7 @@
   </div>
 
     {% buttons %}
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" class="btn btn-primary" id="submitRequest">
     {% bootstrap_icon "star" %} Submit
     </button>
     {% endbuttons %}
@@ -93,6 +93,7 @@
 		var options = {
 			enableHighAccuracy: true
 		};
+        var addressPromise;
 
 		success = function(pos, doNotUpdateMap, doNotFetchAddress) {
 			var crd = pos.coords;
@@ -103,6 +104,7 @@
                 }
 
                 if(!doNotFetchAddress) {
+                    $('#id_latlng_display').val("");
                     $.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + crd.latitude + '&lon=' + crd.longitude + '&zoom=18&addressdetails=1')
                         .done(function(response) {
                             $('#id_latlng_display').val(response.display_name);
@@ -212,7 +214,7 @@
 
         function fetchCoordinates() {
             var address = document.getElementById('address').value;
-            $.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
+            addressPromise = $.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
                 .done(function(response) {
                     try{
                         console.log(response);
@@ -239,6 +241,17 @@
             }
         });
 
+        $("#submitRequest").on('click', function (e) {
+            if( addressPromise ){
+                if(addressPromise.state() === "pending"){
+                    e.preventDefault();
+                    alert("Your location is being fetched, click the submit button again.\n" +
+                        "താങ്കളുടെ വിലാസം കണ്ടെത്തിക്കൊണ്ടിരിക്കുകയാണ്, വീണ്ടും submit അമർത്തുക");
+                } else {
+                    return true;
+                }
+            }
+        });
 
         addAddressField();
         createMap();
