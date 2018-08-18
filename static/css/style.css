@@ -184,7 +184,7 @@ tr:hover td{
 
 #map {
     height: 500px;
-    min-width:400px;
+    width: 100%;
 }
 /* Optional: Makes the sample page fill the window. */
 #floating-panel {
@@ -200,6 +200,7 @@ tr:hover td{
     width:100%;
     box-sizing: border-box;
     margin: 20px auto;
+    box-sizing: border-box;
 }
 
 table thead tr th {
