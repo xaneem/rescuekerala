@@ -307,7 +307,7 @@ class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
         return kwargs
 
 
-class CampDetailsForm(forms.ModelForm):
+class CampRequirementsForm(forms.ModelForm):
     class Meta:
        model = RescueCamp
        fields = [
@@ -331,11 +331,11 @@ class CampDetailsForm(forms.ModelForm):
            'other_req': forms.Textarea(attrs={'rows':3}),
        }
 
-class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
+class CampRequirements(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     login_url = '/login/'
     model = RescueCamp
-    template_name='mainapp/camp_details.html'  
-    form_class = CampDetailsForm
+    template_name='mainapp/camp_requirements.html'  
+    form_class = CampRequirementsForm
     success_url = '/coordinator_home/'
     success_message = "Updated requirements saved!"
 
@@ -345,6 +345,37 @@ class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     #         raise PermissionDenied
     #     return super(CampDetails, self).dispatch(
     #         request, *args, **kwargs)
+
+
+class CampDetailsForm(forms.ModelForm):
+    class Meta:
+       model = RescueCamp
+       fields = [
+        'name',
+        'location',
+        'district',
+        'taluk',
+        'village',
+        'contacts',
+        'map_link',
+        'latlng',
+        ]
+
+class CampDetails(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
+    login_url = '/login/'
+    model = RescueCamp
+    template_name='mainapp/camp_details.html'  
+    form_class = CampDetailsForm
+    success_url = '/coordinator_home/'
+    success_message = "Details saved!"
+
+    # Commented to allow all users to edit all camps
+    # def dispatch(self, request, *args, **kwargs):
+    #     if request.user!=self.get_object().data_entry_user:
+    #         raise PermissionDenied
+    #     return super(CampDetails, self).dispatch(
+    #         request, *args, **kwargs)
+
 
 class PeopleFilter(django_filters.FilterSet):
     fields = ['name', 'phone','address','district','notes','gender','camped_at']
