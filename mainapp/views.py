@@ -19,8 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
-from csv import writer as csv_writer
-from .admin import create_csv_response
+from mainapp.admin import create_csv_response
 
 class CreateRequest(CreateView):
     model = Request
@@ -70,9 +69,9 @@ def download_ngo_list(request):
     filename = 'ngo_list.csv'
     if district is not None:
         filename = 'ngo_list_{0}.csv'.format(district)
-        qs = NGO.objects.filter(district=district)
+        qs = NGO.objects.filter(district=district).order_by('district','name')
     else:
-        qs = NGO.objects.all()
+        qs = NGO.objects.all().order_by('district','name')
     header_row = ['Organisation',
                   'Type',
                   'Address',
