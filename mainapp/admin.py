@@ -3,7 +3,7 @@ import csv
 from django.contrib import admin
 from django.http import HttpResponse
 
-from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, RescueCamp, Person, NGO
+from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, RescueCamp, Person, NGO, Announcements
 
 
 def create_csv_response(csv_name, header_row, body_rows):
@@ -122,6 +122,12 @@ class RescueCampAdmin(admin.ModelAdmin):
         response = create_csv_response('RescueCamp', header_row, body_rows)
         return response
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['data_entry_user'].initial = request.user.id
+        return form
+
+
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
@@ -131,3 +137,4 @@ admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
+admin.site.register(Announcements)
