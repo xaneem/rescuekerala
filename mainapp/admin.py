@@ -108,6 +108,12 @@ class ContributorAdmin(admin.ModelAdmin):
 class RescueCampAdmin(admin.ModelAdmin):
     list_display = ('district', 'name', 'location')
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['data_entry_user'].initial = request.user.id
+        return form
+
+
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
