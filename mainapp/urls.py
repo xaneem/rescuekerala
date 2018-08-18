@@ -1,20 +1,11 @@
 from django.urls import path
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
-from rest_framework.routers import DefaultRouter
 
 from . import views
 
 
-router = DefaultRouter()
-router.register(r'api/1/camps', views.RescueCampViewSet)
-router.register(r'api/1/persons', views.PersonViewSet)
-
-
-
-
 urlpatterns = [
-    path('api/1/camplist/', views.CampList.as_view(), name='api_camplist'),
     path('', views.HomePageView.as_view(), name='home'),
     path('ngo-volunteer/', views.NgoVolunteerView.as_view(), name='ngovolunteerview'),
     path('map-view/', views.MapView.as_view(), name='mapview'),
@@ -50,6 +41,3 @@ urlpatterns = [
     path('announcements/', views.announcements, name="Announcements"),
     path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list')
 ]
-
-urlpatterns += router.urls
-
