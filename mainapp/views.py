@@ -72,9 +72,7 @@ def download_ngo_list(request):
         filename = 'ngo_list_{0}.csv'.format(district)
         qs = NGO.objects.filter(district=district)
     else:
-        query = NGO.objects.all().query
-        query.group_by = ['district']
-        qs = QuerySet(query=query, model=NGO)
+        qs = NGO.objects.all()
     header_row = ['Organisation',
                   'Type',
                   'Address',
