@@ -147,7 +147,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
 
     def download_csv(self, request, queryset):
-        header_row = ('name', 'phone', 'age', 'gender_string', 'district', 'camped_at')
+        header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at')
         body_rows = []
         persons = queryset.all()
         for person in persons:
