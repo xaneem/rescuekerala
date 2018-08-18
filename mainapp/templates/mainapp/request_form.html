@@ -210,29 +210,37 @@
             }, true, doNotFetchAddress);
         }
 
-		document.getElementById('Search').addEventListener('click', function() {
-			var address = document.getElementById('address').value;
-			$.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
-					.done(function(response) {
-						try{
-							console.log(response);
-							if(response.length<1){
-								alert('Please check the spelling');
-							}else{
-								response = response[0];
-								console.log(response.lon-0, response.lat-0);
-								changeLocation(response);
-							}
-						}catch(err){
-							console.error(err);
-						}
-					})
-					.fail(function(err){
-						console.log(err);
-					});
-		});
+        function fetchCoordinates() {
+            var address = document.getElementById('address').value;
+            $.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
+                .done(function(response) {
+                    try{
+                        console.log(response);
+                        if(response.length<1){
+                            alert('Please check the spelling');
+                        }else{
+                            response = response[0];
+                            console.log(response.lon-0, response.lat-0);
+                            changeLocation(response);
+                        }
+                    }catch(err){
+                        console.error(err);
+                    }
+                })
+                .fail(function(err){
+                    console.log(err);
+                });
+        }
+		document.getElementById('Search').addEventListener('click', fetchCoordinates);
+        $("#address").on('keydown', function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                fetchCoordinates();
+            }
+        });
 
-		addAddressField();
+
+        addAddressField();
         createMap();
 	}
 
