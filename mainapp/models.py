@@ -230,11 +230,17 @@ class RescueCamp(models.Model):
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True,help_text="This camp's coordinator page will be visible only to this user")
     map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
+    
+    total_males = models.IntegerField(null=True,blank=True,verbose_name="Number of Males")
+    total_females = models.IntegerField(null=True,blank=True,verbose_name="Number of Females")
+    total_infants = models.IntegerField(null=True,blank=True,verbose_name="Number of Infants (<2y)")
+
     food_req = models.TextField(blank=True,null=True,verbose_name="Food - ഭക്ഷണം")
     clothing_req = models.TextField(blank=True,null=True,verbose_name="Clothing - വസ്ത്രം")
     sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
     medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
     other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
     class Meta:
         verbose_name = 'Relief Camp'
     def __str__(self):

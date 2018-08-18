@@ -272,6 +272,9 @@ class CampDetailsForm(forms.ModelForm):
        model = RescueCamp
        fields = [
         'name',
+        'total_males',
+        'total_females',
+        'total_infants',
         'food_req',
         'clothing_req',
         'sanitary_req',

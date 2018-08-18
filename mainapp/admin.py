@@ -106,7 +106,7 @@ class ContributorAdmin(admin.ModelAdmin):
 
 
 class RescueCampAdmin(admin.ModelAdmin):
-    list_display = ('district', 'name', 'location')
+    list_display = ('name','district','location')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
