@@ -28,9 +28,6 @@
               <div class="input-group-btn">
                 <!-- Buttons -->
                 <input id="Search" type="button" value="Search" class="btn btn-default">
-                <button id="change" type="button" class="btn btn-default">
-                  Update location
-                </button>
               </div>
             </div>
           </div>
@@ -38,8 +35,8 @@
       </div>
       <div id="map"></div>
       <div class="alert alert-info">
-        Use the marker to update the location. Touch / click at the bottom of the pin and drag. Update GPS coordinate field by clicking 'Update location'.<br/>
-        സ്ഥലം അപ്ഡേറ്റുചെയ്യാൻ മാർക്കർ ഉപയോഗിക്കുക. പിൻ, ഡ്രാഗ് താഴെയുള്ള സ്പർശിക്കുക / ക്ലിക്കുചെയ്യുക. 'ലൊക്കേഷൻ അപ്ഡേറ്റുചെയ്യുക' ക്ലിക്കുചെയ്ത് ജിപിഎസ് കോർഡിനേറ്റ് ഫീൽഡ് അപ്ഡേറ്റുചെയ്യുക.
+          Click / touch on the map to move marker. This will update the form.<br/>
+          മാർക്കർ നീക്കാൻ മാപ്പിൽ ക്ലിക്കുചെയ്യുക / സ്പർശിക്കുക. ഇത് ഫോം അപ്ഡേറ്റ് ചെയ്യും.
       </div>
   </div>
 
@@ -138,24 +135,9 @@
 		})
 
 		$('#instructionModal').modal('show');
-
-		function makeMovable(feature) {
-				var modify = new ol.interaction.Modify({
-						features: new ol.Collection([feature])
-				});
-
-				feature.on('change',function() {
-						var pos = ol.proj.transform(this.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326');
-						// console.log('Feature Moved To:', pos);
-						currentPosition.lat = pos[1];
-						currentPosition.long = pos[0];
-						updateCurrentLocation(true);
-				}, feature);
-				return modify;
-		}
-
+        var iconFeature;
 		function createMarker(location, style){
-				var iconFeature = new ol.Feature({
+				iconFeature = new ol.Feature({
 						geometry: new ol.geom.Point(location)
 				});
 				iconFeature.setStyle(style);
@@ -184,6 +166,15 @@
 				view: view
 			});
 
+            map.on('click', function (event) {
+                var coordinates = event.coordinate;
+                var latlng = ol.proj.transform(coordinates, 'EPSG:3857', 'EPSG:4326');
+                latlng = { coords: {latitude: latlng[1], longitude: latlng[0], accuracy: 100}};
+                success(latlng, true, false);
+                var point = new ol.geom.Point(coordinates);
+                iconFeature.setGeometry(point);
+            });
+
 			currentPosition = {
 				lat: 9.9312,
 				long: 76.2673
@@ -210,8 +201,6 @@
 			]
 			marker = createMarker(ol.proj.transform([76.2673, 9.9312], 'EPSG:4326', 'EPSG:3857'), iconStyle);
 			mapVectorSource.addFeature(marker);
-			var modifyInteraction = makeMovable(marker);
-			map.addInteraction(modifyInteraction);
 		}
 
 		function addAddressField () {
@@ -231,11 +220,6 @@
             }, true, doNotFetchAddress);
         }
 
-		document.getElementById('change').addEventListener('click', function(event){
-			console.log(currentPosition);
-			updateCurrentLocation(false);
-			alert("Your location has been updated.");
-		});
 		document.getElementById('Search').addEventListener('click', function() {
 			var address = document.getElementById('address').value;
 			$.get('https://nominatim.openstreetmap.org/search?q='+encodeURI(address)+'&format=json&addressdetails=1&limit=1&polygon_svg=1')
