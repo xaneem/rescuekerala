@@ -175,10 +175,10 @@ Note: If you have cloned a fork of IEEEKeralaSection/rescuekerala, replace ```or
       ```
       git fetch origin pull/ID/head:BRANCHNAME`
       git checkout BRANCHNAME
-     ```    
+     ```
 2. Example
     ```
-    git fetch origin pull/406/head:jaseem  
+    git fetch origin pull/406/head:jaseem
     git checkout jaseem1
     ```
 3. Run Migration
@@ -214,7 +214,12 @@ has the bug number in the branch name.
       ```
       git push origin2 issues_442
       ```
-7. Compare and create your pull request.   
+7. Compare and create your pull request.
 
 [0]: https://travis-ci.org/IEEEKeralaSection/rescuekerala.svg?branch=master
 [1]: https://travis-ci.org/IEEEKeralaSection/rescuekerala
+
+
+### Setting up s3 Account
+
+- Follow https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html and https://www.caktusgroup.com/blog/2014/11/10/Using-Amazon-S3-to-store-your-Django-sites-static-and-media-files/ to setup s3 bucket, and download access keys.
