@@ -18,7 +18,7 @@ def send_confirmation_sms(phone_number):
         phone_number.lstrip("0"),
     )
     try:
-        requests.get(api_url)
+        requests.get(api_url, timeout=1)
     except Exception as e:
         # API endpoint might misbehave, and sms confirmation is not a critical function
         pass

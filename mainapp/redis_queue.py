@@ -3,6 +3,8 @@ import os
 from redis import Redis
 from rq import Queue
 
-redis_host = os.environ.get("REDIS_URL")
-redis_port = os.environ.get("REDIS_PORT")
-q = Queue(connection=Redis(host=redis_host, port=redis_port))
+REDIS_URL = os.environ.get("REDIS_URL")
+
+
+def get_sms_queue():
+    return Queue(name="smsjob", connection=Redis(REDIS_URL))
