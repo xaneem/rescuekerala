@@ -156,10 +156,13 @@ class RescueCampFilter(django_filters.FilterSet):
             self.queryset = self.queryset.none()
 
 def relief_camps(request):
+    return render(request,"mainapp/relief_camps.html")
+
+def relief_camps_list(request):
     filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
     relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
 
-    return render(request, 'mainapp/relief_camps.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
+    return render(request, 'mainapp/relief_camps_list.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
 
 class RequestFilter(django_filters.FilterSet):
     class Meta:
