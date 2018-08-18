@@ -501,18 +501,6 @@ class CoordinatorCampFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
-class CoordinatorCampFilter(django_filters.FilterSet):
-    class Meta:
-        model = RescueCamp
-        fields = {
-            'district' : ['exact'],
-            'name' : ['icontains']
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
-        if self.data == {}:
-            self.queryset = self.queryset.none()
 
 @login_required(login_url='/login/')
 def coordinator_home(request):
