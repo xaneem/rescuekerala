@@ -15,6 +15,7 @@ The Website for co-ordinating the rehabilitation of the people affected in the 2
     - [Redis](#redis)
     - [Setting up an S3 Account](#setting-up-an-s3-account)
 - [Getting started](#getting-started)
+- [Creating migration files](#creating-migration-files)
 - [Running tests](#running-tests)
 - [Enable HTTPS connections](#enable-https-connections)
 - [How can you help?](#how-can-you-help)
@@ -147,6 +148,11 @@ That's it!
 </details>
 
 <hr>
+
+### Creating migration files
+[^toc](#creating-migration-files)
+
+If your code changes anything in models.py, you might need to make changes in database schema, or other constraints. To create migrations files, run python3 manage.py makemigrations --settings=floodrelief.settings after making your changes. Also make sure to add these files in the commit.
 
 ### Running tests
 [^toc](#table-of-contents)
