@@ -49,7 +49,7 @@
       <td>
         {{item.village}}
       </td>
-      <td>
+      <td class="phone-links">
         {{item.contacts|linebreaks}}
       </td>
       <td>
@@ -109,4 +109,15 @@
 
 
 </div>
+<script>
+  window.onload = function() {
+    $('.phone-links').each(function () {
+      var content = $(this).html();
+      // Convert 10 digit numbers to links
+      links = content.replace(/[0-9 ]{10,15}/g, "<a href=\"tel:$&\">$&</a>");
+      $(this).html(links);
+    })
+  }
+
+</script>
 {% endblock %}
