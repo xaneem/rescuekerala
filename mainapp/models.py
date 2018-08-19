@@ -68,6 +68,7 @@ announcement_priorities = [
     ('L', 'Low')]
 
 
+
 class Request(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -372,6 +373,33 @@ class Announcements(models.Model):
     class Meta:
         verbose_name = 'Announcement: News'
         verbose_name_plural = 'Announcements: News'
+
+    def __str__(self):
+        return self.description[:100]
+
+
+class ReliefCampData(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, verbose_name="Details of requirements")
+    file = models.FileField(blank=True, upload_to='camp_data')
+    district = models.CharField(
+        max_length=15,
+        choices=districts,
+        verbose_name='District - ജില്ല',
+        null=True,
+        blank=True
+    )
+    tag = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(
+        max_length=11,
+        verbose_name="Phone - ഫോണ്‍ നമ്പര്‍",
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Relief: Camp Data'
+        verbose_name_plural = 'Relief: Camp Datas'
 
     def __str__(self):
         return self.description[:100]
