@@ -393,28 +393,20 @@ class Announcements(models.Model):
         return self.description[:100]
 
 
-class ReliefCampData(models.Model):
+class DataCollection(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(blank=True, verbose_name="Details of requirements")
-    file = models.FileField(blank=True, upload_to='camp_data')
-    district = models.CharField(
-        max_length=15,
-        choices=districts,
-        verbose_name='District - ജില്ല',
+    document_name = models.CharField(
+        max_length=255,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name="Document name"
     )
+    document = models.FileField(blank=True, upload_to='camp_data')
     tag = models.CharField(max_length=255, null=True, blank=True)
-    phone = models.CharField(
-        max_length=11,
-        verbose_name="Phone - ഫോണ്‍ നമ്പര്‍",
-        null=True,
-        blank=True
-    )
 
     class Meta:
-        verbose_name = 'Relief: Camp Data'
-        verbose_name_plural = 'Relief: Camp Datas'
+        verbose_name = 'Data: Collection'
+        verbose_name_plural = 'Data: Collections'
 
     def __str__(self):
-        return self.description[:100]
+        return self.document_name
