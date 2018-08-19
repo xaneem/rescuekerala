@@ -122,14 +122,13 @@ class ContributorAdmin(admin.ModelAdmin):
 
 class RescueCampAdmin(admin.ModelAdmin):
     actions = ['download_csv']
-    list_display = ('district', 'name', 'location', 'contacts', 'total_people',
+    list_display = ('district', 'name', 'location', 'contacts', 'facilities_available', 'total_people',
                     'total_males', 'total_females', 'total_infants', 'food_req',
-                    'clothing_req', 'sanitary_req', 'medical_req', 'other_req',
-                    'facilities_available')
+                    'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
     list_filter = ('district',)
 
     def download_csv(self, request, queryset):
-        header_row = ('district', 'name', 'location', 'contacts', 'total_people',
+        header_row = ('district', 'name', 'location', 'contacts', 'facilities_available', 'total_people',
                       'total_males', 'total_females', 'total_infants', 'food_req',
                       'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
         body_rows = []

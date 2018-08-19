@@ -366,8 +366,7 @@ class CampRequirementsForm(forms.ModelForm):
         'clothing_req',
         'sanitary_req',
         'medical_req',
-        'other_req',
-        'facilities_available'
+        'other_req'
         ]
        read_only = ('name',)
        widgets = {
@@ -405,6 +404,7 @@ class CampDetailsForm(forms.ModelForm):
         'taluk',
         'village',
         'contacts',
+        'facilities_available',
         'map_link',
         'latlng',
         ]
