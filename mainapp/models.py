@@ -32,6 +32,11 @@ contrib_status_types =(
     ('ful', 'Fullfilled'),
 )
 
+relief_camp_status = (
+    ('active', 'Active'),
+    ('closed', 'Closed'),
+)
+
 vol_categories = (
     ('dcr', 'Doctor'),
     ('hsv', 'Health Services'),
@@ -291,6 +296,12 @@ class RescueCamp(models.Model):
     sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
     medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
     other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
+    status = models.CharField(
+        max_length = 10,
+        choices = relief_camp_status,
+        default = 'active',
+    )
 
     class Meta:
         verbose_name = 'Relief: Camp'
