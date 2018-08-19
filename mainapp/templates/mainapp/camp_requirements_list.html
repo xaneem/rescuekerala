@@ -15,8 +15,8 @@
   <h3>Camp details</h3>
 </div>
 
-<form action="" method="get">
-    {{ filter.form.as_p }}
+<form action="" method="get" class="simple-form">
+    {% bootstrap_form filter.form bound_css_class=False %}
     <button class="btn btn-default" type="submit">Show Relief Camps</button>
 </form>
 <div class="">
