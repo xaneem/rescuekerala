@@ -357,7 +357,8 @@ class CampRequirementsForm(forms.ModelForm):
         'clothing_req',
         'sanitary_req',
         'medical_req',
-        'other_req'
+        'other_req',
+        'facilities_available'
         ]
        read_only = ('name',)
        widgets = {
