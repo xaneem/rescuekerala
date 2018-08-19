@@ -121,7 +121,7 @@ class ContributorAdmin(admin.ModelAdmin):
         return
 
 class RescueCampAdmin(admin.ModelAdmin):
-    actions = ['download_csv']
+    actions = ['download_csv', 'mark_as_closed', 'mark_as_active']
     list_display = ('district', 'name', 'location', 'status', 'contacts', 'facilities_available', 'total_people',
                     'total_males', 'total_females', 'total_infants', 'food_req',
                     'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
@@ -139,6 +139,14 @@ class RescueCampAdmin(admin.ModelAdmin):
 
         response = create_csv_response('RescueCamp', header_row, body_rows)
         return response
+
+    def mark_as_closed(self, request, queryset):
+        queryset.update(status='closed')
+        return
+
+    def mark_as_active(self, request, queryset):
+        queryset.update(status='active')
+        return
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
