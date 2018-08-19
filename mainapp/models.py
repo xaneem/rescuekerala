@@ -1,3 +1,5 @@
+import os
+import uuid
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
@@ -56,8 +58,15 @@ announcement_types =(
     (0,'General'),
     (1,'Food'),
     (2,'Camps'),
-    (3,'Weather')
+    (3,'Weather'),
+    (4, 'All'),
 )
+
+announcement_priorities = [
+    ('H', 'High'),
+    ('M', 'Medium'),
+    ('L', 'Low')]
+
 
 class Request(models.Model):
     district = models.CharField(
@@ -119,8 +128,8 @@ class Request(models.Model):
         return out
 
     class Meta:
-        verbose_name = 'Relief: Supply Requiement'
-        verbose_name_plural = 'Relief: Supply Requirements'
+        verbose_name = 'Rescue: Request'
+        verbose_name_plural = 'Rescue:Requests'
 
     def __str__(self):
         return self.get_district_display() + ' ' + self.location
@@ -266,7 +275,7 @@ class RescueCamp(models.Model):
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True,help_text="This camp's coordinator page will be visible only to this user")
     map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
-        
+
     total_people = models.IntegerField(null=True,blank=True,verbose_name="Total Number of People")
     total_males = models.IntegerField(null=True,blank=True,verbose_name="Number of Males")
     total_females = models.IntegerField(null=True,blank=True,verbose_name="Number of Females")
@@ -340,23 +349,29 @@ class Person(models.Model):
     def __str__(self):
         return self.name
 
+
+def upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('media/', filename)
+
+
 class Announcements(models.Model):
     dateadded = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=50)
-    link = models.CharField(max_length=100)
-    district = models.CharField(
-        max_length = 15,
-        choices = districts,
-        verbose_name='Districts - ജില്ല'
-    )
-    category = models.IntegerField(
-        choices = announcement_types,
-        verbose_name='Type'
-    )
+    priority = models.CharField(
+        max_length=20,
+        choices = announcement_priorities,
+        verbose_name='Priority',
+        default='L')
+
+    description = models.TextField(blank=True)
+    image = models.ImageField(blank=True, upload_to=upload_to)
+    upload = models.FileField(blank=True, upload_to=upload_to)
+    is_pinned = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Announcement: News'
         verbose_name_plural = 'Announcements: News'
 
     def __str__(self):
-        return self.get_district_display()
+        return self.description[:100]
