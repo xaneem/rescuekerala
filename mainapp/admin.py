@@ -88,14 +88,13 @@ class NGOAdmin(admin.ModelAdmin):
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in NGO._meta.get_fields()]
-        body_rows = []
-        for ngo in NGO.objects.all():
-            row = [
-                getattr(ngo, key) if key != 'district' else ngo.get_district_display()
-                for key in header_row
-            ]
-            body_rows.append(row)
-
+        body_rows = queryset.values_list()
+        # for ngo in NGO.objects.all():
+        #     row = [
+        #         getattr(ngo, key) if key != 'district' else ngo.get_district_display()
+        #         for key in header_row
+        #     ]
+        #     body_rows.append(row)
         response = create_csv_response('NGOs', header_row, body_rows)
         return response
 
