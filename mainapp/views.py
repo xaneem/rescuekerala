@@ -5,7 +5,8 @@ from django.views.generic.base import TemplateView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, Announcements
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
+    Announcements, ReliefCampData
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -134,6 +135,10 @@ class ReqSuccess(TemplateView):
 
 class RegSuccess(TemplateView):
     template_name = "mainapp/reg_success.html"
+
+
+class SubmissionSuccess(TemplateView):
+    template_name = "mainapp/submission_success.html"
 
 
 class ContribSuccess(TemplateView):
@@ -509,3 +514,9 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+
+class AddCampData(CreateView):
+    model = ReliefCampData
+    fields = ['description', 'file', 'district', 'phone']
+    success_url = '/submission_success/'
