@@ -16,7 +16,7 @@
 </div>
 
 <form id="relief-comps-form" action="" method="get">
-  {{ filter.form }}
+  {% bootstrap_form filter.form bound_css_class=False %}
 </form>
 
 {% if relief_camps.count > 0 %}
