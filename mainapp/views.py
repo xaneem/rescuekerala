@@ -2,8 +2,11 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
+
+from mainapp.redis_queue import sms_queue
+from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
-    Announcements, ReliefCampData
+    Announcements
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -22,6 +25,12 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
+
+class CustomForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomForm, self).__init__(*args, **kwargs)
+        # for field_name, field in self.fields.items():
+        #     field.widget.attrs['class'] = 'form-control'
 
 PER_PAGE = 100
 PAGE_LEFT = 5
@@ -56,6 +65,13 @@ class CreateRequest(CreateView):
         'needothers'
     ]
     success_url = '/req_sucess/'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        sms_queue.enqueue(
+            send_confirmation_sms, self.object.requestee_phone
+        )
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class RegisterVolunteer(CreateView):
@@ -276,7 +292,7 @@ def logout_view(request):
     # Redirect to camps page instead
     return redirect('/relief_camps')
 
-class PersonForm(forms.ModelForm):
+class PersonForm(CustomForm):
     class Meta:
        model = Person
        fields = [
@@ -303,6 +319,9 @@ class PersonForm(forms.ModelForm):
        rescue_camp_qs = RescueCamp.objects.filter(id=camp_id)
        self.fields['camped_at'].queryset = rescue_camp_qs
        self.fields['camped_at'].initial = rescue_camp_qs.first()
+       # for field_name, field in self.fields.items():
+       #    print(field_name)
+       #    field.widget.attrs['class'] = 'form-control'
 
 class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     login_url = '/login/'
@@ -335,8 +354,17 @@ class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
 
 
 class CampRequirementsForm(forms.ModelForm):
+
+
     class Meta:
        model = RescueCamp
+       help_texts = {
+            'food_req': 'Indicate the required items and approximate quantity',
+            'clothing_req': 'Indicate the required items and approximate quantity',
+            'medical_req': 'Indicate the required items and approximate quantity',
+            'sanitary_req': 'Indicate the required items and approximate quantity',
+            'other_req': 'Indicate the required items and approximate quantity',
+        }
        fields = [
         'name',
         'total_people',
@@ -385,6 +413,7 @@ class CampDetailsForm(forms.ModelForm):
         'taluk',
         'village',
         'contacts',
+        'facilities_available',
         'map_link',
         'latlng',
         ]
@@ -505,8 +534,3 @@ def camp_requirements_list(request):
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
 
-
-class AddCampData(CreateView):
-    model = ReliefCampData
-    fields = ['description', 'file', 'district', 'phone']
-    success_url = '/submission_success/'

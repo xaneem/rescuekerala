@@ -32,6 +32,11 @@ contrib_status_types =(
     ('ful', 'Fullfilled'),
 )
 
+relief_camp_status = (
+    ('active', 'Active'),
+    ('closed', 'Closed'),
+)
+
 vol_categories = (
     ('dcr', 'Doctor'),
     ('hsv', 'Health Services'),
@@ -77,7 +82,7 @@ class Request(models.Model):
     )
     location = models.CharField(max_length=500,verbose_name='Location - സ്ഥലം')
     requestee = models.CharField(max_length=100,verbose_name='Requestee - അപേക്ഷകന്‍റെ പേര്')
-    requestee_phone = models.CharField(max_length=10,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍', validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
+    requestee_phone = models.CharField(max_length=11,verbose_name='Requestee Phone - അപേക്ഷകന്‍റെ ഫോണ്‍ നമ്പര്‍', validators=[RegexValidator(regex='^[6-9]\d{10}$', message='Please Enter 10/11 digit mobile number', code='invalid_mobile')])
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates - GPS നിർദ്ദേശാങ്കങ്ങൾ ', blank=True)
     latlng_accuracy = models.CharField(max_length=100, verbose_name='GPS Accuracy - GPS കൃത്യത ', blank=True)
     #  If it is enabled no need to consider lat and lng
@@ -142,7 +147,7 @@ class Volunteer(models.Model):
         verbose_name="District - ജില്ല"
     )
     name = models.CharField(max_length=100, verbose_name="Name - പേര്")
-    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
+    phone = models.CharField(max_length=11, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
     organisation = models.CharField(max_length=250, verbose_name="Organization (സംഘടന) / Institution")
     address = models.TextField(verbose_name="Address - വിലാസം")
     area = models.CharField(
@@ -199,7 +204,7 @@ class Contributor(models.Model):
         verbose_name="District - ജില്ല"
     )
     name = models.CharField(max_length=100, verbose_name="Name - പേര്")
-    phone = models.CharField(max_length=10, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
+    phone = models.CharField(max_length=11, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[RegexValidator(regex='^[6-9]\d{9}$', message='Please Enter 10 digit mobile number', code='invalid_mobile')])
     address = models.TextField(verbose_name="Address - വിലാസം")
     commodities = models.TextField(verbose_name="What you can contribute. ( സംഭാവന ചെയ്യാന്‍ ഉദ്ദേശിക്കുന്ന സാധനങ്ങള്‍ ) -- Eg: Shirts, torches etc ")
     status = models.CharField(
@@ -263,7 +268,6 @@ class DistrictCollection(models.Model):
         verbose_name_plural = 'District: Collections'
 
 class RescueCamp(models.Model):
-    verbose_name = 'Relief Camp'
     name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
     location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
     district = models.CharField(
@@ -273,6 +277,11 @@ class RescueCamp(models.Model):
     taluk = models.CharField(max_length=50,verbose_name="Taluk - താലൂക്ക്")
     village = models.CharField(max_length=50,verbose_name="Village - വില്ലജ്")
     contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    facilities_available = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Facilities Available (light, kitchen, toilets etc.) - ലഭ്യമായ സൗകര്യങ്ങൾ"
+    )
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True,help_text="This camp's coordinator page will be visible only to this user")
     map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
@@ -287,6 +296,12 @@ class RescueCamp(models.Model):
     sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
     medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
     other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
+    status = models.CharField(
+        max_length = 10,
+        choices = relief_camp_status,
+        default = 'active',
+    )
 
     class Meta:
         verbose_name = 'Relief: Camp'
@@ -378,28 +393,20 @@ class Announcements(models.Model):
         return self.description[:100]
 
 
-class ReliefCampData(models.Model):
+class DataCollection(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(blank=True, verbose_name="Details of requirements")
-    file = models.FileField(blank=True, upload_to='camp_data')
-    district = models.CharField(
-        max_length=15,
-        choices=districts,
-        verbose_name='District - ജില്ല',
+    document_name = models.CharField(
+        max_length=255,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name="Document name"
     )
+    document = models.FileField(blank=True, upload_to='camp_data')
     tag = models.CharField(max_length=255, null=True, blank=True)
-    phone = models.CharField(
-        max_length=11,
-        verbose_name="Phone - ഫോണ്‍ നമ്പര്‍",
-        null=True,
-        blank=True
-    )
 
     class Meta:
-        verbose_name = 'Relief: Camp Data'
-        verbose_name_plural = 'Relief: Camp Datas'
+        verbose_name = 'Data: Collection'
+        verbose_name_plural = 'Data: Collections'
 
     def __str__(self):
-        return self.description[:100]
+        return self.document_name

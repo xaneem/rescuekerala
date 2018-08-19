@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
-    RescueCamp, Person, NGO, Announcements, ReliefCampData
+    RescueCamp, Person, NGO, Announcements, DataCollection
 
 
 def create_csv_response(csv_name, header_row, body_rows):
@@ -121,14 +121,14 @@ class ContributorAdmin(admin.ModelAdmin):
         return
 
 class RescueCampAdmin(admin.ModelAdmin):
-    actions = ['download_csv']
-    list_display = ('district', 'name', 'location', 'contacts', 'total_people',
+    actions = ['download_csv', 'mark_as_closed', 'mark_as_active']
+    list_display = ('district', 'name', 'location', 'status', 'contacts', 'facilities_available', 'total_people',
                     'total_males', 'total_females', 'total_infants', 'food_req',
                     'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
-    list_filter = ('district',)
+    list_filter = ('district','status')
 
     def download_csv(self, request, queryset):
-        header_row = ('district', 'name', 'location', 'contacts', 'total_people',
+        header_row = ('district', 'name', 'location', 'status', 'contacts', 'facilities_available', 'total_people',
                       'total_males', 'total_females', 'total_infants', 'food_req',
                       'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
         body_rows = []
@@ -139,6 +139,14 @@ class RescueCampAdmin(admin.ModelAdmin):
 
         response = create_csv_response('RescueCamp', header_row, body_rows)
         return response
+
+    def mark_as_closed(self, request, queryset):
+        queryset.update(status='closed')
+        return
+
+    def mark_as_active(self, request, queryset):
+        queryset.update(status='active')
+        return
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(RescueCampAdmin, self).get_form(request, obj, **kwargs)
@@ -166,13 +174,8 @@ class PersonAdmin(admin.ModelAdmin):
         return response
 
 
-class ReliefCampDataAdmin(admin.ModelAdmin):
-    list_display = ['description', 'file', 'district', 'tag', 'phone']
-    list_filter = ('district',)
-    actions = ['mark_completed']
-
-    def mark_completed(self, request, queryset):
-        queryset.update(tag="completed")
+class DataCollectionAdmin(admin.ModelAdmin):
+    list_display = ['document_name', 'document', 'tag']
 
 
 admin.site.register(Request, RequestAdmin)
@@ -185,4 +188,4 @@ admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements, AnnouncementAdmin)
 admin.site.register(Person, PersonAdmin)
-admin.site.register(ReliefCampData, ReliefCampDataAdmin)
+admin.site.register(DataCollection, DataCollectionAdmin)
