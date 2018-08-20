@@ -378,7 +378,9 @@ def dmotal(request):
     d = []
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
-        for i in RescueCamp.objects.all().filter(taluk = taluk["taluk"]):
+        if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"])
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"]) 
+        for i in RCdata:
             camps+=1
             district = i.district
             total_people += ifnonezero(i.total_people)
