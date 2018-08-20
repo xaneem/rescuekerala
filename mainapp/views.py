@@ -292,7 +292,21 @@ def dmoinfo(request):
     volcount = Volunteer.objects.all().filter(district = dist).count()
     conserve = Contributor.objects.all().filter(status = "ful" , district = dist).count()
     contotal = Contributor.objects.all().filter(district = dist).count()
-    return render(request ,"dmoinfo.html",{"reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal })
+
+    camps = RescueCamp.objects.all().filter(district = dist)
+
+    total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+
+    for i in camps:
+
+        total_people += i.total_people
+        total_male += i.total_males
+        total_female += i.total_females
+        total_infant += i.total_infants
+        if(i.medical_req.strip() != ""):total_medical+=1
+
+    return render(request ,"dmoinfo.html",{"reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
+    "total_camps" : camps.count() ,"total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical    })
 
 def error(request):
     error_text = request.GET.get('error_text')
