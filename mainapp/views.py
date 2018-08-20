@@ -248,8 +248,9 @@ class VolunteerFilter(django_filters.FilterSet):
 class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
-        # fields = []
-        exclude = ['is_spoc', 'joined',]
+        fields = {
+                    'district' : ['exact'],
+                 }
 
     def __init__(self, *args, **kwargs):
         super(NGOFilter, self).__init__(*args, **kwargs)
