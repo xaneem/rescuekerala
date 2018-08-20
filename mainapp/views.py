@@ -195,7 +195,15 @@ class RequestFilter(django_filters.FilterSet):
                     'district' : ['exact'],
                     'requestee' : ['icontains'],
                     'requestee_phone' : ['exact'],
-                    'location' : ['icontains']
+                    'location' : ['icontains'],
+                    'needrescue': ['exact'],
+                    'needwater' : ['exact'],
+                    'needfood' : ['exact'],
+                    'needcloth' : ['exact'],
+                    'needmed' : ['exact'],
+                    'needkit_util' : ['exact'],
+                    'needtoilet' : ['exact'],
+                    'needothers' : ['exact']
                  }
 
     def __init__(self, *args, **kwargs):
