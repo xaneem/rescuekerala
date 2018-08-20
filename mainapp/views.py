@@ -217,9 +217,10 @@ class RequestFilter(django_filters.FilterSet):
 
 class VolunteerFilter(django_filters.FilterSet):
     class Meta:
-        model = Request
+        model = Volunteer
         fields = {
                     'district' : ['exact'],
+                    'area' : ['exact'],
                  }
 
     def __init__(self, *args, **kwargs):
