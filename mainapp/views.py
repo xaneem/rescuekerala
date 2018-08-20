@@ -286,9 +286,7 @@ def dmodash(request):
     return render(request , "dmodash.html")
 
 def dmodist(request):
-    data = RescueCamp.objects.all()
     d = []
-    print(districts)
     for district in districts:
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
 
@@ -304,7 +302,24 @@ def dmodist(request):
     return render(request , "dmodist.html" , {"camps" : d }  )
 
 def dmotal(request):
-    pass
+    distmapper = {}
+    for i in districts:
+        distmapper[i[0]] = i[1]
+    d = []
+    for taluk in RescueCamp.objects.all().values('taluk').distinct().order_by('district'):
+        camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+        district = ""
+        for i in RescueCamp.objects.all().filter(taluk = taluk["taluk"]):
+            camps+=1
+            district = i.district
+            total_people += ifnonezero(i.total_people)
+            total_male  += ifnonezero(i.total_males)
+            total_female += ifnonezero(i.total_females)
+            total_infant += ifnonezero(i.total_infants)
+            if(i.medical_req.strip() != ""):total_medical+=1
+
+        d.append( { "district" : distmapper[district] , "taluk" : taluk["taluk"] ,"total_camp" : camps , "total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical   } )    
+    return render(request , "dmotal.html" , {"camps" : d }  )
 
 
 def dmocsv(request):
