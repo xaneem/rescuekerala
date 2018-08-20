@@ -249,7 +249,7 @@ class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
         # fields = []
-        exclude = []
+        exclude = ['is_spoc', 'joined',]
 
     def __init__(self, *args, **kwargs):
         super(NGOFilter, self).__init__(*args, **kwargs)
