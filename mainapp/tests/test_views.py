@@ -96,14 +96,14 @@ class RequestViewTests(TestCase):
         response = client.post(self.url, post_data)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'mainapp/request_form.html')
-        self.assertFormError(response, 'form', 'requestee_phone', 'Ensure this value has at most 11 characters (it has 13).')
+        self.assertFormError(response, 'form', 'requestee_phone', 'Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>')
 
     def test_creating_request(self):
         client = Client()
         post_data = {
             'district': 'pkd',
             'requestee': 'Rag Sagar',
-            'requestee_phone': '95628546420',
+            'requestee_phone': '09562854642',
             'location': 'Kadankode',
             'latlng': '',
             'latlng_accuracy': ''
