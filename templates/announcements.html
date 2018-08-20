@@ -6,7 +6,7 @@
         {% for req in pinned_data %}
             <div class="card priority-very-important">
                 <span class="card-text">
-                    {{ req.description | safe }}<br/>
+                    {{ req.description | safe | linebreaks }}<br/>
                 </span>
                 <span class="card-priority">Very Important</span><br/>
                 <span class="card-time">{% bootstrap_icon "time" %} {{ req.dateadded }}</span>
