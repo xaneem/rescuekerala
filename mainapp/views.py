@@ -368,13 +368,16 @@ def dmodist(request):
     return render(request , "dmodist.html" , {"camps" : d }  )
 
 def dmotal(request):
+    if(request.GET.get("district",-1) == -1):return render(request , "dmotal.html"  )
+    dist = request.GET.get("district",-1)
+    if(dist == "all"): data = RescueCamp.objects.all().values('taluk').distinct()
+    else:data = RescueCamp.objects.all().filter(district = dist).values('taluk').distinct()
     distmapper = {}
     for i in districts:
         distmapper[i[0]] = i[1]
     d = []
-    for taluk in RescueCamp.objects.all().values('taluk').distinct().order_by('district'):
-        camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
-        district = ""
+    for taluk in data :
+        camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
         for i in RescueCamp.objects.all().filter(taluk = taluk["taluk"]):
             camps+=1
             district = i.district
