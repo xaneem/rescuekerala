@@ -26,6 +26,7 @@ urlpatterns = [
     path('map/' , views.mapview , name="mapview"),
     path('dmodash/' , views.dmodash , name="DMODash"),
     path('dmoinfo/' , views.dmoinfo , name="DMOInfo" ),
+    path('dmocsv/' , views.dmocsv , name="DMOCSV" ),
     path('error/' , views.error , name="errorview" ),
     path('login/', auth_views.LoginView.as_view(template_name='mainapp/login.html'),name='user_login'),
     path('logout/', views.logout_view, name='user_logout'),

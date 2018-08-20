@@ -25,6 +25,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
+import csv
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -284,6 +285,26 @@ def mapview(request):
 def dmodash(request):
     return render(request , "dmodash.html")
 
+
+def dmocsv(request):
+    if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
+    dist = request.GET.get("district")
+    header_row = [i.name for i in RescueCamp._meta.get_fields() ][1:]  # There is a person field in the begining , to remove that
+    body_rows = []
+    csv_name = "{}-data".format(dist)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(csv_name)
+    writer = csv.writer(response)
+    writer.writerow(header_row)
+    for camp in RescueCamp.objects.all().filter(district = dist):
+        row = [
+            getattr(camp , key)  for key in header_row
+        ]
+        writer.writerow(row)
+
+
+    return response
+
 def dmoinfo(request):
     if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
     dist = request.GET.get("district")
@@ -305,7 +326,7 @@ def dmoinfo(request):
         total_infant += i.total_infants
         if(i.medical_req.strip() != ""):total_medical+=1
 
-    return render(request ,"dmoinfo.html",{"reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
+    return render(request ,"dmoinfo.html",{"district" : dist , "reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
     "total_camps" : camps.count() ,"total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical    })
 
 def error(request):
