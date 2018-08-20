@@ -181,7 +181,7 @@ def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
 
 def relief_camps_list(request):
-    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.all())
+    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(active='active')
     relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
 
     return render(request, 'mainapp/relief_camps_list.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
@@ -401,7 +401,7 @@ class CampRequirementsForm(forms.ModelForm):
 class CampRequirements(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     login_url = '/login/'
     model = RescueCamp
-    template_name='mainapp/camp_requirements.html'  
+    template_name='mainapp/camp_requirements.html'
     form_class = CampRequirementsForm
     success_url = '/coordinator_home/'
     success_message = "Updated requirements saved!"
@@ -495,7 +495,7 @@ class CoordinatorCampFilter(django_filters.FilterSet):
             'district' : ['exact'],
             'name' : ['icontains']
         }
-    
+
     def __init__(self, *args, **kwargs):
         super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
@@ -508,7 +508,7 @@ class CoordinatorCampFilter(django_filters.FilterSet):
             'district' : ['exact'],
             'name' : ['icontains']
         }
-    
+
     def __init__(self, *args, **kwargs):
         super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
@@ -546,4 +546,3 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
-
