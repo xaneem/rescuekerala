@@ -306,7 +306,17 @@ def mapview(request):
     return render(request,"map.html")
 
 def dmodash(request):
-    return render(request , "dmodash.html")
+    camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+
+    for i in RescueCamp.objects.all():
+        camps+=1
+        total_people += ifnonezero(i.total_people)
+        total_male  += ifnonezero(i.total_males)
+        total_female += ifnonezero(i.total_females)
+        total_infant += ifnonezero(i.total_infants)
+        if(i.medical_req.strip() != ""):total_medical+=1 
+
+    return render(request , "dmodash.html",{"camp" :camps , "people" : total_people , "male" : total_male , "female" : total_female , "infant" : total_infant , "medicine" : total_medical})
 
 def dmodist(request):
     d = []
