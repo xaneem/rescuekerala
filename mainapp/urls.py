@@ -10,6 +10,7 @@ urlpatterns = [
     path('request/', views.CreateRequest.as_view(), name='requestview'),
     # path('volunteer/', views.Maintenance.as_view(), name='registerview'),
     path('volunteer/', views.RegisterVolunteer.as_view(), name='registerview'),
+    path('volunteerdata/', views.volunteerdata, name='volunteerdata'),
     path('NGO/', views.RegisterNGO.as_view(), name='ngoregisterview'),
     path('ngoview/', views.ngo_list, name='ngoview'),
     path('NGO/download/', views.download_ngo_list, name='ngo_download_view'),

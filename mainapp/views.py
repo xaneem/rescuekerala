@@ -80,6 +80,16 @@ class RegisterVolunteer(CreateView):
     fields = ['name', 'district', 'phone', 'organisation', 'area', 'address']
     success_url = '/reg_success/'
 
+def volunteerdata(request):
+    filter = VolunteerFilter(request.GET, queryset=Volunteer.objects.all() )
+    req_data = filter.qs.order_by('-id')
+    paginator = Paginator(req_data, PER_PAGE)
+    page = request.GET.get('page')
+    req_data = paginator.get_page(page)
+    req_data.min_page = req_data.number - PAGE_LEFT
+    req_data.max_page = req_data.number + PAGE_RIGHT
+    req_data.lim_page = PAGE_INTERMEDIATE
+    return render(request, 'mainapp/volunteerview.html', {'filter': filter , "data" : req_data })
 
 class RegisterNGO(CreateView):
     model = NGO
@@ -222,6 +232,18 @@ class RequestFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+class VolunteerFilter(django_filters.FilterSet):
+    class Meta:
+        model = Request
+        fields = {
+                    'district' : ['exact'],
+                 }
+
+    def __init__(self, *args, **kwargs):
+        super(VolunteerFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
 
 class NGOFilter(django_filters.FilterSet):
     class Meta:
