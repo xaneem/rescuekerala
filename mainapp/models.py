@@ -35,6 +35,7 @@ contrib_status_types =(
 relief_camp_status = (
     ('active', 'Active'),
     ('closed', 'Closed'),
+    ('duplicate', 'Duplicate')
 )
 
 vol_categories = (
