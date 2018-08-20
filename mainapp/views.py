@@ -181,7 +181,7 @@ def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
 
 def relief_camps_list(request):
-    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(active='active')
+    filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(active='active'))
     relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
 
     return render(request, 'mainapp/relief_camps_list.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
