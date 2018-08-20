@@ -305,6 +305,10 @@ def dmocsv(request):
 
     return response
 
+def ifnonezero(val):
+    if(val == None):return 0
+    return val
+
 def dmoinfo(request):
     if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
     dist = request.GET.get("district")
@@ -320,10 +324,10 @@ def dmoinfo(request):
 
     for i in camps:
 
-        total_people += i.total_people
-        total_male += i.total_males
-        total_female += i.total_females
-        total_infant += i.total_infants
+        total_people += ifnonezero(i.total_people)
+        total_male  += ifnonezero(i.total_males)
+        total_female += ifnonezero(i.total_females)
+        total_infant += ifnonezero(i.total_infants)
         if(i.medical_req.strip() != ""):total_medical+=1
 
     return render(request ,"dmoinfo.html",{"district" : dist , "reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
