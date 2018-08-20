@@ -529,7 +529,9 @@ class CampRequirementsFilter(django_filters.FilterSet):
         model = RescueCamp
         fields = {
             'district' : ['exact'],
-            'name' : ['icontains']
+            'name' : ['icontains'],
+            'taluk' : ['icontains'],
+            'village' : ['icontains']
         }
 
     def __init__(self, *args, **kwargs):
