@@ -317,6 +317,12 @@ class RescueCamp(models.Model):
         verbose_name = 'Relief: Camp'
         verbose_name_plural = "Relief: Camps"
 
+    def clean(self):
+            super(RescueCamp, self).clean()
+
+            if self.status != 'active':
+                raise ValidationError('You can only do that on active camps')
+
     def __str__(self):
         return self.name
 
