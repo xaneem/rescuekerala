@@ -384,31 +384,21 @@ def ifnonezero(val):
     return val
 
 def dmoinfo(request):
-    if("district" not in request.GET.keys()):return render(request ,"dmoinfo.html" )
-    dist = request.GET.get("district")
-    reqserve = Request.objects.all().filter(status = "sup" , district = dist).count()
-    reqtotal = Request.objects.all().filter(district = dist).count()
-    volcount = Volunteer.objects.all().filter(district = dist).count()
-    conserve = Contributor.objects.all().filter(status = "ful" , district = dist).count()
-    contotal = Contributor.objects.all().filter(district = dist).count()
 
-    camps = RescueCamp.objects.all().filter(district = dist)
-
-    total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
-    distmapper = {}
+    data = []
     for i in districts:
-        distmapper[i[0]] = i[1]
-    for i in camps:
+        req = 0 ; reqo = 0 ; reqd = 0 ; con = 0 ; cons = 0 ; vol = 0
+        reqquery = Request.objects.all().filter(district = i[0])
+        req = reqquery.count()
+        reqo = reqquery.filter( status = "pro" ).count()
+        reqd = reqquery.filter(status = "sup").count()
+        contquery = Contributor.objects.all().filter(district = i[0])
+        con = contquery.count()
+        cons =contquery.filter(status = "ful").count()
+        vol = Volunteer.objects.all().filter(district = i[0]).count()
 
-        total_people += ifnonezero(i.total_people)
-        total_male  += ifnonezero(i.total_males)
-        total_female += ifnonezero(i.total_females)
-        total_infant += ifnonezero(i.total_infants)
-        if(i.medical_req.strip() != ""):total_medical+=1
-
-    return render(request ,"dmoinfo.html",{"district" : distmapper[dist] , "reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
-    "total_camps" : camps.count() ,"total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical    })
-
+        data.append({ "district" : i[1], "req" : req  , "reqo" : reqo , "reqd" : reqd , "con" : con , "cons" : cons , "vol" : vol})
+    return render(request ,"dmoinfo.html",{"data" : data} )
 def error(request):
     error_text = request.GET.get('error_text')
     return render(request , "mainapp/error.html", {"error_text" : error_text})
