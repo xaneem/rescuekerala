@@ -6,17 +6,24 @@
 
 <div class="container text-center">
     <h1 class="main-logo">kerala<span style="font-weight: normal;">rescue  DMO Portal</span></h1>
-    
-    <p style="margin-bottom:20px; margin-top:50px">
-      <i style="font-size:  40px ;"><a href="/dmodist">Views Stats of all Districts</a> </i><br/>
-</p>
-
-<p style="margin-bottom:20px;margin-top:50px">
-  <i style="font-size: 40px ;"><a href="/dmotal">Views Stats of all Taluks</a> </i><br/>
-</p>
-    
     <p style="margin-bottom:20px;margin-top:50px;">
-        <i style="font-size:  40px ;">Please Select the district to view stats </i><br/>
+      <strong style="font-size:  40px ;">Please Select the Camps to view statistics  </strong><br/>
+</p>
+    <a href="/dmodist" class="home-button card" role="button">
+      {% bootstrap_icon "user" %}
+      <span class="text">
+        View stats By district      </span>
+  </a>
+  <a href="/dmotal" class="home-button card" role="button">
+      {% bootstrap_icon "user" %}
+      <span class="text">
+        Views Stats By Taluk
+      </span>
+  </a>
+
+
+    <p style="margin-bottom:20px;margin-top:50px;">
+        <strong style="font-size:  40px ;">Please Select the district to view stats </strong><br/>
   </p>
 <form method="get" action="/dmoinfo/"  class="simple-form">
     <div class="form-group"><label class="control-label" for="id_district">Districts - ജില്ല</label><select name="district" class="form-control" title="" required id="id_district">
