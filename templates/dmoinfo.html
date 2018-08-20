@@ -6,8 +6,8 @@
 
 <div class="container text-center">
     <h1 class="main-logo">kerala<span style="font-weight: normal;">rescue  DMO Portal</span></h1>
-    <p style="margin-bottom:20px;">
-        <i>Stats for your District </i><br/>
+    <p style="margin-top:60px; margin-bottom: 30px">
+        <i style="font-size:  40px ;"> Request Stats for your District </i><br/>
   </p>
 
   <div class="row">
@@ -28,8 +28,33 @@
   
   </div>
 
+  <br>
+  <br>
+  <i style="font-size:  40px ;" > Camp Stats for your District </i> <a href="/dmocsv?district={{district}}" > Download as csv</a>
 
+  <div class="container" style="font-size:  30px ; padding-top: 30px">
 
+  
+        Total Camps
+         {{total_camps}}
+   <br>
+        Total People
+        {{total_people}}
+    <br>
+        Total Male
+        {{total_male}}
+    <br>
+        Total Female
+        {{total_female}}
+    <br>
+        Total Infants
+        {{total_infant}}
+    <br>
+        Camps with Med Requirements
+        {{total_medical}}
+
+</div>
+</div>
 </div>
 
   {% endblock %}

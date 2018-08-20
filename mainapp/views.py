@@ -6,7 +6,7 @@ from django.views.generic.base import TemplateView
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
-    Announcements
+    Announcements , districts
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -25,6 +25,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
+import csv
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -79,6 +80,16 @@ class RegisterVolunteer(CreateView):
     fields = ['name', 'district', 'phone', 'organisation', 'area', 'address']
     success_url = '/reg_success/'
 
+def volunteerdata(request):
+    filter = VolunteerFilter(request.GET, queryset=Volunteer.objects.all() )
+    req_data = filter.qs.order_by('-id')
+    paginator = Paginator(req_data, PER_PAGE)
+    page = request.GET.get('page')
+    req_data = paginator.get_page(page)
+    req_data.min_page = req_data.number - PAGE_LEFT
+    req_data.max_page = req_data.number + PAGE_RIGHT
+    req_data.lim_page = PAGE_INTERMEDIATE
+    return render(request, 'mainapp/volunteerview.html', {'filter': filter , "data" : req_data })
 
 class RegisterNGO(CreateView):
     model = NGO
@@ -212,6 +223,18 @@ class RequestFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+class VolunteerFilter(django_filters.FilterSet):
+    class Meta:
+        model = Request
+        fields = {
+                    'district' : ['exact'],
+                 }
+
+    def __init__(self, *args, **kwargs):
+        super(VolunteerFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
 
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
@@ -292,6 +315,66 @@ def mapview(request):
 def dmodash(request):
     return render(request , "dmodash.html")
 
+def dmodist(request):
+    d = []
+    for district in districts:
+        camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+
+        for i in RescueCamp.objects.all().filter(district = district[0]):
+            camps+=1
+            total_people += ifnonezero(i.total_people)
+            total_male  += ifnonezero(i.total_males)
+            total_female += ifnonezero(i.total_females)
+            total_infant += ifnonezero(i.total_infants)
+            if(i.medical_req.strip() != ""):total_medical+=1
+
+        d.append( { "district" : district[1] , "total_camp" : camps , "total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical   } )    
+    return render(request , "dmodist.html" , {"camps" : d }  )
+
+def dmotal(request):
+    distmapper = {}
+    for i in districts:
+        distmapper[i[0]] = i[1]
+    d = []
+    for taluk in RescueCamp.objects.all().values('taluk').distinct().order_by('district'):
+        camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+        district = ""
+        for i in RescueCamp.objects.all().filter(taluk = taluk["taluk"]):
+            camps+=1
+            district = i.district
+            total_people += ifnonezero(i.total_people)
+            total_male  += ifnonezero(i.total_males)
+            total_female += ifnonezero(i.total_females)
+            total_infant += ifnonezero(i.total_infants)
+            if(i.medical_req.strip() != ""):total_medical+=1
+
+        d.append( { "district" : distmapper[district] , "taluk" : taluk["taluk"] ,"total_camp" : camps , "total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical   } )    
+    return render(request , "dmotal.html" , {"camps" : d }  )
+
+
+def dmocsv(request):
+    if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
+    dist = request.GET.get("district")
+    header_row = [i.name for i in RescueCamp._meta.get_fields() ][1:]  # There is a person field in the begining , to remove that
+    body_rows = []
+    csv_name = "{}-data".format(dist)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(csv_name)
+    writer = csv.writer(response)
+    writer.writerow(header_row)
+    for camp in RescueCamp.objects.all().filter(district = dist):
+        row = [
+            getattr(camp , key)  for key in header_row
+        ]
+        writer.writerow(row)
+
+
+    return response
+
+def ifnonezero(val):
+    if(val == None):return 0
+    return val
+
 def dmoinfo(request):
     if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
     dist = request.GET.get("district")
@@ -300,7 +383,21 @@ def dmoinfo(request):
     volcount = Volunteer.objects.all().filter(district = dist).count()
     conserve = Contributor.objects.all().filter(status = "ful" , district = dist).count()
     contotal = Contributor.objects.all().filter(district = dist).count()
-    return render(request ,"dmoinfo.html",{"reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal })
+
+    camps = RescueCamp.objects.all().filter(district = dist)
+
+    total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
+
+    for i in camps:
+
+        total_people += ifnonezero(i.total_people)
+        total_male  += ifnonezero(i.total_males)
+        total_female += ifnonezero(i.total_females)
+        total_infant += ifnonezero(i.total_infants)
+        if(i.medical_req.strip() != ""):total_medical+=1
+
+    return render(request ,"dmoinfo.html",{"district" : dist , "reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal ,
+    "total_camps" : camps.count() ,"total_people" : total_people , "total_male" : total_male , "total_female" : total_female , "total_infant" : total_infant , "total_medical" : total_medical    })
 
 def error(request):
     error_text = request.GET.get('error_text')
