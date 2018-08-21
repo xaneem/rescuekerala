@@ -26,6 +26,8 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
 import csv
+from dateutil import parser
+import calendar
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -73,7 +75,6 @@ class CreateRequest(CreateView):
             send_confirmation_sms, self.object.requestee_phone
         )
         return HttpResponseRedirect(self.get_success_url())
-
 
 class RegisterVolunteer(CreateView):
     model = Volunteer
@@ -713,6 +714,28 @@ class CampRequirementsFilter(django_filters.FilterSet):
         super(CampRequirementsFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
             self.queryset = self.queryset.none()
+
+class VolunteerConsent(UpdateView):
+    model = Volunteer
+    fields = ['has_consented']
+    success_url = '/consent_success/'
+    
+    def dispatch(self, request, *args, **kwargs):
+        timestamp = parser.parse(self.get_object().joined.isoformat())
+        timestamp = calendar.timegm(timestamp.utctimetuple())
+        timestamp = str(timestamp)[-4:]
+        request_ts = kwargs['ts']
+        
+        if request_ts != timestamp:
+            return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
+        return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
+        
+    def form_valid(self, form):
+        print(form)
+        return HttpResponseRedirect(self.get_success_url())
+
+class ConsentSuccess(TemplateView):
+    template_name = "mainapp/volunteer_consent_success.html"
 
 def camp_requirements_list(request):
     filter = CampRequirementsFilter(request.GET, queryset=RescueCamp.objects.all())
