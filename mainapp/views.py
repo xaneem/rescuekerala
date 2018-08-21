@@ -527,8 +527,16 @@ class PersonForm(CustomForm):
         'gender',
         'district',
         'address',
-        'notes'
+        'notes',
+        'checkin_date',
+        'checkout_date',
+        'status'
         ]
+
+       help_texts = {
+          'checkin_date': 'Use yyyy-mm-dd format. Eg. 2018-08-18',
+          'checkout_date': 'Use yyyy-mm-dd format. Eg. 2018-08-21'
+       }
 
        widgets = {
            'address': forms.Textarea(attrs={'rows':3}),
