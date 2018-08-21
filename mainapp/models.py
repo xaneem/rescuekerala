@@ -333,6 +333,50 @@ class RescueCamp(models.Model):
         return self.name
 
 
+class PrivateRescueCamp(models.Model):
+    name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
+    location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
+    district = models.CharField(
+        max_length=15,
+        choices=districts
+    )
+    taluk = models.CharField(max_length=50,verbose_name="Taluk - താലൂക്ക്")
+    village = models.CharField(max_length=50,verbose_name="Village - വില്ലജ്")
+    contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    facilities_available = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Facilities Available (light, kitchen, toilets etc.) - ലഭ്യമായ സൗകര്യങ്ങൾ"
+    )
+    map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
+    latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
+
+    total_people = models.IntegerField(null=True,blank=True,verbose_name="Total Number of People")
+    total_males = models.IntegerField(null=True,blank=True,verbose_name="Number of Males")
+    total_females = models.IntegerField(null=True,blank=True,verbose_name="Number of Females")
+    total_infants = models.IntegerField(null=True,blank=True,verbose_name="Number of Infants (<2y)")
+
+    food_req = models.TextField(blank=True,null=True,verbose_name="Food - ഭക്ഷണം")
+    clothing_req = models.TextField(blank=True,null=True,verbose_name="Clothing - വസ്ത്രം")
+    sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
+    medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
+    other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
+    status = models.CharField(
+        max_length = 10,
+        choices = relief_camp_status,
+        default = 'active',
+    )
+
+    class Meta:
+        verbose_name = 'Private Relief: Camp'
+        verbose_name_plural = "Private Relief: Camps"
+
+
+    def __str__(self):
+        return self.name
+
+
 class Person(models.Model):
     name = models.CharField(max_length=30,blank=False,null=False,verbose_name="Name - പേര്")
     phone = models.CharField(max_length=11,null=True,blank=True,verbose_name='Mobile - മൊബൈൽ')

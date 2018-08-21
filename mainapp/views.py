@@ -6,7 +6,7 @@ from django.views.generic.base import TemplateView
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
-    Announcements , districts, RequestUpdate
+    Announcements , districts, RequestUpdate, PrivateRescueCamp
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -95,6 +95,11 @@ class RegisterNGO(CreateView):
     model = NGO
     fields = ['organisation', 'organisation_type','organisation_address', 'name', 'phone', 'description', 'area',
               'location']
+    success_url = '/reg_success'
+
+class RegisterPrivateReliefCamp(CreateView):
+    model = PrivateRescueCamp
+    fields = '__all__'
     success_url = '/reg_success'
 
 
@@ -246,11 +251,13 @@ class VolunteerFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+
 class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
         fields = {
                     'district' : ['exact'],
+                    'area' : ['icontains']
                  }
 
     def __init__(self, *args, **kwargs):
@@ -258,6 +265,38 @@ class NGOFilter(django_filters.FilterSet):
         # at startup user doen't push Submit button, and QueryDict (in data) is empty
         if self.data == {}:
             self.queryset = self.queryset.none()
+
+
+class ContribFilter(django_filters.FilterSet):
+    class Meta:
+        model = Contributor
+        fields = {
+                    'district' : ['exact'],
+                    'name' : ['icontains'],
+                    'phone' : ['exact'],
+                    'address' : ['icontains'],
+                    'commodities' : ['icontains'],
+                    'status' : ['icontains'],
+                 }
+
+    def __init__(self, *args, **kwargs):
+        super(ContribFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+
+def contributors(request):
+    filter = ContribFilter(request.GET, queryset=Contributor.objects.all() )
+    contrib_data = filter.qs.order_by('-id')
+    paginator = Paginator(contrib_data, PER_PAGE)
+    page = request.GET.get('page')
+    contrib_data = paginator.get_page(page)
+    contrib_data.min_page = contrib_data.number - PAGE_LEFT
+    contrib_data.max_page = contrib_data.number + PAGE_RIGHT
+    contrib_data.lim_page = PAGE_INTERMEDIATE
+    return render(request, 'mainapp/contrib_list.html', {'filter': filter , "data" : contrib_data })
+
 
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
@@ -357,7 +396,7 @@ def dmodash(request):
         total_male  += ifnonezero(i.total_males)
         total_female += ifnonezero(i.total_females)
         total_infant += ifnonezero(i.total_infants)
-        if(i.medical_req.strip() != ""):total_medical+=1 
+        if(i.medical_req.strip() != ""):total_medical+=1
 
     return render(request , "dmodash.html",{"camp" :camps , "people" : total_people , "male" : total_male , "female" : total_female , "infant" : total_infant , "medicine" : total_medical})
 
@@ -389,7 +428,7 @@ def dmotal(request):
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
         if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"])
-        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"]) 
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"])
         for i in RCdata:
             camps+=1
             district = i.district
@@ -649,18 +688,6 @@ class CoordinatorCampFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
-class CoordinatorCampFilter(django_filters.FilterSet):
-    class Meta:
-        model = RescueCamp
-        fields = {
-            'district' : ['exact'],
-            'name' : ['icontains']
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
-        if self.data == {}:
-            self.queryset = self.queryset.none()
 
 @login_required(login_url='/login/')
 def coordinator_home(request):

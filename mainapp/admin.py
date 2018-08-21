@@ -5,7 +5,7 @@ from django.core.validators import EMPTY_VALUES
 from django.http import HttpResponse
 
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
-    RescueCamp, Person, NGO, Announcements, DataCollection
+    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp
 
 
 def create_csv_response(csv_name, header_row, body_rows):
@@ -190,6 +190,7 @@ admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(Contributor, ContributorAdmin)
 admin.site.register(DistrictNeed)
+admin.site.register(PrivateRescueCamp)
 admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
 admin.site.register(RescueCamp, RescueCampAdmin)
