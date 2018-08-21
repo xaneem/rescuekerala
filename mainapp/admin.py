@@ -180,7 +180,8 @@ class AnnouncementAdmin(admin.ModelAdmin):
 
 class PersonAdmin(admin.ModelAdmin):
     actions = ['download_csv']
-    list_display = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
+    list_display = ('name', 'camped_at', 'added_at', 'phone', 'age', 'gender', 'district')
+    ordering = ('-added_at',)
 
     def download_csv(self, request, queryset):
         header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at')
