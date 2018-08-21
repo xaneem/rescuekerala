@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1 class="text-center">Consent to Volunteer</h1>
+<h2 class="text-center">Malayalam Placeholder</h2>
+  {% buttons %}
+  
+  <td><a class="btn btn-lg btn-success" href="{%url 'volunteer_consent' req.id %}/yes" target="_blank">Yes</a>
+  <td><a class="btn btn-lg btn-success" href="{%url 'volunteer_consent' req.id %}/no" target="_blank">No</a>
+  
+  {% endbuttons %}
+
+{% endblock %}

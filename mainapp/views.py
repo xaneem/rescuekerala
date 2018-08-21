@@ -74,7 +74,6 @@ class CreateRequest(CreateView):
         )
         return HttpResponseRedirect(self.get_success_url())
 
-
 class RegisterVolunteer(CreateView):
     model = Volunteer
     fields = ['name', 'district', 'phone', 'organisation', 'area', 'address']
@@ -694,3 +693,13 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+def volunteer_consent(request, volunteer_id=None):
+    if not volunteer_id:
+        return HttpResponseRedirect("/error?error_text={}".format('Volunteer not found!'))
+    filter = RequestFilter(None)
+    try:
+        req_data = Volunteer.objects.get(id=volunteer_id)
+    except:
+        return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch details for that request'))
+    return render(request, 'mainapp/volunteer_consent.html', {'filter' : filter, 'req': req_data })
