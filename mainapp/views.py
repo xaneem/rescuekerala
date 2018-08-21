@@ -752,6 +752,7 @@ def camp_requirements_list(request):
 class CollectionCenterListView(ListView):
     model = CollectionCenter
     paginate_by = PER_PAGE
+    ordering = ['-id']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
