@@ -59,7 +59,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'mark_inactive', 'mark_active']
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
-    list_filter = ('district', 'joined', 'is_active', 'has_consented')
+    list_filter = ('district', 'joined',)
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Volunteer._meta.get_fields()]
@@ -119,7 +119,6 @@ class ContributorAdmin(admin.ModelAdmin):
     def mark_as_new(self, request, queryset):
         queryset.update(status='new')
         return
-
 
 class RescueCampAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'download_inmates' ,  'mark_as_closed', 'mark_as_active']
