@@ -16,7 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.contrib import admin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count, QuerySet
 from django.core.cache import cache
 from django.conf import settings
@@ -26,6 +26,8 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from mainapp.admin import create_csv_response
 import csv
+from dateutil import parser
+import calendar
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -690,6 +692,20 @@ class VolunteerConsent(UpdateView):
     model = Volunteer
     fields = ['has_consented']
     success_url = '/consent_success/'
+    
+    def dispatch(self, request, *args, **kwargs):
+        timestamp = parser.parse(self.get_object().joined.isoformat())
+        timestamp = calendar.timegm(timestamp.utctimetuple())
+        timestamp = str(timestamp)[-4:]
+        request_ts = kwargs['ts']
+        
+        if request_ts != timestamp:
+            return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
+        return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
+        
+    def form_valid(self, form):
+        print(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 class ConsentSuccess(TemplateView):
     template_name = "mainapp/volunteer_consent_success.html"
