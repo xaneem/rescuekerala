@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
-#from mainapp.redis_queue import sms_queue
+from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
 from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp, NGO, \
     Announcements , districts , PrivateRescueCamp
@@ -75,9 +75,9 @@ class CreateRequest(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        #sms_queue.enqueue(
-        #    send_confirmation_sms, self.object.requestee_phone
-        #)
+        sms_queue.enqueue(
+            send_confirmation_sms, self.object.requestee_phone
+        )
         return HttpResponseRedirect(self.get_success_url())
 
 class RegisterVolunteer(CreateView):
