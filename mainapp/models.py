@@ -24,7 +24,11 @@ districts = (
 status_types =(
     ('new', 'New'),
     ('pro', 'In progess'),
-    ('sup', 'Supplied'),
+    ('res', 'Resolved'),
+    ('dup', 'Duplicate'),
+    ('cls', 'Closed'),
+    ('otr', 'Other'),
+    ('sup', 'Supplied')
 )
 
 contrib_status_types =(
@@ -424,3 +428,23 @@ class DataCollection(models.Model):
 
     def __str__(self):
         return self.document_name
+
+class RequestUpdate(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    status = models.CharField(
+            max_length = 10,
+            choices = status_types
+        )
+
+    other_status = models.CharField(max_length=255, verbose_name='Status description if none of the default statuses are applicable', default='')
+    updater_name = models.CharField(max_length=100, verbose_name='Name of person or group updating', blank=False)
+
+    phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$', message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>', code='invalid_mobile')
+    updater_phone = models.CharField(max_length=14,verbose_name='Phone number of person or group updating', validators=[phone_number_regex])
+
+    notes = models.TextField(verbose_name='Volunteer comments', blank=True)
+
+    update_ts = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.get_status_display()
