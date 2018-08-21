@@ -517,6 +517,9 @@ def logout_view(request):
     return redirect('/relief_camps')
 
 class PersonForm(CustomForm):
+    checkin_date = forms.DateField(input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 18-08-2018")
+    checkout_date = forms.DateField(input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 21-08-2018")
+
     class Meta:
        model = Person
        fields = [
@@ -533,17 +536,11 @@ class PersonForm(CustomForm):
         'status'
         ]
 
-       help_texts = {
-          'checkin_date': 'Use yyyy-mm-dd format. Eg. 2018-08-18',
-          'checkout_date': 'Use yyyy-mm-dd format. Eg. 2018-08-21'
-       }
-
        widgets = {
            'address': forms.Textarea(attrs={'rows':3}),
            'notes': forms.Textarea(attrs={'rows':3}),
            'gender': forms.RadioSelect(),
         }
-
 
     def __init__(self, *args, **kwargs):
        camp_id = kwargs.pop('camp_id')
