@@ -8,6 +8,11 @@
 </div>
 
 <div>
+    <form action="" method="get">
+        {% bootstrap_form filter.form bound_css_class=False %}
+        <input value="Search" class="btn btn-primary" type="submit" />
+    </form>
+
     <table class="table">
         <tr>
           <th>Center Name</th>
@@ -15,7 +20,7 @@
           <th>Contacts</th>
           <th>Materials Collecting</th>
         </tr>
-    {% for center in object_list %}
+    {% for center in filter.qs %}
         <tr valign="top">
               <!-- <td>{{ center.id }}</td> -->
               <td>{{ center.name }}</td>
