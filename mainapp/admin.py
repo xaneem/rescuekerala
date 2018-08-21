@@ -59,8 +59,8 @@ class VolunteerAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'mark_inactive', 'mark_active']
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
-    list_filter = ('district', 'joined', 'is_active', 'has_consented')
-
+    list_filter = ('district', 'joined', 'is_active', 'has_consented')	
+    
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Volunteer._meta.get_fields()]
         body_rows = []
@@ -120,13 +120,24 @@ class ContributorAdmin(admin.ModelAdmin):
         queryset.update(status='new')
         return
 
-
 class RescueCampAdmin(admin.ModelAdmin):
-    actions = ['download_csv', 'mark_as_closed', 'mark_as_active']
+    actions = ['download_csv', 'download_inmates' ,  'mark_as_closed', 'mark_as_active']
     list_display = ('district', 'name', 'location', 'status', 'contacts', 'facilities_available', 'total_people',
                     'total_males', 'total_females', 'total_infants', 'food_req',
                     'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
     list_filter = ('district','status')
+
+
+    def download_inmates(self, request, queryset):
+        header_row = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
+        body_rows = []
+        campid = queryset[0].id
+        for person in Person.objects.all().filter(camped_at__id = campid):
+            row = [getattr(person, field) for field in header_row]
+            body_rows.append(row)
+
+        response = create_csv_response('InmatesOf{}'.format(queryset[0].name), header_row, body_rows)
+        return response
 
     def get_readonly_fields(self, request, obj=None):
         fields = []
