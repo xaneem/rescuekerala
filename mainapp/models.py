@@ -1,8 +1,12 @@
 import os
 import uuid
+from enum import Enum
+
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.urls import reverse
+
 
 districts = (
     ('alp','Alappuzha - ആലപ്പുഴ'),
@@ -73,6 +77,11 @@ announcement_priorities = [
     ('M', 'Medium'),
     ('L', 'Low')]
 
+
+class LSGTypes(Enum):
+    CORPORATION = 0
+    MUNICIPALITY = 1
+    GRAMA_PANCHAYATH = 2
 
 
 class Request(models.Model):
@@ -421,3 +430,42 @@ class DataCollection(models.Model):
 
     def __str__(self):
         return self.document_name
+
+
+class CollectionCenter(models.Model):
+
+    lsg_types = [
+        (LSGTypes.CORPORATION.value, 'Corporation'),
+        (LSGTypes.MUNICIPALITY.value, 'Municipality'),
+        (LSGTypes.GRAMA_PANCHAYATH.value, 'Grama Panchayath')
+    ]
+
+    name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Name - പേര്")
+    address = models.TextField(verbose_name="Address - വിലാസം")
+    contacts = models.CharField(max_length=250, null=True, blank=True, verbose_name='Mobile - മൊബൈൽ')
+    type_of_materials_collecting = models.TextField(
+        verbose_name="Type of materials collecting - ശേഖരിക്കുന്ന വസ്തുക്കൾ ",
+        null=True, blank=True
+    )
+    district = models.CharField(
+        max_length=15,
+        choices=districts,
+        verbose_name='Ceter District - ജില്ല',
+        null=True, blank=True
+    )
+    lsg_type = models.SmallIntegerField(
+        choices=lsg_types,
+        verbose_name='LSG Type - തദ്ദേശ സ്വയംഭരണ സ്ഥാപനം',
+        null=True, blank=True
+    )
+    lsg_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Name - പേര്")
+    ward_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Ward - വാർഡ്")
+    is_inside_kerala = models.BooleanField(verbose_name="Center inside kerala? - കേന്ദ്രം കേരളത്തിലാണോ")
+    city = models.CharField(max_length=150, verbose_name="City - നഗരം")
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('collection_centers_list')

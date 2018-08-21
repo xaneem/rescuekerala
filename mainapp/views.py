@@ -1,7 +1,10 @@
+import csv
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
@@ -24,8 +27,10 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+
 from mainapp.admin import create_csv_response
-import csv
+from mainapp.models import CollectionCenter
+
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -166,6 +171,7 @@ class DistNeeds(TemplateView):
         # Add in a QuerySet of all the books
         context['district_data'] = DistrictNeed.objects.all()
         return context
+
 
 class RescueCampFilter(django_filters.FilterSet):
     class Meta:
@@ -593,3 +599,28 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+
+class CollectionCenterListView(ListView):
+    model = CollectionCenter
+    paginate_by = PER_PAGE
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class CollectionCenterView(CreateView):
+    model = CollectionCenter
+    fields = [
+        'name',
+        'address',
+        'contacts',
+        'type_of_materials_collecting',
+        'district',
+        'lsg_type',
+        'lsg_name',
+        'ward_name',
+        'is_inside_kerala',
+        'city',
+    ]
