@@ -27,6 +27,7 @@ urlpatterns = [
     path('contrib_success/', views.ContribSuccess.as_view(), name='contribsucessview'),
     path('disclaimer/', views.DisclaimerPage.as_view(), name='disclaimer'),
     path('ieee/', views.AboutIEEE.as_view(), name='aboutieee'),
+    path('pcampadd' , views.RegisterPrivateReliefCamp.as_view() , name="Private Camps"),
     path('data/' , views.data , name="data"),
     path('map/' , views.mapview , name="mapview"),
     path('dmodash/' , views.dmodash , name="DMODash"),
