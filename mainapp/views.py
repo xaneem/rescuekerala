@@ -105,7 +105,11 @@ class RegisterNGO(CreateView):
 class RegisterPrivateReliefCamp(CreateView):
     model = PrivateRescueCamp
     fields = '__all__'
-    success_url = '/reg_success'
+    success_url = '/pcamp'
+
+def privatecc(request):
+    return render(request,"privatecc.html")
+
 
 def pcamplist(request):
     filter = PrivateCampFilter(request.GET, queryset=PrivateRescueCamp.objects.all())

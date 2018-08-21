@@ -5,7 +5,7 @@ from django.core.validators import EMPTY_VALUES
 from django.http import HttpResponse
 
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
-    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp
+    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter
 
 
 def create_csv_response(csv_name, header_row, body_rows):
@@ -60,7 +60,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
     list_filter = ('district', 'joined', 'is_active', 'has_consented')	
-    
+
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Volunteer._meta.get_fields()]
         body_rows = []
@@ -205,6 +205,7 @@ admin.site.register(DistrictNeed)
 admin.site.register(PrivateRescueCamp)
 admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
+admin.site.register(CollectionCenter)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements, AnnouncementAdmin)
