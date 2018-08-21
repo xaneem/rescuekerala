@@ -183,7 +183,7 @@ class Volunteer(models.Model):
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-    has_consented = models.BooleanField(default=True, verbose_name="Available")
+    has_consented = models.BooleanField(default=False, verbose_name="Available")
 
     class Meta:
         verbose_name = 'Volunteer: Individual'
