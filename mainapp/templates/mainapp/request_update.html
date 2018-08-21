@@ -54,7 +54,6 @@
     <thead>
       <tr>
 		  <th>Status</th>
-		  <th>Other Status</th>
 		  <th>Updater Name</th>
 		  <th>Updater Phone</th>
 		  <th>Notes</th>
@@ -66,8 +65,7 @@
 		
 	    {% for update in view.updates %}
 	        <tr>
-	          <td>{{ update.status }}</td>
-			  <td>{{ update.status }}</td>
+	          <td>{{ update.status }} {{ update.other_status }}</td>
 	          <td>{{ update.updater_name }}</td>
 	          <td>{{ update.updater_phone }}</td>
 	          <td>{{ update.notes }}</td>
@@ -80,9 +78,9 @@
 
 </div>
 
-<h1 class="text-center">Request Updates</h1>
-<h2 class="text-center">placeholder for malayalam ‍</h2>
-  <form method="post"  class="simple-form">
+  <h1 class="text-center">Request Updates</h1>
+  <h2 class="text-center">placeholder for malayalam ‍</h2>
+  <form method="post"  class="simple-form" id="request_update_form">
   {% csrf_token %}
   {% bootstrap_form form %}
 
@@ -93,4 +91,25 @@
   {% endbuttons %}
   </form>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+	  $(document).ready(function() {
+		  $("[name=other_status]").attr('type', 'hidden');
+		  $("[name=other_status]").attr('required', false)
+		  $("[for=id_other_status]").hide();
+		  
+	  })
+	  $("[name=status]").change(function() {
+		  var value = this.value;
+		  if(value !== 'otr') {
+		  	$("[name=other_status]").attr('type', 'hidden')
+			$("[name=other_status]").attr('required', false)
+			// $("[for=id_other_status]").hide();
+		  } else {
+		  	$("[name=other_status]").attr('type', 'text')
+			  // $("[for=id_other_status]").show();
+		  }
+	  })
+	  
+  </script>
 {% endblock %}

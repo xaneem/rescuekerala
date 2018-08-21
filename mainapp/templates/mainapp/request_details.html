@@ -57,7 +57,6 @@
     <thead>
       <tr>
 		  <th>Status</th>
-		  <th>Other Status</th>
 		  <th>Updater Name</th>
 		  <th>Updater Phone</th>
 		  <th>Notes</th>
@@ -69,8 +68,7 @@
 		
 	    {% for update in updates %}
 	        <tr>
-	          <td>{{ update.status }}</td>
-			  <td>{{ update.status }}</td>
+	          <td>{{ update.status }} {{ update.other_status }}</td>
 	          <td>{{ update.updater_name }}</td>
 	          <td>{{ update.updater_phone }}</td>
 	          <td>{{ update.notes }}</td>
