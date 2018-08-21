@@ -6,6 +6,7 @@ Returns paginated requests from the mainapp_requests table.
 
 Response format:
 
+```
 {
   "data": [
     {
@@ -44,6 +45,7 @@ Response format:
     "last_record_id": 1
   }
 }
+```
 
 ### POST /request_data/
 
