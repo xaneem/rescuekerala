@@ -407,7 +407,7 @@ def mapview(request):
 def dmodash(request):
     camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
 
-    for i in RescueCamp.objects.all():
+    for i in RescueCamp.objects.all().filter(status="active"):
         camps+=1
         total_people += ifnonezero(i.total_people)
         total_male  += ifnonezero(i.total_males)
@@ -422,7 +422,7 @@ def dmodist(request):
     for district in districts:
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
 
-        for i in RescueCamp.objects.all().filter(district = district[0]):
+        for i in RescueCamp.objects.all().filter(district = district[0] , status="active"):
             camps+=1
             total_people += ifnonezero(i.total_people)
             total_male  += ifnonezero(i.total_males)
@@ -436,16 +436,16 @@ def dmodist(request):
 def dmotal(request):
     if(request.GET.get("district",-1) == -1):return render(request , "dmotal.html"  )
     dist = request.GET.get("district",-1)
-    if(dist == "all"): data = RescueCamp.objects.all().values('taluk').distinct()
-    else:data = RescueCamp.objects.all().filter(district = dist).values('taluk').distinct()
+    if(dist == "all"): data = RescueCamp.objects.filter(status='active').values('taluk').distinct()
+    else:data = RescueCamp.objects.filter(district = dist , status='active').values('taluk').distinct()
     distmapper = {}
     for i in districts:
         distmapper[i[0]] = i[1]
     d = []
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
-        if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"])
-        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"])
+        if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"] , status="active")
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"] , status="active")
         for i in RCdata:
             camps+=1
             district = i.district
@@ -469,7 +469,7 @@ def dmocsv(request):
     response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(csv_name)
     writer = csv.writer(response)
     writer.writerow(header_row)
-    for camp in RescueCamp.objects.all().filter(district = dist):
+    for camp in RescueCamp.objects.all().filter(district = dist , status="active"):
         row = [
             getattr(camp , key)  for key in header_row
         ]
