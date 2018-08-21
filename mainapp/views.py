@@ -259,7 +259,6 @@ class NGOFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
-
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
     req_data = filter.qs.order_by('-id')
