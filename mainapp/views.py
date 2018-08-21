@@ -280,6 +280,18 @@ class ContribFilter(django_filters.FilterSet):
             self.queryset = self.queryset.none()
 
 
+def contributors(request):
+    filter = ContribFilter(request.GET, queryset=Contributor.objects.all() )
+    contrib_data = filter.qs.order_by('-id')
+    paginator = Paginator(contrib_data, PER_PAGE)
+    page = request.GET.get('page')
+    contrib_data = paginator.get_page(page)
+    contrib_data.min_page = contrib_data.number - PAGE_LEFT
+    contrib_data.max_page = contrib_data.number + PAGE_RIGHT
+    contrib_data.lim_page = PAGE_INTERMEDIATE
+    return render(request, 'mainapp/contrib_list.html', {'filter': filter , "data" : contrib_data })
+
+
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
     req_data = filter.qs.order_by('-id')
