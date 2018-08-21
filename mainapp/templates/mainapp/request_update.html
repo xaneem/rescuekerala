@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+ 
+ 
+ <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th colspan="2" style="text-align:center;">Request Updates</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td><b> District : </b></td><td>{{ view.original_request.get_district_display }}</td>
+      </tr>
+      <tr>
+        <td><b> Location : </b></td><td>{{ view.original_request.location }}</td>
+      </tr>
+      <tr>
+        <td><b> GPS Location : </b></td>
+        <td>
+          {% if view.original_request.latlng %}
+            <a class="btn btn-sm btn-success" href="https://maps.google.com/?q={{ view.original_request.latlng }}" target="_blank">Open in maps</a>
+            <br>
+            Accuracy: {{ view.original_request.latlng_accuracy }}
+          {% else %}
+            NA
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><b> Requestee : </b></td><td>{{ view.original_request.requestee }}</td>
+      </tr>	  
+      <tr>
+        <td><b> Contact number : </b></td><td><a href="tel:{{ req.requestee_phone }}" >{{ view.original_request.requestee_phone }}</a></td>
+      </tr>
+      <tr>
+        <td><b> Summary of request : </b></td><td>{{ view.original_request.summarise | linebreaks }}</td>
+      </tr>
+      <tr>
+        <td><b> Date : </b></td><td>{{ view.original_request.dateadded }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<h3 style="text-align:center;">Updates</h3>
+ <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+		  <th>Status</th>
+		  <th>Other Status</th>
+		  <th>Updater Name</th>
+		  <th>Updater Phone</th>
+		  <th>Notes</th>
+		  <th>Update Time</th>
+      </tr>
+    </thead>
+
+    <tbody>
+		
+	    {% for update in view.updates %}
+	        <tr>
+	          <td>{{ update.status }}</td>
+			  <td>{{ update.status }}</td>
+	          <td>{{ update.updater_name }}</td>
+	          <td>{{ update.updater_phone }}</td>
+	          <td>{{ update.notes }}</td>
+	          <td>{{ update.update_ts }}</td>
+	        </tr>
+	    {% endfor %}
+		
+   </tbody>
+  </table>
+
+</div>
+
+<h1 class="text-center">Request Updates</h1>
+<h2 class="text-center">placeholder for malayalam ‍</h2>
+  <form method="post"  class="simple-form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+
+  {% buttons %}
+  <button type="submit" class="btn btn-primary">
+  {% bootstrap_icon "star" %} Submit
+  </button>
+  {% endbuttons %}
+  </form>
+
+{% endblock %}

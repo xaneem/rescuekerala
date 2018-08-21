@@ -50,4 +50,36 @@
   </table>
 
 </div>
+
+<h3 style="text-align:center;">Updates</h3>
+ <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+		  <th>Status</th>
+		  <th>Other Status</th>
+		  <th>Updater Name</th>
+		  <th>Updater Phone</th>
+		  <th>Notes</th>
+		  <th>Update Time</th>
+      </tr>
+    </thead>
+
+    <tbody>
+		
+	    {% for update in updates %}
+	        <tr>
+	          <td>{{ update.status }}</td>
+			  <td>{{ update.status }}</td>
+	          <td>{{ update.updater_name }}</td>
+	          <td>{{ update.updater_phone }}</td>
+	          <td>{{ update.notes }}</td>
+	          <td>{{ update.update_ts }}</td>
+	        </tr>
+	    {% endfor %}
+		
+   </tbody>
+  </table>
+
+</div>
 {% endblock %}
