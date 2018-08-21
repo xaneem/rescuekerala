@@ -332,6 +332,7 @@ class RescueCamp(models.Model):
     def __str__(self):
         return self.name
 
+
 class PrivateRescueCamp(models.Model):
     name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
     location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)

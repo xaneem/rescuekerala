@@ -98,7 +98,7 @@ class RegisterNGO(CreateView):
     success_url = '/reg_success'
 
 class RegisterPrivateReliefCamp(CreateView):
-    model = PrivateRescueCamp 
+    model = PrivateRescueCamp
     fields = '__all__'
     success_url = '/reg_success'
 
@@ -257,6 +257,7 @@ class NGOFilter(django_filters.FilterSet):
         model = NGO
         fields = {
                     'district' : ['exact'],
+                    'area' : ['icontains']
                  }
 
     def __init__(self, *args, **kwargs):
