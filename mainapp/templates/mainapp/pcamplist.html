@@ -28,7 +28,7 @@
         <tr>
             <th>Name</th>
             <th>District</th>
-            <th>Taluk/Village</th>
+            <th>LSG Type/LSG Name</th>
             <th>Total People</th>
             <th>Details</th>
         </tr>
@@ -38,7 +38,7 @@
         <tr>
             <td><strong>{{ item.name }}</strong></td>
             <td>{{ item.get_district_display }}</td>
-            <td>{{ item.taluk }}<br>{{ item.village }}</td>
+            <td>{{ item.get_lsg_type_display }}<br>{{ item.lsg_name }}</td>
             <td>{{ item.total_people }}</td>
             <td>
                 <div class="btn-group">
