@@ -174,6 +174,7 @@ class Volunteer(models.Model):
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    has_consented = models.BooleanField(default=False, verbose_name="Available")
 
     class Meta:
         verbose_name = 'Volunteer: Individual'
@@ -331,6 +332,7 @@ class RescueCamp(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class PrivateRescueCamp(models.Model):
     name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
