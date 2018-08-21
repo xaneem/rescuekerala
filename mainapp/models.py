@@ -508,7 +508,7 @@ class RequestUpdate(models.Model):
             choices = volunteer_update_status_types
         )
 
-    other_status = models.CharField(max_length=255, verbose_name='Status description if none of the default statuses are applicable', default='')
+    other_status = models.CharField(max_length=255, verbose_name='Please specify other status', default='', blank=True)
     updater_name = models.CharField(max_length=100, verbose_name='Name of person or group updating', blank=False)
 
     phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$', message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>', code='invalid_mobile')
