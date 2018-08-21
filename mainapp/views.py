@@ -692,11 +692,14 @@ class PeopleFilter(django_filters.FilterSet):
 def find_people(request):
     filter = PeopleFilter(request.GET, queryset=Person.objects.all())
     people = filter.qs.order_by('name','-added_at')
-    paginator = Paginator(people, 50)
+    paginator = Paginator(people, PER_PAGE)
     page = request.GET.get('page')
     people = paginator.get_page(page)
-    return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
+    people.min_page = people.number - PAGE_LEFT
+    people.max_page = people.number + PAGE_RIGHT
+    people.lim_page = PAGE_INTERMEDIATE
 
+    return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
 def announcements(request):
     link_data = Announcements.objects.filter(is_pinned=False).order_by('-id').all()
