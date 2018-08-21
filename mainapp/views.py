@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
@@ -16,7 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.contrib import admin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count, QuerySet
 from django.core.cache import cache
 from django.conf import settings
@@ -24,8 +25,13 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+
 from mainapp.admin import create_csv_response
 import csv
+from dateutil import parser
+import calendar
+from mainapp.models import CollectionCenter
+
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -74,7 +80,6 @@ class CreateRequest(CreateView):
         )
         return HttpResponseRedirect(self.get_success_url())
 
-
 class RegisterVolunteer(CreateView):
     model = Volunteer
     fields = ['name', 'district', 'phone', 'organisation', 'area', 'address']
@@ -98,7 +103,7 @@ class RegisterNGO(CreateView):
     success_url = '/reg_success'
 
 class RegisterPrivateReliefCamp(CreateView):
-    model = PrivateRescueCamp 
+    model = PrivateRescueCamp
     fields = '__all__'
     success_url = '/reg_success'
 
@@ -268,11 +273,13 @@ class VolunteerFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+
 class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
         fields = {
                     'district' : ['exact'],
+                    'area' : ['icontains']
                  }
 
     def __init__(self, *args, **kwargs):
@@ -280,6 +287,38 @@ class NGOFilter(django_filters.FilterSet):
         # at startup user doen't push Submit button, and QueryDict (in data) is empty
         if self.data == {}:
             self.queryset = self.queryset.none()
+
+
+class ContribFilter(django_filters.FilterSet):
+    class Meta:
+        model = Contributor
+        fields = {
+                    'district' : ['exact'],
+                    'name' : ['icontains'],
+                    'phone' : ['exact'],
+                    'address' : ['icontains'],
+                    'commodities' : ['icontains'],
+                    'status' : ['icontains'],
+                 }
+
+    def __init__(self, *args, **kwargs):
+        super(ContribFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+
+def contributors(request):
+    filter = ContribFilter(request.GET, queryset=Contributor.objects.all() )
+    contrib_data = filter.qs.order_by('-id')
+    paginator = Paginator(contrib_data, PER_PAGE)
+    page = request.GET.get('page')
+    contrib_data = paginator.get_page(page)
+    contrib_data.min_page = contrib_data.number - PAGE_LEFT
+    contrib_data.max_page = contrib_data.number + PAGE_RIGHT
+    contrib_data.lim_page = PAGE_INTERMEDIATE
+    return render(request, 'mainapp/contrib_list.html', {'filter': filter , "data" : contrib_data })
+
 
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
@@ -378,7 +417,7 @@ def dmodash(request):
         total_male  += ifnonezero(i.total_males)
         total_female += ifnonezero(i.total_females)
         total_infant += ifnonezero(i.total_infants)
-        if(i.medical_req.strip() != ""):total_medical+=1 
+        if(i.medical_req.strip() != ""):total_medical+=1
 
     return render(request , "dmodash.html",{"camp" :camps , "people" : total_people , "male" : total_male , "female" : total_female , "infant" : total_infant , "medicine" : total_medical})
 
@@ -410,7 +449,7 @@ def dmotal(request):
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
         if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"] , status="active")
-        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"] , status="active") 
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"] , status="active")
         for i in RCdata:
             camps+=1
             district = i.district
@@ -657,6 +696,20 @@ def announcements(request):
                                                   'pinned_data': pinned_data})
 
 
+class CoordinatorCampFilter(django_filters.FilterSet):
+    class Meta:
+        model = RescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains']
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+            
 class PrivateCampFilter(django_filters.FilterSet):
     class Meta:
         model = PrivateRescueCamp
@@ -670,18 +723,6 @@ class PrivateCampFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
-class CoordinatorCampFilter(django_filters.FilterSet):
-    class Meta:
-        model = RescueCamp
-        fields = {
-            'district' : ['exact'],
-            'name' : ['icontains']
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
-        if self.data == {}:
-            self.queryset = self.queryset.none()
 
 @login_required(login_url='/login/')
 def coordinator_home(request):
@@ -708,6 +749,25 @@ class CampRequirementsFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+class VolunteerConsent(UpdateView):
+    model = Volunteer
+    fields = ['has_consented']
+    success_url = '/consent_success/'
+    
+    def dispatch(self, request, *args, **kwargs):
+        timestamp = parser.parse(self.get_object().joined.isoformat())
+        timestamp = calendar.timegm(timestamp.utctimetuple())
+        timestamp = str(timestamp)[-4:]
+        request_ts = kwargs['ts']
+        
+        if request_ts != timestamp:
+            return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
+        return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
+        
+
+class ConsentSuccess(TemplateView):
+    template_name = "mainapp/volunteer_consent_success.html"
+
 def camp_requirements_list(request):
     filter = CampRequirementsFilter(request.GET, queryset=RescueCamp.objects.all())
     camp_data = filter.qs.order_by('name')
@@ -715,3 +775,30 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+
+class CollectionCenterListView(ListView):
+    model = CollectionCenter
+    paginate_by = PER_PAGE
+    ordering = ['-id']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class CollectionCenterView(CreateView):
+    model = CollectionCenter
+    fields = [
+        'name',
+        'address',
+        'contacts',
+        'type_of_materials_collecting',
+        'district',
+        'lsg_type',
+        'lsg_name',
+        'ward_name',
+        'is_inside_kerala',
+        'city',
+    ]
+

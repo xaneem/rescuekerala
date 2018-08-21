@@ -22,7 +22,10 @@ urlpatterns = [
     path('reg_success/', views.RegSuccess.as_view(), name='reg_successview'),
     path('req_sucess/', views.ReqSuccess.as_view(), name='req_sucessview'),
     path('district_needs/', views.DistNeeds.as_view(), name='distneedsview'),
+    path('collection_center/', views.CollectionCenterView.as_view(), name='collection_centers_view'),
+    path('collection_centers/', views.CollectionCenterListView.as_view(), name='collection_centers_list'),
     path('reg_contrib/', views.RegisterContributor.as_view(), name='reg_contribview'),
+    path('contribview/', views.contributors, name='contribview'),
     path('contrib_success/', views.ContribSuccess.as_view(), name='contribsucessview'),
     path('disclaimer/', views.DisclaimerPage.as_view(), name='disclaimer'),
     path('ieee/', views.AboutIEEE.as_view(), name='aboutieee'),
@@ -50,4 +53,6 @@ urlpatterns = [
     path('announcements/', views.announcements, name="Announcements"),
     path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list'),
     path('submission_success/', views.SubmissionSuccess.as_view(), name='submission_success'),
+    path('consent_success/', views.ConsentSuccess.as_view(), name='consent_success'),
+    url(r'c/(?P<pk>\d+)/(?P<ts>\d+)/$', views.VolunteerConsent.as_view(), name='volunteer_consent'),
 ]
