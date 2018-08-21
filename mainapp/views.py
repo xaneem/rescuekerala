@@ -82,7 +82,7 @@ class RegisterVolunteer(CreateView):
     success_url = '/reg_success/'
 
 def volunteerdata(request):
-    filter = VolunteerFilter(request.GET, queryset=Volunteer.objects.all() )
+    filter = VolunteerFilter( request.GET, queryset=Volunteer.objects.all() )
     req_data = filter.qs.order_by('-id')
     paginator = Paginator(req_data, PER_PAGE)
     page = request.GET.get('page')
@@ -103,6 +103,23 @@ class RegisterPrivateReliefCamp(CreateView):
     fields = '__all__'
     success_url = '/reg_success'
 
+def pcamplist(request):
+    filter = PrivateCampFilter(request.GET, queryset=PrivateRescueCamp.objects.all())
+    data = filter.qs.order_by('-id')
+    paginator = Paginator(data, 50)
+    page = request.GET.get('page')
+    data = paginator.get_page(page)
+
+    return render(request, "mainapp/pcamplist.html", {'filter': filter , 'data' : data})
+
+def pcampdetails(request):
+    if('id' not in request.GET.keys() ):return HttpResponseRedirect('/pcamp')
+    id = request.GET.get('id')
+    try:
+        req_data = PrivateRescueCamp.objects.get(id=id)
+    except:
+        return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch details for that Camp'))
+    return render(request, 'mainapp/p_camp_details.html', {'req': req_data }) 
 
 def download_ngo_list(request):
     district = request.GET.get('district', None)
@@ -675,16 +692,16 @@ def announcements(request):
                                                   'pinned_data': pinned_data})
 
 
-class CoordinatorCampFilter(django_filters.FilterSet):
+class PrivateCampFilter(django_filters.FilterSet):
     class Meta:
-        model = RescueCamp
+        model = PrivateRescueCamp
         fields = {
             'district' : ['exact'],
             'name' : ['icontains']
         }
 
     def __init__(self, *args, **kwargs):
-        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
+        super(PrivateCampFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
             self.queryset = self.queryset.none()
 
