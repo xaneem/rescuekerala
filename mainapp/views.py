@@ -246,6 +246,7 @@ class VolunteerFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+
 class NGOFilter(django_filters.FilterSet):
     class Meta:
         model = NGO
@@ -258,6 +259,26 @@ class NGOFilter(django_filters.FilterSet):
         # at startup user doen't push Submit button, and QueryDict (in data) is empty
         if self.data == {}:
             self.queryset = self.queryset.none()
+
+
+class ContribFilter(django_filters.FilterSet):
+    class Meta:
+        model = Contributor
+        fields = {
+                    'district' : ['exact'],
+                    'name' : ['icontains'],
+                    'phone' : ['exact'],
+                    'address' : ['icontains'],
+                    'commodities' : ['icontains'],
+                    'status' : ['icontains'],
+                 }
+
+    def __init__(self, *args, **kwargs):
+        super(ContribFilter, self).__init__(*args, **kwargs)
+        # at startup user doen't push Submit button, and QueryDict (in data) is empty
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
 
 def request_list(request):
     filter = RequestFilter(request.GET, queryset=Request.objects.all() )
@@ -356,7 +377,7 @@ def dmodash(request):
         total_male  += ifnonezero(i.total_males)
         total_female += ifnonezero(i.total_females)
         total_infant += ifnonezero(i.total_infants)
-        if(i.medical_req.strip() != ""):total_medical+=1 
+        if(i.medical_req.strip() != ""):total_medical+=1
 
     return render(request , "dmodash.html",{"camp" :camps , "people" : total_people , "male" : total_male , "female" : total_female , "infant" : total_infant , "medicine" : total_medical})
 
@@ -388,7 +409,7 @@ def dmotal(request):
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
         if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"])
-        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"]) 
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"])
         for i in RCdata:
             camps+=1
             district = i.district
