@@ -841,17 +841,27 @@ class CollectionCenterListView(ListView):
         return context
 
 
+class CollectionCenterForm(forms.ModelForm):
+    class Meta:
+        model = CollectionCenter
+        fields = [
+            'name',
+            'address',
+            'contacts',
+            'type_of_materials_collecting',
+            'is_inside_kerala',
+            'district',
+            'lsg_type',
+            'lsg_name',
+            'ward_name',
+            'city',
+        ]
+        widgets = {
+            'lsg_name': forms.Select(),
+            'ward_name': forms.Select(),
+        }
+
+
 class CollectionCenterView(CreateView):
     model = CollectionCenter
-    fields = [
-        'name',
-        'address',
-        'contacts',
-        'type_of_materials_collecting',
-        'is_inside_kerala',
-        'district',
-        'lsg_type',
-        'lsg_name',
-        'ward_name',
-        'city',
-    ]
+    form_class = CollectionCenterForm
