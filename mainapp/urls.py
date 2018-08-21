@@ -45,5 +45,6 @@ urlpatterns = [
     path('announcements/', views.announcements, name="Announcements"),
     path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list'),
     path('submission_success/', views.SubmissionSuccess.as_view(), name='submission_success'),
-    url(r'volunteer_consent/(?P<volunteer_id>\d+)/$', views.volunteer_consent, name='volunteer_consent'),
+    url(r'volunteer_consent/(?P<pk>\d+)/$', views.VolunteerConsent.as_view(), name='volunteer_consent'),
+    path('consent_success/', views.ConsentSuccess.as_view(), name='consent_success'),
 ]

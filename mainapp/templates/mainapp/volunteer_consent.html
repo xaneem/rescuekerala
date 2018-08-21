@@ -4,11 +4,16 @@
 {% block content %}
 <h1 class="text-center">Consent to Volunteer</h1>
 <h2 class="text-center">Malayalam Placeholder</h2>
+  <form method="post">
+  {% csrf_token %}
+  {% bootstrap_form form %}
   {% buttons %}
   
-  <td><a class="btn btn-lg btn-success" href="{%url 'volunteer_consent' req.id %}/yes" target="_blank">Yes</a>
-  <td><a class="btn btn-lg btn-success" href="{%url 'volunteer_consent' req.id %}/no" target="_blank">No</a>
+  <td><a class="btn btn-lg btn-success" href="{%url 'volunteer_consent' req.id %}yes" target="_blank">Confirm</a>
+  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td><a class="btn btn-lg btn-danger" href="{%url 'volunteer_consent' req.id %}no" target="_blank">Cancel</a>
   
   {% endbuttons %}
+  </form>
 
 {% endblock %}

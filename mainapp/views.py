@@ -686,6 +686,14 @@ class CampRequirementsFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+class VolunteerConsent(UpdateView):
+    model = Volunteer
+    fields = ['has_consented']
+    success_url = '/consent_success/'
+
+class ConsentSuccess(TemplateView):
+    template_name = "mainapp/volunteer_consent_success.html"
+
 def camp_requirements_list(request):
     filter = CampRequirementsFilter(request.GET, queryset=RescueCamp.objects.all())
     camp_data = filter.qs.order_by('name')
@@ -693,13 +701,3 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
-
-def volunteer_consent(request, volunteer_id=None):
-    if not volunteer_id:
-        return HttpResponseRedirect("/error?error_text={}".format('Volunteer not found!'))
-    filter = RequestFilter(None)
-    try:
-        req_data = Volunteer.objects.get(id=volunteer_id)
-    except:
-        return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch details for that request'))
-    return render(request, 'mainapp/volunteer_consent.html', {'filter' : filter, 'req': req_data })
