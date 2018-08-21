@@ -426,7 +426,7 @@ class Person(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     checkin_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
-    checkout_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഔട്ട് തീയതി')
+    checkout_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
 
     status = models.CharField(
         blank=True,
