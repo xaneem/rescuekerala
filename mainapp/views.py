@@ -836,10 +836,10 @@ class CollectionCenterView(CreateView):
         'address',
         'contacts',
         'type_of_materials_collecting',
+        'is_inside_kerala',
         'district',
         'lsg_type',
         'lsg_name',
         'ward_name',
-        'is_inside_kerala',
         'city',
     ]
