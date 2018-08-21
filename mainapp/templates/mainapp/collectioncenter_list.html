@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+<div class="text-center">
+  <h3>Collection Centers</h3>
+</div>
+
+<div>
+    <table class="table">
+        <tr>
+          <th>Center Name</th>
+          <th>Address</th>
+          <th>Contacts</th>
+          <th>Materials Collecting</th>
+        </tr>
+    {% for center in object_list %}
+        <tr valign="top">
+              <td>{{ center.id }}</td>
+              <td>{{ center.name }}</td>
+              <td>{{ center.address }}</td>
+              <td>{{ center.type_of_materials_collecting }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">No Collection Centers added yet.</td></tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}
