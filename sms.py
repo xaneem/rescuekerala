@@ -2,6 +2,10 @@
 # Python 2.7.15
 
 # Expects a csv file's path containing volunteer details
+# Fill in the credentials in line 55, and run the script
+
+# Example usage: 
+# python2 path/to/sms.py path/to/csvFile.csv
 
 import calendar
 import csv
@@ -49,7 +53,7 @@ if __name__ == "__main__":
 				message = "Thank you for registering to volunteer. Please click here to confirm " + url
 							
 				payload = { 'username':'xxxxxxxx','password':'xxxxxxxx','message':message,'numbers':mobile}
-				# response  = requests.get('http://api.esms.kerala.gov.in/fastclient/SMSclient.php',params=payload)
+				response  = requests.get('http://api.esms.kerala.gov.in/fastclient/SMSclient.php',params=payload)
 
 			except KeyboardInterrupt:
 
