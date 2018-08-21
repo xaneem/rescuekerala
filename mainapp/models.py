@@ -24,11 +24,15 @@ districts = (
 status_types =(
     ('new', 'New'),
     ('pro', 'In progess'),
-    ('res', 'Resolved'),
-    ('dup', 'Duplicate'),
-    ('cls', 'Closed'),
-    ('otr', 'Other'),
     ('sup', 'Supplied')
+)
+
+volunteer_update_status_types = (
+    ('hig', 'High priority'),
+    ('med', 'Medium priority'),
+    ('low', 'Low priority'),
+    ('cls', 'Can be closed'),
+    ('otr', 'Other')
 )
 
 contrib_status_types =(
@@ -433,7 +437,7 @@ class RequestUpdate(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE)
     status = models.CharField(
             max_length = 10,
-            choices = status_types
+            choices = volunteer_update_status_types
         )
 
     other_status = models.CharField(max_length=255, verbose_name='Status description if none of the default statuses are applicable', default='')
