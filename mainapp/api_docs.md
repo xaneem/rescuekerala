@@ -68,12 +68,10 @@ POST http://localhost:8000/request_update/
 
 Available statuses:
 
-* `new`:  New
-* `pro`: In progess
-* `res`: Resolved
-* `dup`: Duplicate
-* `cls`: Closed
-* `otr`: Other
-* `sup`: Supplied
+* `hig`: 'High priority'
+* `med`: 'Medium priority'
+* `low`: 'Low priority'
+* `cls`: 'Can be closed'
+* `otr`: 'Other'
 
-Expecting 3rd parties to use dup or res to feed back status after resolution/filtering, and otr in case there's an update that doesn't fit one of these statuses.
+Expecting 3rd parties to use one of the priorities or `cls` to feed back status after resolution/filtering, and otr in case there's an update that doesn't fit one of these statuses.
