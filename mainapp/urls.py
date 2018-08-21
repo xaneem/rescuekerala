@@ -32,6 +32,7 @@ urlpatterns = [
     path('pcampadd' , views.RegisterPrivateReliefCamp.as_view() , name="Private Camps"),
     path('pcamp/' , views.pcamplist , name="privatecamplist"),
     path('pcampdet/' , views.pcampdetails , name="privatecampdetails"),
+    path('privatecc/' , views.privatecc , name="privatedetails"),
     path('data/' , views.data , name="data"),
     path('map/' , views.mapview , name="mapview"),
     path('dmodash/' , views.dmodash , name="DMODash"),
