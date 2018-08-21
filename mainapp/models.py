@@ -442,7 +442,7 @@ class CollectionCenter(models.Model):
 
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Name - പേര്")
     address = models.TextField(verbose_name="Address - വിലാസം")
-    contacts = models.CharField(max_length=250, null=True, blank=True, verbose_name='Mobile - മൊബൈൽ')
+    contacts = models.CharField(max_length=250, null=True, blank=True, verbose_name='Contacts - മൊബൈൽ')
     type_of_materials_collecting = models.TextField(
         verbose_name="Type of materials collecting - ശേഖരിക്കുന്ന വസ്തുക്കൾ ",
         null=True, blank=True
@@ -458,7 +458,7 @@ class CollectionCenter(models.Model):
         verbose_name='LSG Type - തദ്ദേശ സ്വയംഭരണ സ്ഥാപനം',
         null=True, blank=True
     )
-    lsg_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Name - പേര്")
+    lsg_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="LSG Name - സ്വയംഭരണ സ്ഥാപനത്തിന്റെ പേര്")
     ward_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Ward - വാർഡ്")
     is_inside_kerala = models.BooleanField(verbose_name="Center inside kerala? - കേന്ദ്രം കേരളത്തിലാണോ")
     city = models.CharField(max_length=150, verbose_name="City - നഗരം")
