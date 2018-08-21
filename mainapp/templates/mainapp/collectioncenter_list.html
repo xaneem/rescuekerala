@@ -17,9 +17,10 @@
         </tr>
     {% for center in object_list %}
         <tr valign="top">
-              <td>{{ center.id }}</td>
+              <!-- <td>{{ center.id }}</td> -->
               <td>{{ center.name }}</td>
               <td>{{ center.address }}</td>
+              <td>{{ center.contacts }}</td>
               <td>{{ center.type_of_materials_collecting }}</td>
         </tr>
     {% empty %}
