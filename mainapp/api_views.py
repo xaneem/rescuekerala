@@ -96,7 +96,6 @@ def request_update_list(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = RequestUpdateSerializer(data=data)
-        import pdb; pdb.set_trace()
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
