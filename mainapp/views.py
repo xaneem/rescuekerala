@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from mainapp.redis_queue import sms_queue
 from mainapp.sms_handler import send_confirmation_sms
@@ -24,10 +25,13 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
+
 from mainapp.admin import create_csv_response
 import csv
 from dateutil import parser
 import calendar
+from mainapp.models import CollectionCenter
+
 
 class CustomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -82,7 +86,7 @@ class RegisterVolunteer(CreateView):
     success_url = '/reg_success/'
 
 def volunteerdata(request):
-    filter = VolunteerFilter(request.GET, queryset=Volunteer.objects.all() )
+    filter = VolunteerFilter( request.GET, queryset=Volunteer.objects.all() )
     req_data = filter.qs.order_by('-id')
     paginator = Paginator(req_data, PER_PAGE)
     page = request.GET.get('page')
@@ -101,8 +105,29 @@ class RegisterNGO(CreateView):
 class RegisterPrivateReliefCamp(CreateView):
     model = PrivateRescueCamp
     fields = '__all__'
-    success_url = '/reg_success'
+    success_url = '/pcamp'
 
+def privatecc(request):
+    return render(request,"privatecc.html")
+
+
+def pcamplist(request):
+    filter = PrivateCampFilter(request.GET, queryset=PrivateRescueCamp.objects.all())
+    data = filter.qs.order_by('-id')
+    paginator = Paginator(data, 50)
+    page = request.GET.get('page')
+    data = paginator.get_page(page)
+
+    return render(request, "mainapp/pcamplist.html", {'filter': filter , 'data' : data})
+
+def pcampdetails(request):
+    if('id' not in request.GET.keys() ):return HttpResponseRedirect('/pcamp')
+    id = request.GET.get('id')
+    try:
+        req_data = PrivateRescueCamp.objects.get(id=id)
+    except:
+        return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch details for that Camp'))
+    return render(request, 'mainapp/p_camp_details.html', {'req': req_data }) 
 
 def download_ngo_list(request):
     district = request.GET.get('district', None)
@@ -390,7 +415,7 @@ def mapview(request):
 def dmodash(request):
     camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
 
-    for i in RescueCamp.objects.all():
+    for i in RescueCamp.objects.all().filter(status="active"):
         camps+=1
         total_people += ifnonezero(i.total_people)
         total_male  += ifnonezero(i.total_males)
@@ -405,7 +430,7 @@ def dmodist(request):
     for district in districts:
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0
 
-        for i in RescueCamp.objects.all().filter(district = district[0]):
+        for i in RescueCamp.objects.all().filter(district = district[0] , status="active"):
             camps+=1
             total_people += ifnonezero(i.total_people)
             total_male  += ifnonezero(i.total_males)
@@ -419,16 +444,16 @@ def dmodist(request):
 def dmotal(request):
     if(request.GET.get("district",-1) == -1):return render(request , "dmotal.html"  )
     dist = request.GET.get("district",-1)
-    if(dist == "all"): data = RescueCamp.objects.all().values('taluk').distinct()
-    else:data = RescueCamp.objects.all().filter(district = dist).values('taluk').distinct()
+    if(dist == "all"): data = RescueCamp.objects.filter(status='active').values('taluk').distinct()
+    else:data = RescueCamp.objects.filter(district = dist , status='active').values('taluk').distinct()
     distmapper = {}
     for i in districts:
         distmapper[i[0]] = i[1]
     d = []
     for taluk in data :
         camps = 0 ;total_people = 0 ;total_male = 0 ; total_female = 0 ; total_infant = 0 ; total_medical = 0;district = ""
-        if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"])
-        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"])
+        if(dist == "all"):RCdata = RescueCamp.objects.all().filter( taluk = taluk["taluk"] , status="active")
+        else:RCdata = RescueCamp.objects.all().filter( district = dist , taluk = taluk["taluk"] , status="active")
         for i in RCdata:
             camps+=1
             district = i.district
@@ -452,7 +477,7 @@ def dmocsv(request):
     response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(csv_name)
     writer = csv.writer(response)
     writer.writerow(header_row)
-    for camp in RescueCamp.objects.all().filter(district = dist):
+    for camp in RescueCamp.objects.all().filter(district = dist , status="active"):
         row = [
             getattr(camp , key)  for key in header_row
         ]
@@ -688,6 +713,20 @@ class CoordinatorCampFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+            
+class PrivateCampFilter(django_filters.FilterSet):
+    class Meta:
+        model = PrivateRescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains']
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PrivateCampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
 
 @login_required(login_url='/login/')
 def coordinator_home(request):
@@ -729,9 +768,6 @@ class VolunteerConsent(UpdateView):
             return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
         return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
         
-    def form_valid(self, form):
-        print(form)
-        return HttpResponseRedirect(self.get_success_url())
 
 class ConsentSuccess(TemplateView):
     template_name = "mainapp/volunteer_consent_success.html"
@@ -743,3 +779,30 @@ def camp_requirements_list(request):
     page = request.GET.get('page')
     data = paginator.get_page(page)
     return render(request, "mainapp/camp_requirements_list.html", {'filter': filter , 'data' : data})
+
+
+class CollectionCenterListView(ListView):
+    model = CollectionCenter
+    paginate_by = PER_PAGE
+    ordering = ['-id']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class CollectionCenterView(CreateView):
+    model = CollectionCenter
+    fields = [
+        'name',
+        'address',
+        'contacts',
+        'type_of_materials_collecting',
+        'district',
+        'lsg_type',
+        'lsg_name',
+        'ward_name',
+        'is_inside_kerala',
+        'city',
+    ]
+
