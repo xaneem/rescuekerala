@@ -559,3 +559,11 @@ class CollectionCenter(models.Model):
 
     def get_absolute_url(self):
         return reverse('collection_centers_list')
+
+
+class CsvBulkUpload(models.Model):
+    name = models.CharField(max_length=20)
+    csv_file = models.FileField(upload_to=upload_to)
+
+    def __str__(self):
+        return self.name

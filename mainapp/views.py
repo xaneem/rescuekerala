@@ -127,7 +127,7 @@ def pcampdetails(request):
         req_data = PrivateRescueCamp.objects.get(id=id)
     except:
         return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch details for that Camp'))
-    return render(request, 'mainapp/p_camp_details.html', {'req': req_data }) 
+    return render(request, 'mainapp/p_camp_details.html', {'req': req_data })
 
 def download_ngo_list(request):
     district = request.GET.get('district', None)
@@ -714,7 +714,7 @@ class CoordinatorCampFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
-            
+
 class PrivateCampFilter(django_filters.FilterSet):
     class Meta:
         model = PrivateRescueCamp
@@ -758,17 +758,17 @@ class VolunteerConsent(UpdateView):
     model = Volunteer
     fields = ['has_consented']
     success_url = '/consent_success/'
-    
+
     def dispatch(self, request, *args, **kwargs):
         timestamp = parser.parse(self.get_object().joined.isoformat())
         timestamp = calendar.timegm(timestamp.utctimetuple())
         timestamp = str(timestamp)[-4:]
         request_ts = kwargs['ts']
-        
+
         if request_ts != timestamp:
             return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
         return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
-        
+
 
 class ConsentSuccess(TemplateView):
     template_name = "mainapp/volunteer_consent_success.html"
@@ -792,10 +792,10 @@ class RequestUpdateView(CreateView):
         'notes'
     ]
     success_url = '/req_update_success/'
-    
+
     def original_request(self):
         return self.original_request
-    
+
     def updates(self):
         return self.updates
 
@@ -805,11 +805,11 @@ class RequestUpdateView(CreateView):
         #disable authentication
         # if not request.user.is_authenticated:
         #     return redirect('/login'+'?next=request_updates/'+kwargs['request_id']+'/')
-            
+
         self.original_request = get_object_or_404(Request, pk=kwargs['request_id'])
         self.updates = RequestUpdate.objects.all().filter(request_id=kwargs['request_id']).order_by('-update_ts')
         return super().dispatch(request, *args, **kwargs)
-        
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.request = self.original_request
@@ -818,6 +818,7 @@ class RequestUpdateView(CreateView):
 
 class ReqUpdateSuccess(TemplateView):
     template_name = "mainapp/request_update_success.html"
+
 
 class CollectionCenterListView(ListView):
     model = CollectionCenter
