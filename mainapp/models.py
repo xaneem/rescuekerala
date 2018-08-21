@@ -85,6 +85,11 @@ announcement_priorities = [
     ('M', 'Medium'),
     ('L', 'Low')]
 
+person_status = (
+    ('new', 'New'),
+    ('checked_out', 'Checked Out'),
+    ('closed', 'Closed')
+)
 
 class LSGTypes(Enum):
     CORPORATION = 0
@@ -419,6 +424,17 @@ class Person(models.Model):
     notes = models.TextField(max_length=500,null=True,blank=True,verbose_name='Notes - കുറിപ്പുകൾ')
     camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
     added_at = models.DateTimeField(auto_now_add=True)
+
+    checkin_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
+    checkout_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
+
+    status = models.CharField(
+        blank=True,
+        null=True,
+        max_length = 15,
+        choices = person_status,
+        default = None,
+    )
 
     @property
     def sex(self):
