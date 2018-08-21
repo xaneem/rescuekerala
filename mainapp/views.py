@@ -692,6 +692,20 @@ def announcements(request):
                                                   'pinned_data': pinned_data})
 
 
+class CoordinatorCampFilter(django_filters.FilterSet):
+    class Meta:
+        model = RescueCamp
+        fields = {
+            'district' : ['exact'],
+            'name' : ['icontains']
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CoordinatorCampFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+            
 class PrivateCampFilter(django_filters.FilterSet):
     class Meta:
         model = PrivateRescueCamp
