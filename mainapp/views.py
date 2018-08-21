@@ -729,9 +729,6 @@ class VolunteerConsent(UpdateView):
             return HttpResponseRedirect("/error?error_text={}".format('Sorry, we couldnt fetch volunteer info'))
         return super(VolunteerConsent, self).dispatch(request, *args, **kwargs)
         
-    def form_valid(self, form):
-        print(form)
-        return HttpResponseRedirect(self.get_success_url())
 
 class ConsentSuccess(TemplateView):
     template_name = "mainapp/volunteer_consent_success.html"
