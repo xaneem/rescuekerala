@@ -4,10 +4,6 @@
 {% block content %}
 
 
-<div class="text-right">
-    <a href="/find_people">Search People</a> | 
-    <a href="/logout">Logout</a>
-</div>
 
 <h2 align=center>
   Private Camp List
@@ -38,7 +34,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in data %}dfg
+        {% for item in data %}
         <tr>
             <td><strong>{{ item.name }}</strong></td>
             <td>{{ item.get_district_display }}</td>
