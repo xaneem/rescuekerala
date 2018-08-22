@@ -3,7 +3,7 @@ import os
 import redis
 from rq import Worker, Queue, Connection
 
-listen = ["high", "default", "low", "smsjob"]
+listen = ["high", "default", "low", "smsjob", "bulkcsvjob"]
 
 redis_url = os.getenv("REDIS_URL")
 
