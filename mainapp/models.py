@@ -347,6 +347,25 @@ class RescueCamp(models.Model):
         verbose_name = 'Relief: Camp'
         verbose_name_plural = "Relief: Camps"
 
+    @property
+    def district_name(self):
+        return {
+                'alp':'Alappuzha - ആലപ്പുഴ',
+                'ekm':'Ernakulam - എറണാകുളം',
+                'idk':'Idukki - ഇടുക്കി',
+                'knr':'Kannur - കണ്ണൂർ',
+                'ksr':'Kasaragod - കാസർഗോഡ്',
+                'kol':'Kollam - കൊല്ലം',
+                'ktm':'Kottayam - കോട്ടയം',
+                'koz':'Kozhikode - കോഴിക്കോട്',
+                'mpm':'Malappuram - മലപ്പുറം',
+                'pkd':'Palakkad - പാലക്കാട്',
+                'ptm':'Pathanamthitta - പത്തനംതിട്ട',
+                'tvm':'Thiruvananthapuram - തിരുവനന്തപുരം',
+                'tcr':'Thrissur - തൃശ്ശൂർ',
+                'wnd':'Wayanad - വയനാട്',
+                }.get(self.district, 'Unknown')
+
 
     def __str__(self):
         return self.name
