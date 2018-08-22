@@ -40,13 +40,13 @@ def import_inmate_file(csvid):
             camp_obj = RescueCamp.objects.get(id = camp_id)
             identifier_str = (datum.get("phone", "") + datum.get("name","") + datum.get("age",0)).encode('utf-8')
             identifier = md5(identifier_str).hexdigest()
-            
+            #this will fail. we should deal with the removed unique_identifier
             p = Person.objects.get(unique_identifier=identifier)
         except ValueError as e:
             print("Invalid camp ID. row = "+ str(datum))
         except RescueCamp.DoesNotExist as e:
             print("Camp does not exist. row = "+ str(datum))
-            
+
         except Person.DoesNotExist:
             gender = 2
             if( len(datum.get("gender", "")) > 0 ):
@@ -69,7 +69,7 @@ def import_inmate_file(csvid):
                 checkin_date = parsedate(datum.get("checkin_date", None)),
                 checkout_date = parsedate(datum.get("checkout_date", None))
             ).save()
-            
+
 
 
 #For Shell Testing

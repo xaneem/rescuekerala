@@ -10,11 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='person',
-            name='unique_identifier',
-            field=models.CharField(default='', max_length=32, unique=True),
-        ),
         migrations.AlterField(
             model_name='person',
             name='checkin_date',
