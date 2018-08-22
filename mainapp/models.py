@@ -425,8 +425,8 @@ class Person(models.Model):
     camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
     added_at = models.DateTimeField(auto_now_add=True)
 
-    checkin_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
-    checkout_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
+    checkin_date = models.DateField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
+    checkout_date = models.DateField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
 
     status = models.CharField(
         blank=True,
@@ -435,6 +435,8 @@ class Person(models.Model):
         choices = person_status,
         default = None,
     )
+
+    unique_identifier = models.CharField(unique=True, max_length=32, default='')
 
     @property
     def sex(self):
@@ -580,6 +582,21 @@ class CollectionCenter(models.Model):
 class CsvBulkUpload(models.Model):
     name = models.CharField(max_length=20)
     csv_file = models.FileField(upload_to=upload_to)
+
+    def full_clean(self, *args, **kwargs):
+        with open(self.csv_file.url, "r") as f:
+            reader = csv.reader(f)
+            i = next(reader)
+            flds = set(i)
+            print(set(i))
+            p_flds = { f.name for f in Person._meta.get_fields() }
+            print(p_flds)
+            if (flds - p_flds) == {}:
+                pass
+            else:
+                raise ValidationError('nope')
+
+        super(CsvBulkUpload, self).full_clean(*args, **kwargs)
 
     def __str__(self):
         return self.name
