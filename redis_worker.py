@@ -2,6 +2,7 @@ import os
 
 import redis
 from rq import Worker, Queue, Connection
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'floodrelief.settings')
 
 listen = ["high", "default", "low", "smsjob", "bulkcsvjob"]
 
