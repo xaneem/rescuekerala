@@ -470,8 +470,8 @@ class Person(models.Model):
                 }.get(self.district, 'Unknown')
 
     class Meta:
-        verbose_name = 'Relief: Refugee'
-        verbose_name_plural = "Relief: Refugees"
+        verbose_name = 'Relief: Inmate'
+        verbose_name_plural = "Relief: Inmates"
 
     def __str__(self):
         return self.name
