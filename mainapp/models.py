@@ -6,6 +6,10 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
+import csv
+import codecs
+from django.core.exceptions import ValidationError
+
 
 
 districts = (
@@ -425,8 +429,8 @@ class Person(models.Model):
     camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
     added_at = models.DateTimeField(auto_now_add=True)
 
-    checkin_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
-    checkout_date = models.DateTimeField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
+    checkin_date = models.DateField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
+    checkout_date = models.DateField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
 
     status = models.CharField(
         blank=True,
@@ -435,6 +439,8 @@ class Person(models.Model):
         choices = person_status,
         default = None,
     )
+
+    unique_identifier = models.CharField(unique=True, max_length=32, default='')
 
     @property
     def sex(self):
@@ -580,6 +586,19 @@ class CollectionCenter(models.Model):
 class CsvBulkUpload(models.Model):
     name = models.CharField(max_length=20)
     csv_file = models.FileField(upload_to=upload_to)
+
+    def full_clean(self, *args, **kwargs):
+        self.csv_file.open(mode="rb")
+        reader = csv.reader(codecs.iterdecode(self.csv_file.file, 'utf-8'))
+        i = next(reader)
+        flds = set(i)
+        p_flds = { f.name for f in Person._meta.get_fields() }
+        if len(flds - p_flds) == 0:
+            pass
+        else:
+            raise ValidationError('Invalid CSV headers found: ' + str(flds - p_flds))
+
+        super(CsvBulkUpload, self).full_clean(*args, **kwargs)
 
     def __str__(self):
         return self.name

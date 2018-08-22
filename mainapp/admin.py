@@ -3,6 +3,9 @@ import csv
 from django.contrib import admin
 from django.core.validators import EMPTY_VALUES
 from django.http import HttpResponse
+from mainapp.redis_queue import bulk_csv_upload_queue
+from mainapp.csvimporter import import_inmate_file
+
 
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
     RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload
@@ -200,7 +203,11 @@ class DataCollectionAdmin(admin.ModelAdmin):
     list_display = ['document_name', 'document', 'tag']
 
 class CsvBulkUploadAdmin(admin.ModelAdmin):
-    pass
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        bulk_csv_upload_queue.enqueue(
+            import_inmate_file, obj.pk
+        )
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
