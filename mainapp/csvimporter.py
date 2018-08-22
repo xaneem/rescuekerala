@@ -1,9 +1,8 @@
-from mainapp.models import Person, RescueCamp, CsvBulkUpload
 import datetime
 from hashlib import md5
 from redis import Redis
 import csv
-# Import Statements End
+import codecs
 
 def parsedate(str):
     try:
@@ -20,8 +19,16 @@ def parsedate(str):
         return None
 
 def import_inmate_file(csvid):
-    csvfile = CsvBulkUpload.objects.all().filter(id = csvid)
-    new_data = csv.DictReader(open( csvfile.csv_file.url , 'r'))
+
+    import django
+    django.setup()
+
+    from mainapp.models import Person, RescueCamp, CsvBulkUpload
+
+    upload = CsvBulkUpload.objects.get(id = csvid)
+    upload.csv_file.open(mode="rb")
+    new_data = csv.DictReader(codecs.iterdecode(upload.csv_file.file, 'utf-8'))
+
     camp_obj = False
     for datum in new_data:
         camp_obj = RescueCamp.objects.get(id = int(datum.get("camped_at", "")))
