@@ -184,10 +184,13 @@ class AnnouncementAdmin(admin.ModelAdmin):
 
 class PersonAdmin(admin.ModelAdmin):
     actions = ['download_csv']
-    list_display = ('name', 'camped_at', 'added_at', 'phone', 'age', 'gender', 'district')
+    list_display = ('name', 'camped_at', 'added_at', 'phone', 'age', 'gender', 'district', 'camped_at_taluk')
     ordering = ('-added_at',)
     list_filter = ('camped_at__district', 'camped_at__taluk')
 
+    def camped_at_taluk(self, instance):
+        return instance.camped_at.taluk
+    
     def download_csv(self, request, queryset):
         header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at')
         body_rows = []
