@@ -65,7 +65,7 @@ def import_inmate_file(csvid):
             address = datum.get("address", ""),
             notes = datum.get("notes", ""),
             camped_at = upload.camp ,
-            district = datum.get("district", ""),
+            district = datum.get("district", "").lower(),
             status = "new",
             checkin_date = parsedate(datum.get("checkin_date", None)),
             checkout_date = parsedate(datum.get("checkout_date", None))
