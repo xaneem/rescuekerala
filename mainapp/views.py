@@ -517,8 +517,8 @@ def logout_view(request):
     return redirect('/relief_camps')
 
 class PersonForm(CustomForm):
-    checkin_date = forms.DateField(input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 18-08-2018")
-    checkout_date = forms.DateField(input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 21-08-2018")
+    checkin_date = forms.DateField(    required=False,input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 18-08-2018")
+    checkout_date = forms.DateField(    required=False,input_formats=["%d-%m-%Y"],help_text="Use dd-mm-yyyy format. Eg. 21-08-2018")
 
     class Meta:
        model = Person
