@@ -89,6 +89,7 @@ announcement_priorities = [
     ('M', 'Medium'),
     ('L', 'Low')]
 
+
 person_status = (
     ('new', 'New'),
     ('checked_out', 'Checked Out'),
