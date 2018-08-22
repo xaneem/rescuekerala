@@ -586,18 +586,33 @@ class CollectionCenter(models.Model):
 class CsvBulkUpload(models.Model):
     name = models.CharField(max_length=20)
     csv_file = models.FileField(upload_to=upload_to)
+    is_completed = models.BooleanField(default=False)
+    camp = models.ForeignKey(RescueCamp, models.CASCADE)
 
     def full_clean(self, *args, **kwargs):
+        print("1")
+        # Then call the clean() method of the super  class
+        # ... do some cross-fields validation for the subclass
         self.csv_file.open(mode="rb")
         reader = csv.reader(codecs.iterdecode(self.csv_file.file, 'utf-8'))
         i = next(reader)
         flds = set(i)
-        p_flds = { f.name for f in Person._meta.get_fields() }
-        if len(flds - p_flds) == 0:
+        person_flds = {
+            'name',
+            'phone',
+            'age',
+            'gender',
+            'address',
+            'district',
+            'notes',
+            'checkin_date',
+            'checkout_date',
+            'status',
+        }
+        if len(flds - person_flds) == 0:
             pass
         else:
-            raise ValidationError('Invalid CSV headers found: ' + str(flds - p_flds))
-
+            raise ValidationError('Invalid CSV headers found: ' + str(flds - person_flds))
         super(CsvBulkUpload, self).full_clean(*args, **kwargs)
 
     def __str__(self):

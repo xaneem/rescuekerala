@@ -54,7 +54,6 @@ def import_inmate_file(csvid):
                 gender = 1
 
         Person(
-            unique_identifier = identifier,
             name = datum.get("name", ""),
             phone = datum.get("phone", ""),
             age = datum.get("age", ""),
@@ -67,7 +66,7 @@ def import_inmate_file(csvid):
             checkin_date = parsedate(datum.get("checkin_date", None)),
             checkout_date = parsedate(datum.get("checkout_date", None))
         ).save()
-    CsvBulkUpload.objects.get(id = csvid).update(is_completed = True)       
+    CsvBulkUpload.objects.filter(id = csvid).update(is_completed = True)
 
 
 
