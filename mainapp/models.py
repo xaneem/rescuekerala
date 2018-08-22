@@ -6,6 +6,10 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
+import csv
+import codecs
+from django.core.exceptions import ValidationError
+
 
 
 districts = (
@@ -584,17 +588,15 @@ class CsvBulkUpload(models.Model):
     csv_file = models.FileField(upload_to=upload_to)
 
     def full_clean(self, *args, **kwargs):
-        with open(self.csv_file.url, "r") as f:
-            reader = csv.reader(f)
-            i = next(reader)
-            flds = set(i)
-            print(set(i))
-            p_flds = { f.name for f in Person._meta.get_fields() }
-            print(p_flds)
-            if (flds - p_flds) == {}:
-                pass
-            else:
-                raise ValidationError('nope')
+        self.csv_file.open(mode="rb")
+        reader = csv.reader(codecs.iterdecode(self.csv_file.file, 'utf-8'))
+        i = next(reader)
+        flds = set(i)
+        p_flds = { f.name for f in Person._meta.get_fields() }
+        if len(flds - p_flds) == 0:
+            pass
+        else:
+            raise ValidationError('Invalid CSV headers found: ' + str(flds - p_flds))
 
         super(CsvBulkUpload, self).full_clean(*args, **kwargs)
 
