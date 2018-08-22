@@ -1,8 +1,16 @@
 import os
 import uuid
+from enum import Enum
+
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.urls import reverse
+import csv
+import codecs
+from django.core.exceptions import ValidationError
+
+
 
 districts = (
     ('alp','Alappuzha - ആലപ്പുഴ'),
@@ -24,7 +32,15 @@ districts = (
 status_types =(
     ('new', 'New'),
     ('pro', 'In progess'),
-    ('sup', 'Supplied'),
+    ('sup', 'Supplied')
+)
+
+volunteer_update_status_types = (
+    ('hig', 'High priority'),
+    ('med', 'Medium priority'),
+    ('low', 'Low priority'),
+    ('cls', 'Can be closed'),
+    ('otr', 'Other')
 )
 
 contrib_status_types =(
@@ -73,6 +89,17 @@ announcement_priorities = [
     ('M', 'Medium'),
     ('L', 'Low')]
 
+
+person_status = (
+    ('new', 'New'),
+    ('checked_out', 'Checked Out'),
+    ('closed', 'Closed')
+)
+
+class LSGTypes(Enum):
+    CORPORATION = 0
+    MUNICIPALITY = 1
+    GRAMA_PANCHAYATH = 2
 
 
 class Request(models.Model):
@@ -166,6 +193,7 @@ class Volunteer(models.Model):
     is_spoc = models.BooleanField(default=False, verbose_name="Is point of contact")
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    has_consented = models.BooleanField(default=False, verbose_name="Available")
 
     class Meta:
         verbose_name = 'Volunteer: Individual'
@@ -320,6 +348,82 @@ class RescueCamp(models.Model):
         verbose_name = 'Relief: Camp'
         verbose_name_plural = "Relief: Camps"
 
+    @property
+    def district_name(self):
+        return {
+                'alp':'Alappuzha - ആലപ്പുഴ',
+                'ekm':'Ernakulam - എറണാകുളം',
+                'idk':'Idukki - ഇടുക്കി',
+                'knr':'Kannur - കണ്ണൂർ',
+                'ksr':'Kasaragod - കാസർഗോഡ്',
+                'kol':'Kollam - കൊല്ലം',
+                'ktm':'Kottayam - കോട്ടയം',
+                'koz':'Kozhikode - കോഴിക്കോട്',
+                'mpm':'Malappuram - മലപ്പുറം',
+                'pkd':'Palakkad - പാലക്കാട്',
+                'ptm':'Pathanamthitta - പത്തനംതിട്ട',
+                'tvm':'Thiruvananthapuram - തിരുവനന്തപുരം',
+                'tcr':'Thrissur - തൃശ്ശൂർ',
+                'wnd':'Wayanad - വയനാട്',
+                }.get(self.district, 'Unknown')
+
+
+    def __str__(self):
+        return self.name
+
+
+class PrivateRescueCamp(models.Model):
+    lsg_types = [
+        (LSGTypes.CORPORATION.value, 'Corporation'),
+        (LSGTypes.MUNICIPALITY.value, 'Municipality'),
+        (LSGTypes.GRAMA_PANCHAYATH.value, 'Grama Panchayath')
+    ]
+
+    name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
+    location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
+    district = models.CharField(
+        max_length=15,
+        choices=districts
+    )
+    lsg_type = models.SmallIntegerField(
+        choices=lsg_types,
+        verbose_name='LSG Type - തദ്ദേശ സ്വയംഭരണ സ്ഥാപനം',
+        null=True, blank=True
+    )
+    lsg_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="LSG Name - സ്വയംഭരണ സ്ഥാപനത്തിന്റെ പേര്")
+    ward_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Ward - വാർഡ്")
+    is_inside_kerala = models.BooleanField(verbose_name="Center inside kerala? - കേന്ദ്രം കേരളത്തിലാണോ")
+    city = models.CharField(max_length=150, verbose_name="City - നഗരം")
+    contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    facilities_available = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Facilities Available (light, kitchen, toilets etc.) - ലഭ്യമായ സൗകര്യങ്ങൾ"
+    )
+    map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
+    latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
+
+    total_people = models.IntegerField(null=True,blank=True,verbose_name="Total Number of People")
+    total_males = models.IntegerField(null=True,blank=True,verbose_name="Number of Males")
+    total_females = models.IntegerField(null=True,blank=True,verbose_name="Number of Females")
+    total_infants = models.IntegerField(null=True,blank=True,verbose_name="Number of Infants (<2y)")
+
+    food_req = models.TextField(blank=True,null=True,verbose_name="Food - ഭക്ഷണം")
+    clothing_req = models.TextField(blank=True,null=True,verbose_name="Clothing - വസ്ത്രം")
+    sanitary_req = models.TextField(blank=True,null=True,verbose_name="Sanitary - സാനിറ്ററി")
+    medical_req = models.TextField(blank=True,null=True,verbose_name="Medical - മെഡിക്കൽ")
+    other_req = models.TextField(blank=True,null=True,verbose_name="Other - മറ്റുള്ളവ")
+
+    status = models.CharField(
+        max_length = 10,
+        choices = relief_camp_status,
+        default = 'active',
+    )
+
+    class Meta:
+        verbose_name = 'Private Relief: Camp'
+        verbose_name_plural = "Private Relief: Camps"
+
 
     def __str__(self):
         return self.name
@@ -344,6 +448,19 @@ class Person(models.Model):
     notes = models.TextField(max_length=500,null=True,blank=True,verbose_name='Notes - കുറിപ്പുകൾ')
     camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False,verbose_name='Camp Name - ക്യാമ്പിന്റെ പേര്')
     added_at = models.DateTimeField(auto_now_add=True)
+
+    checkin_date = models.DateField(null=True,blank=True,verbose_name='Check-in Date - ചെക്ക്-ഇൻ തീയതി')
+    checkout_date = models.DateField(null=True,blank=True,verbose_name='Check-out Date - ചെക്ക്-ഔട്ട് തീയതി')
+
+    status = models.CharField(
+        blank=True,
+        null=True,
+        max_length = 15,
+        choices = person_status,
+        default = None,
+    )
+
+    unique_identifier = models.CharField(max_length=32, default='')
 
     @property
     def sex(self):
@@ -373,8 +490,8 @@ class Person(models.Model):
                 }.get(self.district, 'Unknown')
 
     class Meta:
-        verbose_name = 'Relief: Refugee'
-        verbose_name_plural = "Relief: Refugees"
+        verbose_name = 'Relief: Inmate'
+        verbose_name_plural = "Relief: Inmates"
 
     def __str__(self):
         return self.name
@@ -424,3 +541,96 @@ class DataCollection(models.Model):
 
     def __str__(self):
         return self.document_name
+
+
+class RequestUpdate(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    status = models.CharField(
+            max_length = 10,
+            choices = volunteer_update_status_types
+        )
+
+    other_status = models.CharField(max_length=255, verbose_name='Please specify other status', default='', blank=True)
+    updater_name = models.CharField(max_length=100, verbose_name='Name of person or group updating', blank=False)
+
+    phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$', message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>', code='invalid_mobile')
+    updater_phone = models.CharField(max_length=14,verbose_name='Phone number of person or group updating', validators=[phone_number_regex])
+
+    notes = models.TextField(verbose_name='Volunteer comments', blank=True)
+
+    update_ts = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.get_status_display()
+
+
+class CollectionCenter(models.Model):
+
+    lsg_types = [
+        (LSGTypes.CORPORATION.value, 'Corporation'),
+        (LSGTypes.MUNICIPALITY.value, 'Municipality'),
+        (LSGTypes.GRAMA_PANCHAYATH.value, 'Grama Panchayath')
+    ]
+
+    name = models.CharField(max_length=100, blank=False, null=False, verbose_name="Name - പേര്")
+    address = models.TextField(verbose_name="Address - വിലാസം")
+    contacts = models.CharField(max_length=250, null=True, blank=True, verbose_name='Contacts - മൊബൈൽ')
+    type_of_materials_collecting = models.TextField(
+        verbose_name="Type of materials collecting - ശേഖരിക്കുന്ന വസ്തുക്കൾ ",
+        null=True, blank=True
+    )
+    district = models.CharField(
+        max_length=15,
+        choices=districts,
+        verbose_name='Ceter District - ജില്ല',
+        null=True, blank=True
+    )
+    lsg_type = models.SmallIntegerField(
+        choices=lsg_types,
+        verbose_name='LSG Type - തദ്ദേശ സ്വയംഭരണ സ്ഥാപനം',
+        null=True, blank=True
+    )
+    lsg_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="LSG Name - സ്വയംഭരണ സ്ഥാപനത്തിന്റെ പേര്")
+    ward_name = models.CharField(max_length=150, null=True, blank=True, verbose_name="Ward - വാർഡ്")
+    is_inside_kerala = models.BooleanField(default=True, verbose_name="Center inside kerala? - കേന്ദ്രം കേരളത്തിലാണോ")
+    city = models.CharField(null=True, blank=True, max_length=150, verbose_name="City - നഗരം")
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('collection_centers_list')
+
+
+class CsvBulkUpload(models.Model):
+    name = models.CharField(max_length=20)
+    csv_file = models.FileField(upload_to=upload_to)
+    is_completed = models.BooleanField(default=False)
+    camp = models.ForeignKey(RescueCamp, models.CASCADE)
+
+    def full_clean(self, *args, **kwargs):
+        self.csv_file.open(mode="rb")
+        reader = csv.reader(codecs.iterdecode(self.csv_file.file, 'utf-8'))
+        i = next(reader)
+        flds = set(i)
+        person_flds = {
+            'name',
+            'phone',
+            'age',
+            'gender',
+            'address',
+            'district',
+            'notes',
+            'checkin_date',
+            'checkout_date',
+            'status',
+        }
+        if len(flds - person_flds) == 0:
+            pass
+        else:
+            raise ValidationError('Invalid CSV headers found: ' + str(flds - person_flds))
+        super(CsvBulkUpload, self).full_clean(*args, **kwargs)
+
+    def __str__(self):
+        return self.name

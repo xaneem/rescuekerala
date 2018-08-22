@@ -2,6 +2,14 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<!--Navigation Breadcrumbs-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Relief Camps</li>
+  </ol>
+</nav>
+
 <h3 class="text-center">
   Relief Camps |
   ദുരിതാശ്വാസ ക്യാമ്പുകൾ
@@ -11,6 +19,9 @@
   <div class="col-md-12 text-right">
     <a class="btn btn-default" href="/coordinator_home" style="margin-top: 5px;">
       Coordinator Login
+    </a>
+    <a class="btn btn-info" href="https://play.google.com/store/apps/details?id=xyz.appmaker.keralarescue" style="margin-top: 5px;">
+      Coordinator App
     </a>
     <p>
       Contact your coordinator to get login details
@@ -25,7 +36,7 @@
         {% bootstrap_icon "home" %}
         <span class="text text-center">
             Relief Camps List<br/>
-            ദുരിതാശ്വാസ ക്യാമ്പുകൾ ലിസ്റ്റ് 
+            ദുരിതാശ്വാസ ക്യാമ്പുകൾ ലിസ്റ്റ്
             <span class="ml small"></span>
         </span>
     </a>
@@ -41,7 +52,7 @@
         {% bootstrap_icon "list" %}
         <span class="text text-center">
             Supply Requirements<br/>
-            ക്യാമ്പിന്റെ ആവശ്യങ്ങൾ 
+            ക്യാമ്പിന്റെ ആവശ്യങ്ങൾ
             <span class="ml small"></span>
         </span>
     </a>

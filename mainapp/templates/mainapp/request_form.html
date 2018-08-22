@@ -3,6 +3,14 @@
 {% load static %}
 
 {% block content %}
+<!--Navigation Breadcrumb-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Request For Help</li>
+  </ol>
+</nav>
+
 <h1 class="text-center">Request For Help</h1>
 <h2 class="text-center">സഹായം അഭ്യര്‍ഥിക്കാന്‍</h2>
   <form method="post"  class="simple-form">
@@ -120,8 +128,18 @@
 		$('#instructionModal').on('hidden.bs.modal', function (e) {
 		  navigator.geolocation.getCurrentPosition(success, error, options);
 		})
-
-		$('#instructionModal').modal('show');
+    try {
+      navigator.permissions.query({'name': 'geolocation'}).then(
+        function(result) {
+          switch (result.state) {
+            case 'prompt': $('#instructionModal').modal('show'); break;
+            case 'granted': navigator.geolocation.getCurrentPosition(success, error, options); break;
+          }
+      })
+    } catch (err) {
+      // capture cases that don't have navigator or navigator.permissions
+      $('#instructionModal').modal('show');
+    }
 	}
 
 	function showLocationPickerForm(){
