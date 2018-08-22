@@ -4,7 +4,7 @@
 
 <p align="center">The Website for co-ordinating the rehabilitation of the people affected in the 2018 Kerala Floods.</p>
 
-[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/keralarescueslack)
+[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/Keralarescuechat)
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -150,7 +150,7 @@ That's it!
 <hr>
 
 ### Creating migration files
-[^toc](#creating-migration-files)
+[^toc](#table-of-contents)
 
 If your code changes anything in models.py, you might need to make changes in database schema, or other constraints. To create migrations files, run python3 manage.py makemigrations --settings=floodrelief.settings after making your changes. Also make sure to add these files in the commit.
 
@@ -212,7 +212,7 @@ In the above example the server is being run on a local IP address on port 8002 
 
 #### Verification of Rescue Requests
 
-You can help us with verifying user submitted request from our [Ushahidi volunteer](http://volunteers.keralarescue.in/) portal. Please follow the usermanual available in either [English](https://github.com/IEEEKeralaSection/rescuekerala/files/2300176/Kerala.Rescue.Volunteers.Manual.Draft.pdf) or [Malayalam](https://github.com/IEEEKeralaSection/rescuekerala/files/2299875/default.pdf)
+You can help us with verifying user submitted request from our [Ushahidi volunteer](https://volunteers.keralarescue.in/) portal. Please follow the usermanual available in either [English](https://github.com/IEEEKeralaSection/rescuekerala/files/2300176/Kerala.Rescue.Volunteers.Manual.Draft.pdf) or [Malayalam](https://github.com/IEEEKeralaSection/rescuekerala/files/2299875/default.pdf)
 
 #### Contribution Guidelines
 Check out this [Wiki](https://github.com/IEEEKeralaSection/rescuekerala/wiki/Contribution-Guidelines) for our contribution guidelines.
