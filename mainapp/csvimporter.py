@@ -4,6 +4,9 @@ from redis import Redis
 import csv
 import codecs
 
+
+
+
 def parsedate(str):
     try:
         if( len(str) > 1 ):
@@ -31,12 +34,20 @@ def import_inmate_file(csvid):
 
     camp_obj = False
     for datum in new_data:
-        camp_obj = RescueCamp.objects.get(id = int(datum.get("camped_at", "")))
-        identifier = md5(datum.get("phone", "") + datum.get("name","") + datum.get("age",0))
 
-        if Person.objects.get(unique_identifier=identifier).exists():
-             continue
-        else:
+        try:
+            camp_id = int(datum.get("camped_at", ""))
+            camp_obj = RescueCamp.objects.get(id = camp_id)
+            identifier_str = (datum.get("phone", "") + datum.get("name","") + datum.get("age",0)).encode('utf-8')
+            identifier = md5(identifier_str).hexdigest()
+            
+            p = Person.objects.get(unique_identifier=identifier)
+        except ValueError as e:
+            print("Invalid camp ID. row = "+ str(datum))
+        except RescueCamp.DoesNotExist as e:
+            print("Camp does not exist. row = "+ str(datum))
+            
+        except Person.DoesNotExist:
             gender = 2
             if( len(datum.get("gender", "")) > 0 ):
                 if(datum.get("gender", "")[0] == "m" or datum.get("gender", "")[0] == "M"):
@@ -58,6 +69,8 @@ def import_inmate_file(csvid):
                 checkin_date = parsedate(datum.get("checkin_date", None)),
                 checkout_date = parsedate(datum.get("checkout_date", None))
             ).save()
+            
+
 
 #For Shell Testing
 #exec(open('mainapp/csvimporter.py').read())
