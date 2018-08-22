@@ -130,7 +130,7 @@ class RescueCampAdmin(admin.ModelAdmin):
                     'total_males', 'total_females', 'total_infants', 'food_req',
                     'clothing_req', 'sanitary_req', 'medical_req', 'other_req')
     list_filter = ('district','status')
-
+    search_fields = ['name']
 
     def download_inmates(self, request, queryset):
         header_row = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
@@ -215,6 +215,7 @@ class CsvBulkUploadAdmin(admin.ModelAdmin):
         bulk_csv_upload_queue.enqueue(
             import_inmate_file, obj.pk
         )
+    autocomplete_fields = ['camp']
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)

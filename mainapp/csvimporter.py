@@ -32,12 +32,9 @@ def import_inmate_file(csvid):
     upload.csv_file.open(mode="rb")
     new_data = csv.DictReader(codecs.iterdecode(upload.csv_file.file, 'utf-8'))
 
-    camp_obj = False
     for datum in new_data:
-
+        '''
         try:
-            camp_id = int(datum.get("camped_at", ""))
-            camp_obj = RescueCamp.objects.get(id = camp_id)
             identifier_str = (datum.get("phone", "") + datum.get("name","") + datum.get("age",0)).encode('utf-8')
             identifier = md5(identifier_str).hexdigest()
             #this will fail. we should deal with the removed unique_identifier
@@ -48,27 +45,28 @@ def import_inmate_file(csvid):
             print("Camp does not exist. row = "+ str(datum))
 
         except Person.DoesNotExist:
-            gender = 2
-            if( len(datum.get("gender", "")) > 0 ):
-                if(datum.get("gender", "")[0] == "m" or datum.get("gender", "")[0] == "M"):
-                    gender = 0
-                elif(datum.get("gender", "")[0] == "f" or datum.get("gender", "")[0] == "F"):
-                    gender = 1
+        '''
+        gender = 2
+        if( len(datum.get("gender", "")) > 0 ):
+            if(datum.get("gender", "")[0] == "m" or datum.get("gender", "")[0] == "M"):
+                gender = 0
+            elif(datum.get("gender", "")[0] == "f" or datum.get("gender", "")[0] == "F"):
+                gender = 1
 
-            Person(
-                unique_identifier = identifier,
-                name = datum.get("name", ""),
-                phone = datum.get("phone", ""),
-                age = datum.get("age", ""),
-                gender = gender,
-                address = datum.get("address", ""),
-                notes = datum.get("notes", ""),
-                camped_at = camp_obj,
-                district = datum.get("district", ""),
-                status = "new",
-                checkin_date = parsedate(datum.get("checkin_date", None)),
-                checkout_date = parsedate(datum.get("checkout_date", None))
-            ).save()
+        Person(
+            name = datum.get("name", ""),
+            phone = datum.get("phone", ""),
+            age = datum.get("age", ""),
+            gender = gender,
+            address = datum.get("address", ""),
+            notes = datum.get("notes", ""),
+            camped_at = upload.camp ,
+            district = datum.get("district", ""),
+            status = "new",
+            checkin_date = parsedate(datum.get("checkin_date", None)),
+            checkout_date = parsedate(datum.get("checkout_date", None))
+        ).save()
+    CsvBulkUpload.objects.filter(id = csvid).update(is_completed = True)
 
 
 
