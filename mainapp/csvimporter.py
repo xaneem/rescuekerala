@@ -52,11 +52,15 @@ def import_inmate_file(csvid):
                 gender = 0
             elif(datum.get("gender", "")[0] == "f" or datum.get("gender", "")[0] == "F"):
                 gender = 1
+        age = '-1'
+        if(datum.get("age", "").strip() != ""):
+           age = datum.get("age", "").strip()
+
 
         Person(
             name = datum.get("name", ""),
             phone = datum.get("phone", ""),
-            age = datum.get("age", ""),
+            age = age,
             gender = gender,
             address = datum.get("address", ""),
             notes = datum.get("notes", ""),

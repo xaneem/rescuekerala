@@ -590,9 +590,6 @@ class CsvBulkUpload(models.Model):
     camp = models.ForeignKey(RescueCamp, models.CASCADE)
 
     def full_clean(self, *args, **kwargs):
-        print("1")
-        # Then call the clean() method of the super  class
-        # ... do some cross-fields validation for the subclass
         self.csv_file.open(mode="rb")
         reader = csv.reader(codecs.iterdecode(self.csv_file.file, 'utf-8'))
         i = next(reader)
