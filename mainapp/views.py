@@ -828,6 +828,25 @@ class ReqUpdateSuccess(TemplateView):
     template_name = "mainapp/request_update_success.html"
 
 
+class CollectionCenterFilter(django_filters.FilterSet):
+    class Meta:
+        model = CollectionCenter
+        fields = {
+            'name': ['icontains'],
+            'address': ['icontains'],
+            'contacts': ['icontains'],
+            'district': ['icontains'],
+            'lsg_name': ['icontains'],
+            'ward_name': ['icontains'],
+            'city': ['icontains'],
+         }
+
+    def __init__(self, *args, **kwargs):
+        super(CollectionCenterFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
+
+
 class CollectionCenterListView(ListView):
     model = CollectionCenter
     paginate_by = PER_PAGE
@@ -835,6 +854,9 @@ class CollectionCenterListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['filter'] = CollectionCenterFilter(
+            self.request.GET, queryset=CollectionCenter.objects.all()
+        )
         return context
 
 
