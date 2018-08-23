@@ -31,6 +31,7 @@ import csv
 from dateutil import parser
 import calendar
 from mainapp.models import CollectionCenter
+from collections import OrderedDict
 
 
 class CustomForm(forms.ModelForm):
@@ -829,17 +830,19 @@ class ReqUpdateSuccess(TemplateView):
 
 
 class CollectionCenterFilter(django_filters.FilterSet):
+    lsg_name = django_filters.ChoiceFilter()
+    ward_name = django_filters.ChoiceFilter()
+
     class Meta:
         model = CollectionCenter
-        fields = {
-            'name': ['icontains'],
-            'address': ['icontains'],
-            'contacts': ['icontains'],
-            'district': ['icontains'],
-            'lsg_name': ['icontains'],
-            'ward_name': ['icontains'],
-            'city': ['icontains'],
-         }
+        fields = OrderedDict()
+        fields['name'] = ['icontains']
+        fields['address'] = ['icontains']
+        fields['contacts'] = ['icontains']
+        fields['district'] = ['exact']
+        fields['lsg_name'] = ['exact']
+        fields['ward_name'] = ['exact']
+        fields['city'] = ['icontains']
 
     def __init__(self, *args, **kwargs):
         super(CollectionCenterFilter, self).__init__(*args, **kwargs)
@@ -885,3 +888,4 @@ class CollectionCenterForm(forms.ModelForm):
 class CollectionCenterView(CreateView):
     model = CollectionCenter
     form_class = CollectionCenterForm
+
