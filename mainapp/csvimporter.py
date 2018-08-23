@@ -52,7 +52,7 @@ def import_inmate_file(csvid):
             if(datum.get(i, "").strip() == ""):empty+=1
         if(empty == len(header)):
             continue
-            
+
         gender = 2
         if( len(datum.get("gender", "")) > 0 ):
             if(datum.get("gender", "")[0] == "m" or datum.get("gender", "")[0] == "M"):
@@ -67,7 +67,7 @@ def import_inmate_file(csvid):
         Person(
             name = datum.get("name", ""),
             phone = datum.get("phone", ""),
-            age = age,
+            age = int(float(age)),
             gender = gender,
             address = datum.get("address", ""),
             notes = datum.get("notes", ""),
