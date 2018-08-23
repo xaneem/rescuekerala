@@ -25,7 +25,7 @@ urlpatterns = [
     path('district_needs/', views.DistNeeds.as_view(), name='distneedsview'),
     path('collection_center/', views.CollectionCenterView.as_view(), name='collection_centers_view'),
     url(r'collection_centers/(?P<location>\w+)/$', views.CollectionCenterListView.as_view(), name='collection_centers_list'),
-    path('collection_centers/', TemplateView.as_view(template_name='mainapp/collectioncenter_district_select.html'), name='collection_centers_district_select'),
+    path('collection_centers/', TemplateView.as_view(template_name='mainapp/collectioncenter_state_select.html'), name='collection_centers_district_select'),
     path('reg_contrib/', views.RegisterContributor.as_view(), name='reg_contribview'),
     path('contribview/', views.contributors, name='contribview'),
     path('contrib_success/', views.ContribSuccess.as_view(), name='contribsucessview'),
