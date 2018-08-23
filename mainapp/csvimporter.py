@@ -46,6 +46,13 @@ def import_inmate_file(csvid):
 
         except Person.DoesNotExist:
         '''
+        empty = 0
+        header = ["name" , "phone" , "address" , "notes" , "district" , "checkin_date" , "checkout_date" , "gender" , "age" ]
+        for i in header:
+            if(datum.get(i, "").strip() == ""):empty+=1
+        if(empty == len(header)):
+            continue
+            
         gender = 2
         if( len(datum.get("gender", "")) > 0 ):
             if(datum.get("gender", "")[0] == "m" or datum.get("gender", "")[0] == "M"):
