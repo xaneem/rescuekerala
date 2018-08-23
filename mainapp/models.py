@@ -1,15 +1,14 @@
 import os
 import uuid
 from enum import Enum
+import csv
+import codecs
 
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
-import csv
-import codecs
 from django.core.exceptions import ValidationError
-
 
 
 districts = (
