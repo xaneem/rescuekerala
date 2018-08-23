@@ -216,7 +216,8 @@ class CsvBulkUploadAdmin(admin.ModelAdmin):
             import_inmate_file, obj.pk
         )
     autocomplete_fields = ['camp']
-    readonly_fields = ['is_completed']
+    readonly_fields = ['is_completed', 'failure_reason']
+    list_display = ['name','camp','is_completed']
 
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
