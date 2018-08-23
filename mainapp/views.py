@@ -853,9 +853,11 @@ class CollectionCenterListView(ListView):
     ordering = ['-id']
 
     def get_context_data(self, **kwargs):
+        location = self.kwargs['location']
+        inside_kerala = True if location == 'inside_kerala' else False
         context = super().get_context_data(**kwargs)
         context['filter'] = CollectionCenterFilter(
-            self.request.GET, queryset=CollectionCenter.objects.all().order_by('-id')
+            self.request.GET, queryset=CollectionCenter.objects.filter(is_inside_kerala=inside_kerala).order_by('-id')
         )
         return context
 
