@@ -605,8 +605,9 @@ class CollectionCenter(models.Model):
 class CsvBulkUpload(models.Model):
     name = models.CharField(max_length=20)
     csv_file = models.FileField(upload_to=upload_to)
-    is_completed = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False, verbose_name="Import Status")
     camp = models.ForeignKey(RescueCamp, models.CASCADE)
+    failure_reason = models.CharField(max_length=150, default='', blank=True, verbose_name="Reason of failure, if failed")
 
     def full_clean(self, *args, **kwargs):
         self.csv_file.open(mode="rb")
