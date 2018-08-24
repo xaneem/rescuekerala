@@ -604,6 +604,7 @@ class CollectionCenter(models.Model):
     is_inside_kerala = models.BooleanField(default=True, verbose_name="Center inside kerala? - കേന്ദ്രം കേരളത്തിലാണോ")
     city = models.CharField(null=True, blank=True, max_length=150, verbose_name="City - നഗരം")
     added_at = models.DateTimeField(auto_now_add=True)
+    map_link = models.TextField( verbose_name='Map(Cordinate links) link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
 
     def __str__(self):
         return self.name

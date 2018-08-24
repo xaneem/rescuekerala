@@ -885,6 +885,7 @@ class CollectionCenterForm(forms.ModelForm):
             'lsg_name',
             'ward_name',
             'city',
+            'map_link',
         ]
         widgets = {
             'lsg_name': forms.Select(),
@@ -895,4 +896,4 @@ class CollectionCenterForm(forms.ModelForm):
 class CollectionCenterView(CreateView):
     model = CollectionCenter
     form_class = CollectionCenterForm
-
+    success_url = '/collection_centers/'
