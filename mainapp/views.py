@@ -230,15 +230,13 @@ class RescueCampFilter(django_filters.FilterSet):
 def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
 
-
 def relief_camps_list(request):
     filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(status='active'))
     relief_camps = filter.qs.annotate(count=Count('person')).order_by('district','name').all()
-    paginator = Paginator(relief_camps,20)
+    paginator = Paginator(relief_camps,50)
     page = request.GET.get('page')
-    req_reliefcamps = paginator.get_page(page)
-    return render(request, 'mainapp/relief_camps_list.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0,'relief_camps_pag': req_reliefcamps})
-
+    data = paginator.get_page(page)
+    return render(request, 'mainapp/relief_camps_list.html', {'filter': filter, 'data': data})
 
 class RequestFilter(django_filters.FilterSet):
     class Meta:
