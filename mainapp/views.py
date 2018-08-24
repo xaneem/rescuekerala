@@ -31,6 +31,7 @@ import csv
 from dateutil import parser
 import calendar
 from mainapp.models import CollectionCenter
+from collections import OrderedDict
 
 
 class CustomForm(forms.ModelForm):
@@ -834,17 +835,20 @@ class ReqUpdateSuccess(TemplateView):
 
 
 class CollectionCenterFilter(django_filters.FilterSet):
+    lsg_name = django_filters.ChoiceFilter()
+    ward_name = django_filters.ChoiceFilter()
+
     class Meta:
+
         model = CollectionCenter
-        fields = {
-            'name': ['icontains'],
-            'address': ['icontains'],
-            'contacts': ['icontains'],
-            'district': ['icontains'],
-            'lsg_name': ['icontains'],
-            'ward_name': ['icontains'],
-            'city': ['icontains'],
-         }
+        fields = OrderedDict()
+        fields['name'] = ['icontains']
+        fields['address'] = ['icontains']
+        fields['contacts'] = ['icontains']
+        fields['district'] = ['exact']
+        fields['lsg_name'] = ['exact']
+        fields['ward_name'] = ['exact']
+        fields['city'] = ['icontains']
 
     def __init__(self, *args, **kwargs):
         super(CollectionCenterFilter, self).__init__(*args, **kwargs)
@@ -861,6 +865,7 @@ class CollectionCenterListView(ListView):
         location = self.kwargs['location']
         inside_kerala = True if location == 'inside_kerala' else False
         context = super().get_context_data(**kwargs)
+        context['inside_kerala'] = inside_kerala
         context['filter'] = CollectionCenterFilter(
             self.request.GET, queryset=CollectionCenter.objects.filter(is_inside_kerala=inside_kerala).order_by('-id')
         )
@@ -890,3 +895,4 @@ class CollectionCenterForm(forms.ModelForm):
 class CollectionCenterView(CreateView):
     model = CollectionCenter
     form_class = CollectionCenterForm
+
