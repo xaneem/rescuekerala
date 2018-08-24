@@ -99,6 +99,15 @@ person_status = (
     ('closed', 'Closed')
 )
 
+contribution_types = (
+    ('fod', 'Food'),
+    ('med', 'Medicines'),
+    ('shl', 'Shelter'),
+    ('clt', 'Clothing'),
+    ('sny', 'Sanitary materials'),
+    ('oth', 'Others')
+)
+
 class LSGTypes(Enum):
     CORPORATION = 0
     MUNICIPALITY = 1
@@ -248,11 +257,16 @@ class Contributor(models.Model):
     phone = models.CharField(max_length=14, verbose_name="Phone - ഫോണ്‍ നമ്പര്‍", validators=[phone_number_regex])
 
     address = models.TextField(verbose_name="Address - വിലാസം")
-    commodities = models.TextField(verbose_name="What you can contribute. ( സംഭാവന ചെയ്യാന്‍ ഉദ്ദേശിക്കുന്ന സാധനങ്ങള്‍ ) -- Eg: Shirts, torches etc ")
+    contrib_details = models.TextField(verbose_name="Details of contribution Eg: 10 shirts", default='')
     status = models.CharField(
         max_length = 10,
         choices = contrib_status_types,
         default = 'new'
+    )
+    contribution_type = models.CharField(
+    max_length=3,
+    choices=contribution_types,
+    default='oth'
     )
 
     class Meta:
@@ -501,6 +515,9 @@ class Person(models.Model):
     class Meta:
         verbose_name = 'Relief: Inmate'
         verbose_name_plural = "Relief: Inmates"
+        indexes = [
+            models.Index(fields=['name', '-added_at',]),
+        ]
 
     def __str__(self):
         return self.name

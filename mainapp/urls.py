@@ -53,6 +53,7 @@ urlpatterns = [
     path('camp/<int:camp_id>/add_person/', views.AddPerson.as_view(), name='add_person'),
     path('coordinator_home/', views.coordinator_home, name='coordinator_home'),
     path('find_people/', views.find_people, name='find_people'),
+    path('missing_persons/', views.missing_persons, name='missing_persons'),
     path('announcements/', views.announcements, name="Announcements"),
     path('camp_requirements/', views.camp_requirements_list, name='camp_requirements_list'),
     path('submission_success/', views.SubmissionSuccess.as_view(), name='submission_success'),

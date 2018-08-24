@@ -164,7 +164,7 @@ def download_ngo_list(request):
 
 class RegisterContributor(CreateView):
     model = Contributor
-    fields = ['name', 'district', 'phone', 'address',  'commodities']
+    fields = ['name', 'district', 'phone', 'address', 'contribution_type', 'contrib_details']
     success_url = '/contrib_success/'
 
 
@@ -229,6 +229,11 @@ class RescueCampFilter(django_filters.FilterSet):
 
 def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
+
+  
+def missing_persons(request):
+    return render(request, "mainapp/missing_persons.html")
+
 
 def relief_camps_list(request):
     filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(status='active'))
@@ -301,8 +306,9 @@ class ContribFilter(django_filters.FilterSet):
                     'district' : ['exact'],
                     'name' : ['icontains'],
                     'phone' : ['exact'],
+                    'status' : ['exact'],
                     'address' : ['icontains'],
-                    'commodities' : ['icontains'],
+                    'contrib_details' : ['icontains'],
                     'status' : ['icontains'],
                  }
 
