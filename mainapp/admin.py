@@ -133,12 +133,13 @@ class RescueCampAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     def download_inmates(self, request, queryset):
-        header_row = ('name', 'phone', 'age', 'gender', 'district', 'camped_at')
+        header_row = ('name', 'address' ,'phone', 'age', 'gender', 'district', 'camped_at')
         body_rows = []
-        campid = queryset[0].id
-        for person in Person.objects.all().filter(camped_at__id = campid):
-            row = [getattr(person, field) for field in header_row]
-            body_rows.append(row)
+        for i in queryset:
+            campid = i.id
+            for person in Person.objects.all().filter(camped_at__id = campid):
+                row = [getattr(person, field) for field in header_row]
+                body_rows.append(row)
 
         response = create_csv_response('InmatesOf{}'.format(queryset[0].name), header_row, body_rows)
         return response
