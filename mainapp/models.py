@@ -9,6 +9,10 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.core.cache.utils import make_template_fragment_key
+from django.core.cache import cache
+from django.dispatch import receiver
 
 
 districts = (
@@ -369,6 +373,12 @@ class RescueCamp(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=RescueCamp)
+def expire_people_filter_form(sender, **kwargs):
+    cache_key = make_template_fragment_key("person_filter_form")
+    cache.delete(cache_key)
 
 
 class PrivateRescueCamp(models.Model):
