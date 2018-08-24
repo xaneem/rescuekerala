@@ -846,7 +846,7 @@ class CollectionCenterFilter(django_filters.FilterSet):
         fields['district'] = ['exact']
         fields['lsg_name'] = ['exact']
         fields['ward_name'] = ['exact']
-        fields['city'] = ['icontains']
+        # fields['city'] = ['icontains']
 
     def __init__(self, *args, **kwargs):
         super(CollectionCenterFilter, self).__init__(*args, **kwargs)
