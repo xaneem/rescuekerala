@@ -164,7 +164,7 @@ def download_ngo_list(request):
 
 class RegisterContributor(CreateView):
     model = Contributor
-    fields = ['name', 'district', 'phone', 'address',  'commodities']
+    fields = ['name', 'district', 'phone', 'address', 'contribution_type', 'contrib_details']
     success_url = '/contrib_success/'
 
 
@@ -303,8 +303,9 @@ class ContribFilter(django_filters.FilterSet):
                     'district' : ['exact'],
                     'name' : ['icontains'],
                     'phone' : ['exact'],
+                    'status' : ['exact'],
                     'address' : ['icontains'],
-                    'commodities' : ['icontains'],
+                    'contrib_details' : ['icontains'],
                     'status' : ['icontains'],
                  }
 
