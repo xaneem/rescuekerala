@@ -230,6 +230,9 @@ class RescueCampFilter(django_filters.FilterSet):
 def relief_camps(request):
     return render(request,"mainapp/relief_camps.html")
 
+def missing_persons(request):
+    return render(request, "mainapp/missing_persons.html")
+
 
 def relief_camps_list(request):
     filter = RescueCampFilter(request.GET, queryset=RescueCamp.objects.filter(status='active'))
