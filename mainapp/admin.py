@@ -196,7 +196,7 @@ class PersonAdmin(admin.ModelAdmin):
         return instance.camped_at.district_name
 
     def download_csv(self, request, queryset):
-        header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at')
+        header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at', 'status')
         body_rows = []
         persons = queryset.all()
         for person in persons:

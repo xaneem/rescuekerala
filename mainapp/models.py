@@ -459,7 +459,7 @@ class Person(models.Model):
         default = None,
     )
 
-    unique_identifier = models.CharField(max_length=32, default='')
+    unique_identifier = models.CharField(max_length=32, default='', blank=True)
 
     @property
     def sex(self):
