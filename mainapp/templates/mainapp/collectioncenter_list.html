@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="text-center">
-  <h3><a href="/collection_centers/">Collection Centers</a></h3>
+  <h3><a href="/collection_centers/">Collection Centers</a>&nbsp;>&nbsp;<span class="inside_kerala"></span></h3>
 </div>
 
 <div>
@@ -63,6 +63,18 @@
 {% endblock %}
 
 {% block javascript %}
+    <script type="text/javascript">
+            var inside_kerala = {{ inside_kerala|yesno:"true,false" }};
+            if(inside_kerala){
+                $(".inside_kerala").text("Inside Kerala");
+            }
+            else{
+                $(".inside_kerala").text("Outside Kerala");
+                $("#id_district").parent().remove();
+                $("#id_ward_name").parent().remove();
+                $("#id_lsg_name").parent().remove();
+            }
+    </script>
 
     <script type="text/javascript">
         window.onload = function() {

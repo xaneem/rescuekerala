@@ -834,6 +834,7 @@ class CollectionCenterFilter(django_filters.FilterSet):
     ward_name = django_filters.ChoiceFilter()
 
     class Meta:
+
         model = CollectionCenter
         fields = OrderedDict()
         fields['name'] = ['icontains']
@@ -859,6 +860,7 @@ class CollectionCenterListView(ListView):
         location = self.kwargs['location']
         inside_kerala = True if location == 'inside_kerala' else False
         context = super().get_context_data(**kwargs)
+        context['inside_kerala'] = inside_kerala
         context['filter'] = CollectionCenterFilter(
             self.request.GET, queryset=CollectionCenter.objects.filter(is_inside_kerala=inside_kerala).order_by('-id')
         )
