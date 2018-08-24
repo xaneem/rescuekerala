@@ -141,7 +141,7 @@ class RescueCampAdmin(admin.ModelAdmin):
                 row = [getattr(person, field) for field in header_row]
                 body_rows.append(row)
 
-        response = create_csv_response('InmatesOf{}'.format(queryset[0].name), header_row, body_rows)
+        response = create_csv_response('InmatesList'.format(queryset[0].name), header_row, body_rows)
         return response
 
     def get_readonly_fields(self, request, obj=None):
